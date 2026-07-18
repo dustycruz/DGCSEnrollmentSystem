@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="EnrollmentSystem.BLL/EnrollmentSystem.BLL.csproj" />
+  <Project Path="EnrollmentSystem.DAL/EnrollmentSystem.DAL.csproj" />
+  <Project Path="EnrollmentSystem.UI/EnrollmentSystem.UI.csproj" />
+</Solution>
