@@ -1,0 +1,137 @@
+﻿// File: EnrollmentSystem.BLL/Services/Implementations/ReportingService.cs
+using EnrollmentSystem.BLL.DTOs;
+using EnrollmentSystem.BLL.Services.Interfaces;
+using EnrollmentSystem.DAL.Repositories.Interfaces;
+
+namespace EnrollmentSystem.BLL.Services.Implementations;
+
+public class ReportingService : IReportingService
+{
+    private readonly ISectionRepository _sectionRepo;
+    private readonly IEnrollmentRepository _enrollmentRepo;
+    private readonly IStudentRepository _studentRepo;
+    private readonly IGradeRepository _gradeRepo;
+
+    public ReportingService(
+        ISectionRepository sectionRepo,
+        IEnrollmentRepository enrollmentRepo,
+        IStudentRepository studentRepo,
+        IGradeRepository gradeRepo)
+    {
+        _sectionRepo = sectionRepo;
+        _enrollmentRepo = enrollmentRepo;
+        _studentRepo = studentRepo;
+        _gradeRepo = gradeRepo;
+    }
+
+    public async Task<IEnumerable<EnrollmentStatDto>> GetEnrollmentStatsAsync()
+    {
+        var sections = await _sectionRepo.GetAllActiveAsync();
+        var stats = new List<EnrollmentStatDto>();
+
+        foreach (var section in sections)
+        {
+            var enrollments = await _enrollmentRepo.GetBySectionAsync(section.SectionId);
+            stats.Add(new EnrollmentStatDto
+            {
+                SectionName = section.Name,
+                GradeLevel = section.GradeLevel?.Name ?? "-",
+                SchoolYear = section.SchoolYear?.Name ?? "-",
+                EnrolledCount = enrollments.Count(e => e.Status == "Enrolled")
+            });
+        }
+
+        return stats;
+    }
+
+    public async Task<IEnumerable<ClassListRowDto>> GetClassListAsync(int sectionId)
+    {
+        var enrollments = (await _enrollmentRepo.GetBySectionAsync(sectionId))
+            .Where(e => e.Status == "Enrolled")
+            .ToList();
+
+        var rows = new List<ClassListRowDto>();
+        var i = 1;
+        foreach (var e in enrollments.OrderBy(e => e.Student.LastName))
+        {
+            rows.Add(new ClassListRowDto
+            {
+                Number = i++,
+                StudentNumber = e.Student.StudentNumber ?? "-",
+                FullName = $"{e.Student.LastName}, {e.Student.FirstName} {e.Student.MiddleName}".Trim(),
+                Gender = e.Student.Gender ?? "-",
+                Status = e.Status
+            });
+        }
+
+        return rows;
+    }
+
+    public async Task<ReportCardDto?> GetReportCardAsync(int studentId)
+    {
+        var student = await _studentRepo.GetByIdAsync(studentId);
+        if (student is null) return null;
+
+        var grades = (await _gradeRepo.GetByStudentAsync(studentId)).ToList();
+
+        var lines = grades
+            .GroupBy(g => new { g.SubjectId, SubjectName = g.Subject?.Name ?? "-" })
+            .Select(group =>
+            {
+                decimal? Q(string q) => group.FirstOrDefault(x => x.Quarter == q)?.Grade1;
+
+                var q1 = Q("Q1"); var q2 = Q("Q2"); var q3 = Q("Q3"); var q4 = Q("Q4");
+                var available = new[] { q1, q2, q3, q4 }.Where(v => v.HasValue).Select(v => v!.Value).ToList();
+                decimal? final = available.Count > 0 ? Math.Round(available.Average(), 2) : null;
+
+                return new ReportCardLineDto
+                {
+                    Subject = group.Key.SubjectName,
+                    Q1 = q1,
+                    Q2 = q2,
+                    Q3 = q3,
+                    Q4 = q4,
+                    Final = final
+                };
+            })
+            .OrderBy(l => l.Subject)
+            .ToList();
+
+        var finals = lines.Where(l => l.Final.HasValue).Select(l => l.Final!.Value).ToList();
+
+        return new ReportCardDto
+        {
+            StudentId = student.StudentId,
+            StudentNumber = student.StudentNumber ?? "-",
+            FullName = $"{student.LastName}, {student.FirstName} {student.MiddleName}".Trim(),
+            Lines = lines,
+            GeneralAverage = finals.Count > 0 ? Math.Round(finals.Average(), 2) : null
+        };
+    }
+
+    public async Task<IEnumerable<MasterListRowDto>> GetMasterListAsync(int? schoolYearId)
+    {
+        var enrolled = (await _enrollmentRepo.GetByStatusAsync("Enrolled")).ToList();
+
+        if (schoolYearId.HasValue)
+            enrolled = enrolled.Where(e => e.Section?.SchoolYearId == schoolYearId.Value).ToList();
+
+        var rows = new List<MasterListRowDto>();
+        var i = 1;
+        foreach (var e in enrolled.OrderBy(e => e.Student.LastName))
+        {
+            rows.Add(new MasterListRowDto
+            {
+                Number = i++,
+                StudentNumber = e.Student.StudentNumber ?? "-",
+                FullName = $"{e.Student.LastName}, {e.Student.FirstName} {e.Student.MiddleName}".Trim(),
+                Section = e.Section?.Name ?? "-",
+                GradeLevel = e.Section?.GradeLevel?.Name ?? "-",
+                SchoolYear = e.Section?.SchoolYear?.Name ?? "-",
+                Status = e.Status
+            });
+        }
+
+        return rows;
+    }
+}

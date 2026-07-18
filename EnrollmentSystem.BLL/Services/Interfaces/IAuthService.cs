@@ -1,0 +1,15 @@
+﻿// File: EnrollmentSystem.BLL/Services/Interfaces/IAuthService.cs
+using EnrollmentSystem.BLL.Common;
+using EnrollmentSystem.BLL.DTOs;
+using EnrollmentSystem.DAL.Models;
+
+namespace EnrollmentSystem.BLL.Services.Interfaces;
+
+public interface IAuthService
+{
+    Task<ServiceResult> RegisterAsync(RegisterDto dto);
+    Task<ServiceResult<AuthUserDto>> LoginAsync(LoginDto dto);
+    Task<IEnumerable<AspNetUser>> GetAllUsersAsync();
+    Task<AuthUserDto?> GetUserAsync(string id);
+    Task EnsureSeedDataAsync();
+}
