@@ -1,0 +1,82 @@
+﻿@* File: EnrollmentSystem.UI/Views/Applicant/Apply.cshtml *@
+@model AdmissionFormViewModel
+@{
+    ViewData["Title"] = "Admission Form";
+}
+<h1 class="page-title">Admission Form</h1>
+<p class="page-subtitle">Complete all required fields, then continue to requirements.</p>
+
+<form asp-action="Apply" method="post">
+    <input type="hidden" asp-for="ApplicationId" />
+    <div asp-validation-summary="ModelOnly" class="alert alert-danger" style="@(ViewData.ModelState.ErrorCount > 0 ? "" : "display:none")"></div>
+
+    <div class="content-card">
+        <h3><i data-lucide="user"></i> Personal Information</h3>
+        <div class="row g-3">
+            <div class="col-md-4"><label class="form-label" asp-for="FirstName"></label><input class="form-control" asp-for="FirstName" /><span asp-validation-for="FirstName" class="text-validation"></span></div>
+            <div class="col-md-4"><label class="form-label" asp-for="MiddleName"></label><input class="form-control" asp-for="MiddleName" /></div>
+            <div class="col-md-4"><label class="form-label" asp-for="LastName"></label><input class="form-control" asp-for="LastName" /><span asp-validation-for="LastName" class="text-validation"></span></div>
+            <div class="col-md-4"><label class="form-label" asp-for="Birthday"></label><input class="form-control" asp-for="Birthday" type="date" /></div>
+            <div class="col-md-4">
+                <label class="form-label" asp-for="Gender"></label>
+                <select class="form-select" asp-for="Gender"><option value="">— Select —</option><option>Male</option><option>Female</option></select>
+            </div>
+            <div class="col-md-4"><label class="form-label" asp-for="PlaceOfBirth"></label><input class="form-control" asp-for="PlaceOfBirth" /></div>
+            <div class="col-md-4"><label class="form-label" asp-for="Religion"></label><input class="form-control" asp-for="Religion" /></div>
+        </div>
+    </div>
+
+    <div class="content-card">
+        <h3><i data-lucide="phone"></i> Contact Information</h3>
+        <div class="row g-3">
+            <div class="col-md-8"><label class="form-label" asp-for="Address"></label><input class="form-control" asp-for="Address" /></div>
+            <div class="col-md-4"><label class="form-label" asp-for="MobileNumber"></label><input class="form-control" asp-for="MobileNumber" /></div>
+            <div class="col-md-6"><label class="form-label" asp-for="EmailAddress"></label><input class="form-control" asp-for="EmailAddress" /></div>
+            <div class="col-md-6"><label class="form-label" asp-for="HomeNumber"></label><input class="form-control" asp-for="HomeNumber" /></div>
+        </div>
+    </div>
+
+    <div class="content-card">
+        <h3><i data-lucide="users"></i> Parent / Guardian</h3>
+        <div class="row g-3">
+            <div class="col-md-6"><label class="form-label" asp-for="GuardianName"></label><input class="form-control" asp-for="GuardianName" /></div>
+            <div class="col-md-6"><label class="form-label" asp-for="GuardianContactNumber"></label><input class="form-control" asp-for="GuardianContactNumber" /></div>
+        </div>
+    </div>
+
+    <div class="content-card">
+        <h3><i data-lucide="book-open"></i> Educational Background</h3>
+        <div class="row g-3">
+            <div class="col-md-4"><label class="form-label" asp-for="LearnerReferenceNumber"></label><input class="form-control" asp-for="LearnerReferenceNumber" /></div>
+            <div class="col-md-4"><label class="form-label" asp-for="LastSchoolAttended"></label><input class="form-control" asp-for="LastSchoolAttended" /></div>
+            <div class="col-md-4"><label class="form-label" asp-for="LastLevelObtained"></label><input class="form-control" asp-for="LastLevelObtained" /></div>
+        </div>
+    </div>
+
+    <div class="content-card">
+        <h3><i data-lucide="graduation-cap"></i> Enrollment Details</h3>
+        <div class="row g-3">
+            <div class="col-md-4">
+                <label class="form-label" asp-for="GradeLevelId">Grade Level Applying For</label>
+                <select class="form-select" asp-for="GradeLevelId" asp-items="Model.GradeLevels"><option value="">— Select —</option></select>
+                <span asp-validation-for="GradeLevelId" class="text-validation"></span>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label" asp-for="SchoolYearId">Academic Year</label>
+                <select class="form-select" asp-for="SchoolYearId" asp-items="Model.SchoolYears"><option value="">— Select —</option></select>
+                <span asp-validation-for="SchoolYearId" class="text-validation"></span>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label" asp-for="ApplicantType"></label>
+                <select class="form-select" asp-for="ApplicantType"><option>New Student</option><option>Transferee</option><option>Returning Student</option></select>
+            </div>
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-brand">Save &amp; Continue to Requirements</button>
+    <a class="btn btn-outline-brand" asp-action="Index">Cancel</a>
+</form>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>if (window.lucide) lucide.createIcons();</script>
+}

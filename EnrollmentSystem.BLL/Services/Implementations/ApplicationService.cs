@@ -78,4 +78,36 @@ public class ApplicationService : IApplicationService
 
     public async Task<IEnumerable<ApplicationDocument>> GetDocumentsAsync(int applicationId)
         => await _documentRepo.GetByApplicationAsync(applicationId);
+
+    public async Task<ServiceResult> UpdateApplicationAsync(Application application, string modifiedBy)
+    {
+        var existing = await _applicationRepo.GetByIdAsync(application.ApplicationId);
+        if (existing is null)
+            return ServiceResult.Fail("Application not found.");
+
+        existing.FirstName = application.FirstName;
+        existing.MiddleName = application.MiddleName;
+        existing.LastName = application.LastName;
+        existing.Birthday = application.Birthday;
+        existing.Gender = application.Gender;
+        existing.PlaceOfBirth = application.PlaceOfBirth;
+        existing.Religion = application.Religion;
+        existing.Address = application.Address;
+        existing.MobileNumber = application.MobileNumber;
+        existing.EmailAddress = application.EmailAddress;
+        existing.HomeNumber = application.HomeNumber;
+        existing.LearnerReferenceNumber = application.LearnerReferenceNumber;
+        existing.LastSchoolAttended = application.LastSchoolAttended;
+        existing.LastLevelObtained = application.LastLevelObtained;
+        existing.GuardianName = application.GuardianName;
+        existing.GuardianContactNumber = application.GuardianContactNumber;
+        existing.GradeLevelId = application.GradeLevelId;
+        existing.SchoolYearId = application.SchoolYearId;
+        existing.ApplicantType = application.ApplicantType;
+        existing.ModifiedBy = modifiedBy;
+
+        _applicationRepo.Update(existing);
+        await _applicationRepo.SaveAsync();
+        return ServiceResult.Ok("Application updated.");
+    }
 }

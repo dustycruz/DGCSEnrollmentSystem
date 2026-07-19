@@ -1,0 +1,43 @@
+﻿@* File: EnrollmentSystem.UI/Views/Student/Schedule.cshtml *@
+@model IEnumerable<Schedule>
+@{
+    ViewData["Title"] = "Class Schedule";
+}
+<h1 class="page-title">Class Schedule</h1>
+<p class="page-subtitle">Your weekly class schedule.</p>
+
+<div class="content-card">
+    @if (Model.Any())
+    {
+        <table class="table">
+            <thead><tr><th>Subject</th><th>Teacher</th><th>Day</th><th>Time</th><th>Room</th></tr></thead>
+            <tbody>
+                @foreach (var sc in Model)
+                {
+                    var teacher = sc.Teacher?.Employee is null ? "TBA" : $"{sc.Teacher.Employee.FirstName} {sc.Teacher.Employee.LastName}";
+                    if (sc.ScheduleDetails.Any())
+                    {
+                        foreach (var d in sc.ScheduleDetails)
+                        {
+                            <tr>
+                                <td>@sc.Subject?.Name</td>
+                                <td>@teacher</td>
+                                <td>@d.Day</td>
+                                <td>@(d.StartTime?.ToString("hh\\:mm")) - @(d.EndTime?.ToString("hh\\:mm"))</td>
+                                <td>@(d.Room?.Name ?? "TBA")</td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr><td>@sc.Subject?.Name</td><td>@teacher</td><td colspan="3" style="color:var(--muted)">Schedule details not set</td></tr>
+                    }
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p style="color:var(--muted)">You don't have a class schedule yet. It appears once you're assigned to a section.</p>
+    }
+</div>

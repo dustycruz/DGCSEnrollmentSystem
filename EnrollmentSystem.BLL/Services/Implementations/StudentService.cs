@@ -3,7 +3,7 @@ using EnrollmentSystem.BLL.Common;
 using EnrollmentSystem.BLL.Services.Interfaces;
 using EnrollmentSystem.DAL.Models;
 using EnrollmentSystem.DAL.Repositories.Interfaces;
-
+using EnrollmentSystem.BLL.DTOs;
 namespace EnrollmentSystem.BLL.Services.Implementations;
 
 public class StudentService : IStudentService
@@ -99,25 +99,25 @@ public class StudentService : IStudentService
         return ServiceResult<int>.Ok(student.StudentId, $"Student record created ({student.StudentNumber}).");
     }
 
-    public async Task<ServiceResult<int>> FinalizeEnrollmentAsync(int applicationId, string modifiedBy)
+    public async Task<ServiceResult<StudentCredentialsDto>> FinalizeEnrollmentAsync(int applicationId, string modifiedBy)
     {
         var application = await _applicationRepo.GetByIdAsync(applicationId);
         if (application is null)
-            return ServiceResult<int>.Fail("Application not found.");
+            return ServiceResult<StudentCredentialsDto>.Fail("Application not found.");
 
         if (application.Status == ApplicationStatuses.Enrolled)
-            return ServiceResult<int>.Fail("This application is already enrolled.");
+            return ServiceResult<StudentCredentialsDto>.Fail("This application is already enrolled.");
 
         if (application.Status != ApplicationStatuses.Approved)
-            return ServiceResult<int>.Fail("Only approved applications can be finalized.");
+            return ServiceResult<StudentCredentialsDto>.Fail("Only approved applications can be finalized.");
 
         if (string.IsNullOrWhiteSpace(application.EmailAddress))
-            return ServiceResult<int>.Fail("The application has no email address on file.");
+            return ServiceResult<StudentCredentialsDto>.Fail("The application has no email address on file.");
 
         // 1. Create the Student record
         var created = await CreateFromApplicationAsync(application, modifiedBy);
         if (!created.Success)
-            return created;
+            return ServiceResult<StudentCredentialsDto>.Fail(created.Message ?? "Failed to create student.");
 
         var student = await _studentRepo.GetByIdAsync(created.Data);
         var studentNumber = student!.StudentNumber!;
@@ -158,8 +158,12 @@ public class StudentService : IStudentService
                 $"Your Student Number is {studentNumber}. Check your email for your Student Portal credentials.");
         }
 
-        return ServiceResult<int>.Ok(created.Data,
-            $"Enrollment finalized. Student Number {studentNumber} created and credentials emailed.");
+        return ServiceResult<StudentCredentialsDto>.Ok(new StudentCredentialsDto
+        {
+            StudentId = created.Data,
+            StudentNumber = studentNumber,
+            TempPassword = tempPassword
+        }, $"Enrollment finalized. Student Number {studentNumber} created.");
     }
 
     public async Task<IEnumerable<Enrollment>> GetEnrollmentsAsync(int studentId)

@@ -1,0 +1,53 @@
+﻿@* File: EnrollmentSystem.UI/Views/Admission/Index.cshtml *@
+@model IEnumerable<Application>
+@using EnrollmentSystem.BLL.Common
+@{
+    ViewData["Title"] = "Admissions";
+    var current = ViewData["Status"] as string ?? "All";
+    var filters = new[] { "All", ApplicationStatuses.Pending, ApplicationStatuses.UnderReview,
+        ApplicationStatuses.AdditionalRequirements, ApplicationStatuses.Approved,
+        ApplicationStatuses.Enrolled, ApplicationStatuses.Rejected };
+}
+<h1 class="page-title">Admissions</h1>
+<p class="page-subtitle">Review applications, verify payments, and finalize enrollment.</p>
+
+@if (TempData["Success"] is string ok)
+{
+    <div class="alert alert-success">@ok</div>
+}
+@if (TempData["Error"] is string err)
+{
+    <div class="alert alert-danger">@err</div>
+}
+
+<div class="content-card">
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;">
+        @foreach (var f in filters)
+        {
+            <a class="btn @(f == current ? "btn-brand" : "btn-outline-brand")" style="padding:6px 14px;font-size:13px;"
+               asp-action="Index" asp-route-status="@f">@f</a>
+        }
+    </div>
+
+    <table class="table">
+        <thead><tr><th>Applicant</th><th>Grade / Type</th><th>Applied</th><th>Status</th><th></th></tr></thead>
+        <tbody>
+            @foreach (var a in Model)
+            {
+                var cls = a.Status is "Approved" or "Enrolled" ? "badge-approved"
+                    : a.Status == "Rejected" ? "badge-rejected" : "badge-pending";
+                <tr>
+                    <td><strong>@a.LastName, @a.FirstName</strong><br /><span style="color:var(--muted);font-size:12px;">@a.EmailAddress</span></td>
+                    <td>@(a.GradeLevel?.Name ?? "-")<br /><span style="color:var(--muted);font-size:12px;">@a.ApplicantType</span></td>
+                    <td>@a.ApplicationDate.ToString("MMM dd, yyyy")</td>
+                    <td><span class="badge-status @cls">@a.Status</span></td>
+                    <td><a class="btn btn-brand" style="padding:6px 14px;font-size:13px;" asp-action="Review" asp-route-id="@a.ApplicationId">Review</a></td>
+                </tr>
+            }
+            @if (!Model.Any())
+            {
+                <tr><td colspan="5" style="text-align:center;color:var(--muted)">No applications.</td></tr>
+            }
+        </tbody>
+    </table>
+</div>

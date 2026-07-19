@@ -1,0 +1,39 @@
+﻿@* File: EnrollmentSystem.UI/Views/Student/Grades.cshtml *@
+@model EnrollmentSystem.BLL.DTOs.ReportCardDto
+@{
+    ViewData["Title"] = "My Grades";
+}
+<h1 class="page-title">My Grades</h1>
+<p class="page-subtitle">Report card and quarterly averages.</p>
+
+<div class="content-card">
+    @if (Model is not null && Model.Lines.Any())
+    {
+        <table class="table">
+            <thead><tr><th>Subject</th><th>Q1</th><th>Q2</th><th>Q3</th><th>Q4</th><th>Final</th></tr></thead>
+            <tbody>
+                @foreach (var line in Model.Lines)
+                {
+                    <tr>
+                        <td><strong>@line.Subject</strong></td>
+                        <td>@(line.Q1?.ToString("0.##") ?? "-")</td>
+                        <td>@(line.Q2?.ToString("0.##") ?? "-")</td>
+                        <td>@(line.Q3?.ToString("0.##") ?? "-")</td>
+                        <td>@(line.Q4?.ToString("0.##") ?? "-")</td>
+                        <td><strong>@(line.Final?.ToString("0.##") ?? "-")</strong></td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="5" style="text-align:right;"><strong>General Average</strong></td>
+                    <td><strong style="color:var(--primary);">@(Model.GeneralAverage?.ToString("0.##") ?? "-")</strong></td>
+                </tr>
+            </tfoot>
+        </table>
+    }
+    else
+    {
+        <p style="color:var(--muted)">No grades have been posted yet.</p>
+    }
+</div>

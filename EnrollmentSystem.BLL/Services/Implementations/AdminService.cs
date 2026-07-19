@@ -83,4 +83,41 @@ public class AdminService : IAdminService
 
         return ServiceResult<int>.Ok(teacher.TeacherId, "Employee promoted to teacher.");
     }
+    public async Task EnsureDemoTeacherAsync()
+    {
+        const string empNo = "EMP-2026-0001";
+        if (await _userRepo.UserNameExistsAsync(empNo)) return;
+
+        var employee = new Employee
+        {
+            FirstName = "Maria",
+            MiddleName = "L",
+            LastName = "Santos",
+            EmployeeNumber = empNo,
+            EmailAddress = "maria.santos@dgcs.edu.ph",
+            CreatedBy = "system",
+            IsDeleted = false
+        };
+        await _employeeRepo.AddAsync(employee);
+        await _employeeRepo.SaveAsync();
+
+        var teacher = new Teacher { EmployeeId = employee.EmployeeId, CreatedBy = "system", IsDeleted = false };
+        await _teacherRepo.AddAsync(teacher);
+        await _teacherRepo.SaveAsync();
+
+        var hash = PasswordHasher.Hash("Teacher@123");
+        var user = new AspNetUser
+        {
+            Id = Guid.NewGuid().ToString(),
+            UserName = empNo,
+            Email = employee.EmailAddress,
+            PasswordHash = hash,
+            EmailConfirmed = true,
+            MustChangePassword = false
+        };
+        var role = await _userRepo.EnsureRoleAsync("Teacher");
+        await _userRepo.AddUserAsync(user);
+        await _userRepo.AddUserToRoleAsync(user.Id, role.Id, empNo, hash);
+        await _userRepo.SaveAsync();
+    }
 }

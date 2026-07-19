@@ -11,4 +11,5 @@ public interface IAdminService
     Task<IEnumerable<AspNetUser>> GetUsersAsync();
     Task<ServiceResult<int>> CreateEmployeeAsync(Employee employee, string createdBy);
     Task<ServiceResult<int>> PromoteToTeacherAsync(int employeeId, string createdBy);
+    Task EnsureDemoTeacherAsync();
 }

@@ -15,6 +15,7 @@ public class LookupService : ILookupService
     private readonly ISubjectRepository _subjectRepo;
     private readonly ICurriculumRepository _curriculumRepo;
     private readonly ITeacherRepository _teacherRepo;
+    private readonly IGenericRepository<Document> _documentRepo;
 
     public LookupService(
         ISchoolYearRepository schoolYearRepo,
@@ -23,7 +24,8 @@ public class LookupService : ILookupService
         ISectionRepository sectionRepo,
         ISubjectRepository subjectRepo,
         ICurriculumRepository curriculumRepo,
-        ITeacherRepository teacherRepo)
+        ITeacherRepository teacherRepo,
+        IGenericRepository<Document> documentRepo)
     {
         _schoolYearRepo = schoolYearRepo;
         _gradeLevelRepo = gradeLevelRepo;
@@ -32,8 +34,8 @@ public class LookupService : ILookupService
         _subjectRepo = subjectRepo;
         _curriculumRepo = curriculumRepo;
         _teacherRepo = teacherRepo;
+        _documentRepo = documentRepo;
     }
-
     public async Task<IEnumerable<SchoolYear>> GetSchoolYearsAsync() => await _schoolYearRepo.GetAllActiveAsync();
     public async Task<IEnumerable<GradeLevel>> GetGradeLevelsAsync() => await _gradeLevelRepo.GetAllActiveAsync();
     public async Task<IEnumerable<EducationalLevel>> GetEducationalLevelsAsync() => await _educationalLevelRepo.GetAllActiveAsync();
@@ -41,4 +43,6 @@ public class LookupService : ILookupService
     public async Task<IEnumerable<Subject>> GetSubjectsAsync() => await _subjectRepo.GetAllActiveAsync();
     public async Task<IEnumerable<Curriculum>> GetCurriculaAsync() => await _curriculumRepo.GetAllActiveAsync();
     public async Task<IEnumerable<Teacher>> GetTeachersAsync() => await _teacherRepo.GetAllWithEmployeeAsync();
+    public async Task<IEnumerable<Document>> GetAdmissionDocumentsAsync()
+    => (await _documentRepo.FindAsync(d => !d.IsDeleted)).OrderBy(d => d.DocumentId).ToList();
 }

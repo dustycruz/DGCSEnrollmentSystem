@@ -1,0 +1,51 @@
+﻿@* File: EnrollmentSystem.UI/Views/Student/Profile.cshtml *@
+@model StudentProfileViewModel
+@{
+    ViewData["Title"] = "My Profile";
+}
+<h1 class="page-title">My Profile</h1>
+<p class="page-subtitle">Student Number: <strong>@Model.StudentNumber</strong></p>
+
+@if (TempData["Success"] is string ok)
+{
+    <div class="alert alert-success">@ok</div>
+}
+@if (TempData["Error"] is string err)
+{
+    <div class="alert alert-danger">@err</div>
+}
+
+<form asp-action="Profile" method="post">
+    <input type="hidden" asp-for="StudentId" />
+    <input type="hidden" asp-for="StudentNumber" />
+    <div class="content-card">
+        <h3><i data-lucide="user"></i> Personal</h3>
+        <div class="row g-3">
+            <div class="col-md-4"><label class="form-label" asp-for="FirstName"></label><input class="form-control" asp-for="FirstName" /></div>
+            <div class="col-md-4"><label class="form-label" asp-for="MiddleName"></label><input class="form-control" asp-for="MiddleName" /></div>
+            <div class="col-md-4"><label class="form-label" asp-for="LastName"></label><input class="form-control" asp-for="LastName" /></div>
+        </div>
+    </div>
+    <div class="content-card">
+        <h3><i data-lucide="phone"></i> Contact</h3>
+        <div class="row g-3">
+            <div class="col-md-8"><label class="form-label" asp-for="Address"></label><input class="form-control" asp-for="Address" /></div>
+            <div class="col-md-4"><label class="form-label" asp-for="MobileNumber"></label><input class="form-control" asp-for="MobileNumber" /></div>
+            <div class="col-md-6"><label class="form-label" asp-for="EmailAddress"></label><input class="form-control" asp-for="EmailAddress" /></div>
+            <div class="col-md-6"><label class="form-label" asp-for="HomeNumber"></label><input class="form-control" asp-for="HomeNumber" /></div>
+        </div>
+    </div>
+    <div class="content-card">
+        <h3><i data-lucide="users"></i> Guardian</h3>
+        <div class="row g-3">
+            <div class="col-md-4"><label class="form-label" asp-for="GuardianName"></label><input class="form-control" asp-for="GuardianName" /></div>
+            <div class="col-md-4"><label class="form-label" asp-for="GuardianRelationship"></label><input class="form-control" asp-for="GuardianRelationship" /></div>
+            <div class="col-md-4"><label class="form-label" asp-for="GuardianEmailAddress"></label><input class="form-control" asp-for="GuardianEmailAddress" /></div>
+        </div>
+    </div>
+    <button type="submit" class="btn btn-brand">Save Changes</button>
+</form>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>if (window.lucide) lucide.createIcons();</script>
+}

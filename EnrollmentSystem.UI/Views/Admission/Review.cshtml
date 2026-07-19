@@ -1,0 +1,143 @@
+﻿@* File: EnrollmentSystem.UI/Views/Admission/Review.cshtml *@
+@model Application
+@using EnrollmentSystem.BLL.Common
+@{
+    ViewData["Title"] = "Review Application";
+    var docs = ViewBag.Documents as IEnumerable<ApplicationDocument> ?? new List<ApplicationDocument>();
+    var payments = ViewBag.Payments as IEnumerable<ProofOfPayment> ?? new List<ProofOfPayment>();
+    var enrollmentPaid = payments.Any(p => p.Purpose == PaymentPurposes.EnrollmentFee && p.Status == "Verified");
+}
+<h1 class="page-title">@Model.LastName, @Model.FirstName</h1>
+<p class="page-subtitle">Applicant #@Model.CreatedBy · @Model.EmailAddress</p>
+
+@if (TempData["Success"] is string ok)
+{
+    <div class="alert alert-success">@ok</div>
+}
+@if (TempData["NewStudentNumber"] is string newSn)
+{
+    <div class="content-card" style="border:2px solid var(--primary);">
+        <h3 style="color:var(--primary);"><i data-lucide="key-round"></i> Student Account Created</h3>
+        <p style="margin:0 0 10px;">Give these credentials to the student. They'll be required to change the password on first login.</p>
+        <table class="table" style="max-width:420px;">
+            <tr><td><strong>Student Number</strong></td><td style="font-size:16px;"><strong>@newSn</strong></td></tr>
+            <tr><td><strong>Temporary Password</strong></td><td style="font-size:16px;letter-spacing:1px;"><strong>@TempData["NewStudentTempPassword"]</strong></td></tr>
+        </table>
+    </div>
+}
+@if (TempData["Error"] is string err)
+{
+    <div class="alert alert-danger">@err</div>
+}
+
+<div class="row g-3">
+    <div class="col-md-7">
+        <div class="content-card">
+            <h3><i data-lucide="user"></i> Applicant Details</h3>
+            <table class="table">
+                <tr><td><strong>Full Name</strong></td><td>@Model.FirstName @Model.MiddleName @Model.LastName</td></tr>
+                <tr><td><strong>Birthday</strong></td><td>@Model.Birthday</td></tr>
+                <tr><td><strong>Gender</strong></td><td>@Model.Gender</td></tr>
+                <tr><td><strong>Address</strong></td><td>@Model.Address</td></tr>
+                <tr><td><strong>Mobile</strong></td><td>@Model.MobileNumber</td></tr>
+                <tr><td><strong>LRN</strong></td><td>@Model.LearnerReferenceNumber</td></tr>
+                <tr><td><strong>Grade / Year</strong></td><td>@(Model.GradeLevel?.Name) · @(Model.SchoolYear?.Name)</td></tr>
+                <tr><td><strong>Applicant Type</strong></td><td>@Model.ApplicantType</td></tr>
+                <tr><td><strong>Guardian</strong></td><td>@Model.GuardianName (@Model.GuardianContactNumber)</td></tr>
+            </table>
+        </div>
+
+        <div class="content-card">
+            <h3><i data-lucide="paperclip"></i> Uploaded Requirements</h3>
+            @if (docs.Any())
+            {
+                <table class="table">
+                    <tbody>
+                        @foreach (var d in docs)
+                        {
+                            <tr><td>@(d.Document?.Name ?? "Document")</td><td><a href="@d.Url" target="_blank">View file</a></td></tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+
+                <p style="color:var(--muted)">No requirements uploaded.</p>
+            }
+        </div>
+
+        <div class="content-card">
+            <h3><i data-lucide="receipt"></i> Proof of Payment</h3>
+            @if (payments.Any())
+            {
+                @foreach (var pay in payments)
+                {
+                    var cls = pay.Status == "Verified" ? "badge-approved" : pay.Status == "Rejected" ? "badge-rejected" : "badge-pending";
+                    <div class="req-row">
+                        <div>
+                            <strong>@pay.Purpose</strong> — ₱@pay.AmountPaid via @pay.PaymentMethod
+                            <span class="badge-status @cls" style="margin-left:8px;">@pay.Status</span><br />
+                            <span style="color:var(--muted);font-size:12px;">Ref: @pay.ReferenceNumber · <a href="@pay.FilePath" target="_blank">View receipt</a></span>
+                        </div>
+                        <form asp-action="VerifyPayment" method="post" style="display:flex;gap:6px;">
+                            <input type="hidden" name="proofId" value="@pay.ProofOfPaymentId" />
+                            <input type="hidden" name="applicationId" value="@Model.ApplicationId" />
+                            <input name="remarks" class="form-control" placeholder="Remarks" style="max-width:150px;" />
+                            <button name="status" value="Verified" class="btn btn-brand" style="padding:6px 10px;">Verify</button>
+                            <button name="status" value="Rejected" class="btn btn-ink" style="padding:6px 10px;">Reject</button>
+                        </form>
+                    </div>
+                }
+            }
+            else
+            {
+                <p style="color:var(--muted)">No payments submitted.</p>
+            }
+        </div>
+    </div>
+
+    <div class="col-md-5">
+        <div class="content-card">
+            <h3><i data-lucide="gavel"></i> Review Decision</h3>
+            <p>Current status: <span class="badge-status @(Model.Status is "Approved" or "Enrolled" ? "badge-approved" : Model.Status == "Rejected" ? "badge-rejected" : "badge-pending")">@Model.Status</span></p>
+            <form asp-action="SetStatus" method="post">
+                <input type="hidden" name="id" value="@Model.ApplicationId" />
+                <label class="form-label">Remarks (visible to applicant)</label>
+                <textarea name="remarks" class="form-control" rows="3">@Model.Remarks</textarea>
+                <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:12px;">
+                    <button name="status" value="@ApplicationStatuses.UnderReview" class="btn btn-outline-brand" style="flex:1;">Under Review</button>
+                    <button name="status" value="@ApplicationStatuses.AdditionalRequirements" class="btn btn-accent" style="flex:1;">Request Docs</button>
+                    <button name="status" value="@ApplicationStatuses.Approved" class="btn btn-brand" style="flex:1;">Approve</button>
+                    <button name="status" value="@ApplicationStatuses.Rejected" class="btn btn-ink" style="flex:1;">Reject</button>
+                </div>
+            </form>
+        </div>
+
+        @if (Model.Status == ApplicationStatuses.Approved)
+        {
+            <div class="content-card">
+                <h3><i data-lucide="user-check"></i> Finalize Enrollment</h3>
+                <p style="color:var(--muted);font-size:14px;">Creates the student record + portal account and emails credentials.</p>
+                @if (!enrollmentPaid)
+                {
+                    <div class="alert" style="background:var(--secondary-soft);color:#8a7a00;">Enrollment fee not yet verified — you can still finalize if your school allows.</div>
+                }
+                <form asp-action="Finalize" method="post" onsubmit="return confirm('Finalize enrollment and create the student account?');">
+                    <input type="hidden" name="id" value="@Model.ApplicationId" />
+                    <button type="submit" class="btn btn-brand w-100">Finalize &amp; Create Student</button>
+                </form>
+            </div>
+        }
+        else if (Model.Status == ApplicationStatuses.Enrolled)
+        {
+            <div class="content-card">
+                <h3 style="color:#157347;"><i data-lucide="check-circle"></i> Enrolled</h3>
+                <p style="color:var(--muted);">The student account has been created and credentials emailed.</p>
+            </div>
+        }
+    </div>
+</div>
+@section Scripts {
+    <script>if (window.lucide) lucide.createIcons();</script>
+}

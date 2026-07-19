@@ -1,0 +1,45 @@
+﻿@* File: EnrollmentSystem.UI/Views/Teacher/Index.cshtml *@
+@model TeacherDashboardViewModel
+@{
+    ViewData["Title"] = "My Classes";
+}
+<h1 class="page-title">My Classes</h1>
+<p class="page-subtitle">Welcome, @(string.IsNullOrEmpty(Model.TeacherName) ? "Teacher" : Model.TeacherName)!</p>
+
+@if (Model.Teacher is null)
+{
+    <div class="alert alert-danger">No teacher record is linked to this account.</div>
+}
+else
+{
+    <div class="content-card">
+        <h3><i data-lucide="book-open"></i> Assigned Classes</h3>
+        @if (Model.Schedules.Any())
+        {
+            <table class="table">
+                <thead><tr><th>Subject</th><th>Section</th><th>Grade Level</th><th></th></tr></thead>
+                <tbody>
+                    @foreach (var sc in Model.Schedules)
+                    {
+                        <tr>
+                            <td><strong>@sc.Subject?.Name</strong></td>
+                            <td>@sc.Section?.Name</td>
+                            <td>@(sc.Section?.GradeLevel?.Name ?? "-")</td>
+                            <td>
+                                <a class="btn btn-outline-brand" style="padding:6px 12px;font-size:13px;" asp-action="ClassList" asp-route-sectionId="@sc.SectionId">Class List</a>
+                                <a class="btn btn-brand" style="padding:6px 12px;font-size:13px;" asp-action="EncodeGrades" asp-route-scheduleId="@sc.ScheduleId">Encode Grades</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <p style="color:var(--muted)">You have no assigned classes yet. The admin assigns subjects/sections to you in the Sections module.</p>
+        }
+    </div>
+}
+@section Scripts {
+    <script>if (window.lucide) lucide.createIcons();</script>
+}

@@ -1,0 +1,97 @@
+﻿@* File: EnrollmentSystem.UI/Views/Applicant/Index.cshtml *@
+@model ApplicantPortalViewModel
+@using EnrollmentSystem.BLL.Common
+@{
+    ViewData["Title"] = "My Application";
+    var app = Model.Application;
+    int StepIndex(string? s) => s switch
+    {
+        ApplicationStatuses.Pending => 1,
+        ApplicationStatuses.UnderReview => 2,
+        ApplicationStatuses.AdditionalRequirements => 2,
+        ApplicationStatuses.Approved => 3,
+        ApplicationStatuses.Enrolled => 4,
+        ApplicationStatuses.Rejected => 0,
+        _ => 0
+    };
+    var step = StepIndex(app?.Status);
+    string Cls(string? s) => (s?.Replace(" ", "").ToLower()) switch
+    {
+        "approved" or "enrolled" => "badge-approved",
+        "rejected" => "badge-rejected",
+        _ => "badge-pending"
+    };
+}
+<h1 class="page-title">My Application</h1>
+<p class="page-subtitle">Track and complete your admission to Divine Grace Center of Studies.</p>
+
+@if (TempData["Success"] is string ok)
+{
+    <div class="alert alert-success">@ok</div>
+}
+@if (TempData["Error"] is string err)
+{
+    <div class="alert alert-danger">@err</div>
+}
+
+@if (app is null)
+{
+    <div class="content-card text-center">
+        <div style="color:var(--primary);font-size:40px;"><i data-lucide="file-plus"></i></div>
+        <h3>Start your admission application</h3>
+        <p style="color:var(--muted)">Fill out the admission form to begin.</p>
+        <a class="btn btn-brand" asp-action="Apply">Begin Application</a>
+    </div>
+}
+else
+{
+    <div class="content-card">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+            <h3 style="margin:0;">Status: <span class="badge-status @Cls(app.Status)">@app.Status</span></h3>
+            <span style="color:var(--muted);font-size:13px;">Applied @app.ApplicationDate.ToString("MMM dd, yyyy")</span>
+        </div>
+
+        <div class="tracker">
+            @{
+                var labels = new[] { "Submitted", "Under Review", "Approved", "Enrolled" };
+            }
+            @for (var i = 0; i < labels.Length; i++)
+            {
+                var state = (i + 1) < step ? "done" : (i + 1) == step ? "active" : "";
+                <div class="tracker-step @state">
+                    <div class="circle">@(((i + 1) < step) ? "✓" : (i + 1).ToString())</div>
+                    <div class="lbl">@labels[i]</div>
+                </div>
+            }
+        </div>
+
+        @if (!string.IsNullOrWhiteSpace(app.Remarks))
+        {
+            <div class="alert" style="background:var(--secondary-soft);color:#8a7a00;">
+                <strong>Registrar remarks:</strong> @app.Remarks
+            </div>
+        }
+        @if (app.Status == ApplicationStatuses.Approved)
+        {
+            <div class="alert alert-success"><strong>Congratulations!</strong> Your application is approved. Complete your enrollment payment on the Payment page.</div>
+        }
+    </div>
+
+    <div class="stat-grid">
+        <a class="content-card" style="text-decoration:none;" asp-action="Apply">
+            <h3><i data-lucide="user-pen"></i> Admission Form</h3>
+            <p style="color:var(--muted);margin:0;">View or edit your details.</p>
+        </a>
+        <a class="content-card" style="text-decoration:none;" asp-action="Requirements">
+            <h3><i data-lucide="upload"></i> Requirements</h3>
+            <p style="color:var(--muted);margin:0;">@Model.UploadedDocuments.Count() uploaded.</p>
+        </a>
+        <a class="content-card" style="text-decoration:none;" asp-action="Payment">
+            <h3><i data-lucide="wallet"></i> Payment</h3>
+            <p style="color:var(--muted);margin:0;">@Model.Payments.Count() receipt(s) submitted.</p>
+        </a>
+    </div>
+}
+@section Scripts {
+    <script>if (window.lucide) lucide.createIcons();</script>
+}

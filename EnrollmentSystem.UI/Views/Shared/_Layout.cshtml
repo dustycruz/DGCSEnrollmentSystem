@@ -39,6 +39,10 @@
 
                 <nav>
                     <div class="nav-group-label">Main Menu</div>
+                    <div class="nav-group-label">Management</div>
+                    <a class="nav-link-item @ActiveIf("Admission")" asp-controller="Admission" asp-action="Index">
+                        <i data-lucide="inbox"></i> Admissions
+                    </a>
                     <a class="nav-link-item @ActiveIf("Home")" asp-controller="Home" asp-action="Dashboard">
                         <i data-lucide="layout-dashboard"></i> Dashboard
                     </a>

@@ -19,6 +19,7 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddDbContext<EnrollmentSystemDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.Configure<SmtpSettings>(builder.Configuration.GetSection("Smtp"));
+builder.Services.Configure<PaymentInstructionSettings>(builder.Configuration.GetSection("PaymentInstructions"));
 
 // ---------- Cookie Authentication ----------
 builder.Services
@@ -66,6 +67,7 @@ builder.Services.AddScoped<IGradeLevelRepository, GradeLevelRepository>();
 builder.Services.AddScoped<ISchoolYearRepository, SchoolYearRepository>();
 builder.Services.AddScoped<IEducationalLevelRepository, EducationalLevelRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IAdmissionService, AdmissionService>();
 
 // ---------- Services ----------
 builder.Services.AddScoped<IFileStorageService, FileStorageService>();
@@ -93,6 +95,14 @@ using (var scope = app.Services.CreateScope())
 {
     var authService = scope.ServiceProvider.GetRequiredService<IAuthService>();
     await authService.EnsureSeedDataAsync();
+}
+using (var scope = app.Services.CreateScope())
+{
+    var authService = scope.ServiceProvider.GetRequiredService<IAuthService>();
+    await authService.EnsureSeedDataAsync();
+
+    var adminService = scope.ServiceProvider.GetRequiredService<IAdminService>();
+    await adminService.EnsureDemoTeacherAsync();
 }
 
 // ---------- HTTP pipeline ----------

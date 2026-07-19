@@ -59,4 +59,10 @@ public class GradeService : IGradeService
         if (grades.Count == 0) return null;
         return Math.Round(grades.Average(), 2);
     }
+    public async Task<IEnumerable<Grade>> GetBySubjectAndQuarterAsync(int subjectId, string quarter)
+        => (await _gradeRepo.GetBySubjectAsync(subjectId))
+            .Where(g => g.Quarter == quarter)
+            .ToList();
+
+
 }

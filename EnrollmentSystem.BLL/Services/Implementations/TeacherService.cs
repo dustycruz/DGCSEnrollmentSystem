@@ -10,15 +10,18 @@ public class TeacherService : ITeacherService
     private readonly ITeacherRepository _teacherRepo;
     private readonly IScheduleRepository _scheduleRepo;
     private readonly IEnrollmentRepository _enrollmentRepo;
+    private readonly IEmployeeRepository _employeeRepo;
 
     public TeacherService(
         ITeacherRepository teacherRepo,
         IScheduleRepository scheduleRepo,
-        IEnrollmentRepository enrollmentRepo)
+        IEnrollmentRepository enrollmentRepo,
+        IEmployeeRepository employeeRepo)
     {
         _teacherRepo = teacherRepo;
         _scheduleRepo = scheduleRepo;
         _enrollmentRepo = enrollmentRepo;
+        _employeeRepo = employeeRepo;
     }
 
     public async Task<IEnumerable<Teacher>> GetAllAsync()
@@ -46,4 +49,14 @@ public class TeacherService : ITeacherService
 
     public async Task<IEnumerable<Enrollment>> GetClassListAsync(int sectionId)
         => await _enrollmentRepo.GetBySectionAsync(sectionId);
+
+    public async Task<Teacher?> GetByEmployeeNumberAsync(string employeeNumber)
+    {
+        var employee = await _employeeRepo.GetByEmployeeNumberAsync(employeeNumber);
+        if (employee is null) return null;
+        return await _teacherRepo.GetByEmployeeIdAsync(employee.EmployeeId);
+    }
+
+    public async Task<Schedule?> GetClassAsync(int scheduleId)
+        => await _scheduleRepo.GetFullAsync(scheduleId);
 }

@@ -12,6 +12,7 @@ public interface IApplicationService
     Task<IEnumerable<Application>> GetPendingAsync();
     Task<Application?> GetApplicationAsync(int id);
     Task<ServiceResult> UpdateStatusAsync(int id, string status, string modifiedBy);
+    Task<ServiceResult> UpdateApplicationAsync(Application application, string modifiedBy);
     Task<ServiceResult<int>> AddDocumentAsync(int applicationId, string url, int? documentId);
     Task<IEnumerable<ApplicationDocument>> GetDocumentsAsync(int applicationId);
 }

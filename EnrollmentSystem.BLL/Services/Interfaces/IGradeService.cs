@@ -10,4 +10,5 @@ public interface IGradeService
     Task<IEnumerable<Grade>> GetByTeacherAsync(int teacherId);
     Task<ServiceResult> EncodeGradeAsync(Grade grade, string createdBy);
     Task<decimal?> GetGeneralAverageAsync(int studentId);
+    Task<IEnumerable<Grade>> GetBySubjectAndQuarterAsync(int subjectId, string quarter);
 }

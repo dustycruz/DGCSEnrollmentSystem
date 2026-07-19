@@ -1,0 +1,28 @@
+﻿@* File: EnrollmentSystem.UI/Views/Student/Announcements.cshtml *@
+@model IEnumerable<Announcement>
+@{
+    ViewData["Title"] = "Announcements";
+}
+<h1 class="page-title">Announcements</h1>
+<p class="page-subtitle">Latest school news.</p>
+
+<div class="content-card">
+    @if (Model.Any())
+    {
+        foreach (var a in Model)
+        {
+            <div style="padding:14px 0;border-bottom:1px solid var(--border);">
+                <div style="display:flex;justify-content:space-between;">
+                    <strong>@a.Title</strong>
+                    <span style="color:var(--muted);font-size:12px;">@a.PostedDate.ToString("MMM dd, yyyy")</span>
+                </div>
+                <div style="color:var(--muted);font-size:14px;margin-top:4px;">@a.Content</div>
+            </div>
+        }
+    }
+    else
+    {
+
+        <p style="color:var(--muted)">No announcements.</p>
+    }
+</div>

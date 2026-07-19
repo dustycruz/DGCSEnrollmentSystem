@@ -1,0 +1,41 @@
+﻿@* File: EnrollmentSystem.UI/Views/Student/Index.cshtml *@
+@model StudentDashboardViewModel
+@{
+    ViewData["Title"] = "Student Portal";
+    var s = Model.Student;
+    var active = Model.Enrollments.FirstOrDefault(e => e.Status == "Enrolled") ?? Model.Enrollments.FirstOrDefault();
+}
+<h1 class="page-title">Student Portal</h1>
+<p class="page-subtitle">Welcome, @(s is null ? "Student" : s.FirstName)!</p>
+
+@if (s is null)
+{
+    <div class="alert alert-danger">No student record is linked to this account.</div>
+}
+else
+{
+    <div class="stat-grid">
+        <div class="stat-card">
+            <div class="stat-icon blue"><i data-lucide="id-card"></i></div>
+            <div><div class="stat-value" style="font-size:18px;">@s.StudentNumber</div><div class="stat-label">Student Number</div></div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon yellow"><i data-lucide="clipboard-check"></i></div>
+            <div><div class="stat-value" style="font-size:18px;">@(active?.Status ?? "Not enrolled")</div><div class="stat-label">Enrollment Status</div></div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon ink"><i data-lucide="school"></i></div>
+            <div><div class="stat-value" style="font-size:18px;">@(active?.Section?.Name ?? "—")</div><div class="stat-label">Section</div></div>
+        </div>
+    </div>
+
+    <div class="stat-grid">
+        <a class="content-card" style="text-decoration:none;" asp-action="Profile"><h3><i data-lucide="user"></i> My Profile</h3><p style="color:var(--muted);margin:0;">View & update your information.</p></a>
+        <a class="content-card" style="text-decoration:none;" asp-action="Schedule"><h3><i data-lucide="calendar"></i> Class Schedule</h3><p style="color:var(--muted);margin:0;">Your weekly schedule.</p></a>
+        <a class="content-card" style="text-decoration:none;" asp-action="Grades"><h3><i data-lucide="bar-chart-3"></i> My Grades</h3><p style="color:var(--muted);margin:0;">Report card & averages.</p></a>
+        <a class="content-card" style="text-decoration:none;" asp-action="Announcements"><h3><i data-lucide="megaphone"></i> Announcements</h3><p style="color:var(--muted);margin:0;">School news.</p></a>
+    </div>
+}
+@section Scripts {
+    <script>if (window.lucide) lucide.createIcons();</script>
+}

@@ -1,0 +1,37 @@
+﻿@* File: EnrollmentSystem.UI/Views/Teacher/ClassList.cshtml *@
+@model IEnumerable<Enrollment>
+@{
+    ViewData["Title"] = "Class List";
+}
+<h1 class="page-title">Class List</h1>
+<p class="page-subtitle">Students enrolled in this section.</p>
+
+<div class="content-card">
+    @if (Model.Any())
+    {
+        <table class="table">
+            <thead><tr><th>#</th><th>Student No.</th><th>Name</th><th>Gender</th><th>Status</th></tr></thead>
+            <tbody>
+                @{
+                    var i = 1;
+                }
+                @foreach (var e in Model.OrderBy(x => x.Student.LastName))
+                {
+                    <tr>
+                        <td>@(i++)</td>
+                        <td>@e.Student.StudentNumber</td>
+                        <td>@e.Student.LastName, @e.Student.FirstName @e.Student.MiddleName</td>
+                        <td>@e.Student.Gender</td>
+                        <td><span class="badge-status @(e.Status == "Enrolled" ? "badge-approved" : "badge-pending")">@e.Status</span></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+
+        <p style="color:var(--muted)">No students in this section yet.</p>
+    }
+</div>
+<a class="btn btn-outline-brand" asp-action="Index">Back to My Classes</a>

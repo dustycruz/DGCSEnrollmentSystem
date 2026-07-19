@@ -1,0 +1,97 @@
+﻿@* File: EnrollmentSystem.UI/Views/Applicant/Payment.cshtml *@
+@model ApplicantPortalViewModel
+@using EnrollmentSystem.BLL.Common
+@{
+    ViewData["Title"] = "Payment";
+    var p = Model.PaymentInfo!;
+    var approved = Model.Application?.Status == ApplicationStatuses.Approved
+        || Model.Application?.Status == ApplicationStatuses.Enrolled;
+}
+<h1 class="page-title">Payment</h1>
+<p class="page-subtitle">Pay through any method below, then upload your proof of payment.</p>
+
+@if (TempData["Success"] is string ok)
+{
+    <div class="alert alert-success">@ok</div>
+}
+@if (TempData["Error"] is string err)
+{
+    <div class="alert alert-danger">@err</div>
+}
+
+<div class="row g-3">
+    <div class="col-md-6">
+        <div class="content-card">
+            <h3><i data-lucide="landmark"></i> Payment Instructions</h3>
+            <table class="table">
+                <tr><td><strong>Bank</strong></td><td>@p.BankName</td></tr>
+                <tr><td><strong>Account Name</strong></td><td>@p.AccountName</td></tr>
+                <tr><td><strong>Account No.</strong></td><td>@p.AccountNumber</td></tr>
+                <tr><td><strong>GCash</strong></td><td>@p.GcashNumber</td></tr>
+                <tr><td><strong>Application Fee</strong></td><td>₱@p.ApplicationFee</td></tr>
+                <tr><td><strong>Enrollment Fee</strong></td><td>₱@p.EnrollmentFee</td></tr>
+            </table>
+            <p style="color:var(--muted);font-size:13px;">@p.Notes</p>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="content-card">
+            <h3><i data-lucide="upload"></i> Upload Proof of Payment</h3>
+            <form asp-action="UploadPayment" method="post" enctype="multipart/form-data">
+                <div class="mb-2">
+                    <label class="form-label">Purpose</label>
+                    <select class="form-select" name="purpose">
+                        <option value="@PaymentPurposes.ApplicationFee">Application Fee</option>
+                        @if (approved)
+                        {
+                            <option value="@PaymentPurposes.EnrollmentFee">Enrollment Fee</option>
+                        }
+                    </select>
+                </div>
+                <div class="mb-2"><label class="form-label">Reference Number</label><input class="form-control" name="referenceNumber" /></div>
+                <div class="mb-2"><label class="form-label">Amount Paid</label><input class="form-control" name="amountPaid" type="number" step="0.01" /></div>
+                <div class="mb-2">
+                    <label class="form-label">Payment Method</label>
+                    <select class="form-select" name="paymentMethod"><option>GCash</option><option>Bank Transfer</option><option>Cash</option></select>
+                </div>
+                <div class="mb-3"><label class="form-label">Receipt (image/PDF)</label><input class="form-control" name="file" type="file" required /></div>
+                <button type="submit" class="btn btn-brand w-100">Submit Payment</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="content-card">
+    <h3><i data-lucide="receipt"></i> Submitted Payments</h3>
+    @if (Model.Payments.Any())
+    {
+        <table class="table">
+            <thead><tr><th>Date</th><th>Purpose</th><th>Reference</th><th>Amount</th><th>Status</th><th>Receipt</th></tr></thead>
+            <tbody>
+                @foreach (var pay in Model.Payments)
+                {
+                    var cls = pay.Status == "Verified" ? "badge-approved" : pay.Status == "Rejected" ? "badge-rejected" : "badge-pending";
+                    <tr>
+                        <td>@pay.PaymentDate?.ToString("MMM dd, yyyy")</td>
+                        <td>@pay.Purpose</td>
+                        <td>@pay.ReferenceNumber</td>
+                        <td>₱@pay.AmountPaid</td>
+                        <td><span class="badge-status @cls">@pay.Status</span></td>
+                        <td>@if (!string.IsNullOrEmpty(pay.FilePath)) {
+                            <a href="@pay.FilePath" target="_blank">View</a>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+    else
+{
+
+    <p style="color:var(--muted)">No payments submitted yet.</p>
+}
+</div>
+@section Scripts {
+    <script>if (window.lucide) lucide.createIcons();</script>
+}
