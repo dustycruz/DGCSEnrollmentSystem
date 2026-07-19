@@ -1,31 +1,509 @@
-html {
-  font-size: 14px;
+/* File: EnrollmentSystem.UI/wwwroot/css/site.css */
+
+:root {
+    --primary: #0194fe; /* school blue   */
+    --secondary: #fdfc01; /* school yellow */
+    --ink: #260b6a; /* text & buttons */
+    --primary-soft: #e6f4ff;
+    --secondary-soft: #fffde3;
+    --bg: #f3f4f6;
+    --card: #ffffff;
+    --border: #e5e7eb;
+    --muted: #6b7280;
+    --sidebar-w: 264px;
 }
 
-@media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
+* {
+    box-sizing: border-box;
 }
 
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+html, body {
+    height: 100%;
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Segoe UI', system-ui, -apple-system, Roboto, Arial, sans-serif;
 }
 
-html {
-  position: relative;
-  min-height: 100%;
+h1, h2, h3, h4, h5, h6 {
+    color: var(--ink);
+    font-weight: 700;
 }
 
-body {
-  margin-bottom: 60px;
+a {
+    color: var(--primary);
+    text-decoration: none;
 }
 
-.form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
-  color: var(--bs-secondary-color);
-  text-align: end;
+    a:hover {
+        text-decoration: underline;
+    }
+
+/* ---------- App shell ---------- */
+.app-shell {
+    display: flex;
+    min-height: 100vh;
 }
 
-.form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
-  text-align: start;
+.sidebar {
+    width: var(--sidebar-w);
+    background: var(--card);
+    border-right: 1px solid var(--border);
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    padding: 18px 14px;
+    overflow-y: auto;
+}
+
+.sidebar-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 8px 16px;
+    border-bottom: 1px solid var(--border);
+}
+
+    .sidebar-brand img {
+        width: 44px;
+        height: 44px;
+        object-fit: contain;
+    }
+
+    .sidebar-brand .title {
+        font-size: 15px;
+        font-weight: 800;
+        color: var(--ink);
+        line-height: 1.1;
+    }
+
+    .sidebar-brand .subtitle {
+        font-size: 11px;
+        color: var(--muted);
+    }
+
+.user-card {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--primary-soft);
+    border-radius: 12px;
+    padding: 10px 12px;
+    margin: 16px 4px;
+}
+
+.avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: var(--primary);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 13px;
+}
+
+.user-card .name {
+    font-weight: 700;
+    font-size: 13px;
+    color: var(--ink);
+}
+
+.user-card .role {
+    font-size: 11px;
+    color: var(--muted);
+}
+
+.nav-group-label {
+    font-size: 10px;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 700;
+    margin: 16px 10px 6px;
+}
+
+.nav-link-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    color: var(--ink);
+    font-weight: 600;
+    font-size: 14px;
+    margin-bottom: 2px;
+}
+
+    .nav-link-item:hover {
+        background: var(--primary-soft);
+        text-decoration: none;
+    }
+
+    .nav-link-item.active {
+        background: var(--primary);
+        color: #fff;
+    }
+
+    .nav-link-item .icon {
+        width: 18px;
+        text-align: center;
+    }
+
+.sidebar-footer {
+    margin-top: auto;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+}
+
+.sign-out {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #dc2626;
+    font-weight: 700;
+    padding: 10px 12px;
+}
+
+    .sign-out:hover {
+        text-decoration: none;
+        background: #fef2f2;
+        border-radius: 10px;
+    }
+
+/* ---------- Main content ---------- */
+.main-content {
+    margin-left: var(--sidebar-w);
+    flex: 1;
+    padding: 28px 32px;
+    width: calc(100% - var(--sidebar-w));
+}
+
+.page-title {
+    font-size: 30px;
+    margin: 0 0 4px;
+}
+
+.page-subtitle {
+    color: var(--muted);
+    margin-bottom: 24px;
+}
+
+/* ---------- Stat cards ---------- */
+.stat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: 16px;
+    margin-bottom: 26px;
+}
+
+.stat-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    box-shadow: 0 1px 2px rgba(16,24,40,.04);
+}
+
+.stat-icon {
+    width: 46px;
+    height: 46px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+}
+
+    .stat-icon.blue {
+        background: var(--primary-soft);
+        color: var(--primary);
+    }
+
+    .stat-icon.yellow {
+        background: var(--secondary-soft);
+        color: #b59f00;
+    }
+
+    .stat-icon.ink {
+        background: #eee9fb;
+        color: var(--ink);
+    }
+
+.stat-value {
+    font-size: 26px;
+    font-weight: 800;
+    color: var(--ink);
+    line-height: 1;
+}
+
+.stat-label {
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 4px;
+}
+
+/* ---------- Content cards ---------- */
+.content-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 22px;
+    margin-bottom: 22px;
+    box-shadow: 0 1px 2px rgba(16,24,40,.04);
+}
+
+    .content-card h3 {
+        font-size: 18px;
+        margin: 0 0 16px;
+    }
+
+/* ---------- Buttons (text always --ink per brand) ---------- */
+.btn {
+    border-radius: 10px;
+    font-weight: 700;
+    padding: 10px 18px;
+    border: none;
+    cursor: pointer;
+}
+
+.btn-brand {
+    background: var(--primary);
+    color: var(--ink);
+}
+
+    .btn-brand:hover {
+        background: #0182e0;
+        color: var(--ink);
+    }
+
+.btn-accent {
+    background: var(--secondary);
+    color: var(--ink);
+}
+
+    .btn-accent:hover {
+        background: #ecec00;
+        color: var(--ink);
+    }
+
+.btn-ink {
+    background: var(--ink);
+    color: #fff;
+}
+
+    .btn-ink:hover {
+        background: #1c084f;
+        color: #fff;
+    }
+
+.btn-outline-brand {
+    background: transparent;
+    color: var(--ink);
+    border: 2px solid var(--primary);
+}
+
+    .btn-outline-brand:hover {
+        background: var(--primary-soft);
+    }
+
+/* ---------- Forms ---------- */
+.form-label {
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 6px;
+}
+
+.form-control, .form-select {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 12px;
+    width: 100%;
+    color: var(--ink);
+    background: #fff;
+    font-size: 14px;
+}
+
+    .form-control:focus, .form-select:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px var(--primary-soft);
+    }
+
+/* ---------- Tables ---------- */
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+    .table th {
+        text-align: left;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+        color: var(--muted);
+        padding: 12px;
+        border-bottom: 2px solid var(--border);
+    }
+
+    .table td {
+        padding: 12px;
+        border-bottom: 1px solid var(--border);
+        color: var(--ink);
+        font-size: 14px;
+    }
+
+    .table tr:hover td {
+        background: #fafbff;
+    }
+
+/* ---------- Badges ---------- */
+.badge-status {
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.badge-pending {
+    background: var(--secondary-soft);
+    color: #8a7a00;
+}
+
+.badge-approved, .badge-enrolled, .badge-verified {
+    background: #e6f7ec;
+    color: #157347;
+}
+
+.badge-rejected {
+    background: #fdecec;
+    color: #c0392b;
+}
+
+/* ---------- Auth pages ---------- */
+.auth-wrap {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 430px;
+    background: var(--card);
+    border-radius: 16px;
+    box-shadow: 0 10px 40px rgba(38,11,106,.10);
+    padding: 34px;
+}
+
+.auth-logo {
+    text-align: center;
+    margin-bottom: 18px;
+}
+
+    .auth-logo img {
+        width: 84px;
+        height: 84px;
+        object-fit: contain;
+    }
+
+.auth-title {
+    text-align: center;
+    font-size: 22px;
+    color: var(--primary);
+    font-weight: 800;
+}
+
+.auth-sub {
+    text-align: center;
+    color: var(--muted);
+    font-size: 13px;
+    margin-bottom: 22px;
+}
+
+.alert {
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-bottom: 16px;
+    font-size: 14px;
+}
+
+.alert-danger {
+    background: #fdecec;
+    color: #c0392b;
+}
+
+.alert-success {
+    background: #e6f7ec;
+    color: #157347;
+}
+
+.text-validation {
+    color: #c0392b;
+    font-size: 12px;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 900px) {
+    .sidebar {
+        transform: translateX(-100%);
+        transition: transform .2s;
+        z-index: 50;
+    }
+
+        .sidebar.open {
+            transform: translateX(0);
+        }
+
+    .main-content {
+        margin-left: 0;
+        width: 100%;
+        padding: 18px;
+    }
+}
+/* File: EnrollmentSystem.UI/wwwroot/css/site.css  (append at end) */
+
+/* ---------- Lucide icons ---------- */
+[data-lucide] {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.nav-link-item svg {
+    width: 18px;
+    height: 18px;
+    stroke-width: 2;
+}
+
+.sign-out svg {
+    width: 18px;
+    height: 18px;
+}
+
+.stat-icon svg {
+    width: 22px;
+    height: 22px;
+    stroke-width: 2.2;
+}
+
+.content-card h3 svg {
+    width: 20px;
+    height: 20px;
+    vertical-align: -3px;
+    margin-right: 6px;
+}
+
+.sidebar-brand svg {
+    width: 20px;
+    height: 20px;
 }

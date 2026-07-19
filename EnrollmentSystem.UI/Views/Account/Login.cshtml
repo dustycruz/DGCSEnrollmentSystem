@@ -1,0 +1,45 @@
+﻿@* File: EnrollmentSystem.UI/Views/Account/Login.cshtml *@
+@model LoginViewModel
+@{
+    ViewData["Title"] = "Sign In";
+    Layout = "_Layout";
+}
+<div class="auth-wrap">
+    <div class="auth-card">
+        <div class="auth-logo"><img src="/images/logo.png" alt="DGCS" /></div>
+        <div class="auth-title">Divine Grace Center of Studies</div>
+        <div class="auth-sub">Web-Based Enrollment System</div>
+
+        @if (TempData["Success"] is string ok)
+        {
+            <div class="alert alert-success">@ok</div>
+        }
+
+        <form asp-action="Login" method="post">
+            <input type="hidden" asp-for="ReturnUrl" />
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger" style="@(ViewData.ModelState.ErrorCount > 0 ? "" : "display:none")"></div>
+
+            <div class="mb-3">
+                <label class="form-label" asp-for="UserName"></label>
+                <input class="form-control" asp-for="UserName" placeholder="Username or email" autofocus />
+                <span asp-validation-for="UserName" class="text-validation"></span>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label" asp-for="Password"></label>
+                <input class="form-control" asp-for="Password" type="password" placeholder="Enter your password" />
+                <span asp-validation-for="Password" class="text-validation"></span>
+            </div>
+
+            <button type="submit" class="btn btn-brand w-100">Sign In</button>
+        </form>
+
+        <p class="text-center mt-3" style="font-size:14px;">
+            Don't have an account? <a asp-action="Register">Create one</a>
+        </p>
+        <p class="text-center" style="font-size:12px;color:var(--muted);">© @DateTime.Now.Year Divine Grace Center of Studies</p>
+    </div>
+</div>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

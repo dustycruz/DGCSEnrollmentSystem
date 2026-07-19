@@ -48,11 +48,14 @@ public class AuthService : IAuthService
 
     public async Task<ServiceResult<AuthUserDto>> LoginAsync(LoginDto dto)
     {
-        var user = await _userRepo.GetByUsernameAsync(dto.UserName);
+        // Allow sign-in with either username OR email
+        var user = await _userRepo.GetByUsernameAsync(dto.UserName)
+                   ?? await _userRepo.GetByEmailAsync(dto.UserName);
+
         if (user is null || string.IsNullOrEmpty(user.PasswordHash) ||
             !PasswordHasher.Verify(dto.Password, user.PasswordHash))
         {
-            return ServiceResult<AuthUserDto>.Fail("Invalid username or password.");
+            return ServiceResult<AuthUserDto>.Fail("Invalid username/email or password.");
         }
 
         var roles = (await _userRepo.GetUserRoleNamesAsync(user.Id)).ToList();

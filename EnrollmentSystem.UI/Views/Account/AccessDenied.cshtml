@@ -1,13 +1,13 @@
-﻿@* File: EnrollmentSystem.UI/Views/Home/Error.cshtml *@
+﻿@* File: EnrollmentSystem.UI/Views/Account/AccessDenied.cshtml *@
 @{
-    ViewData["Title"] = "Error";
+    ViewData["Title"] = "Access Denied";
     Layout = "_Layout";
 }
 <div class="auth-wrap">
     <div class="auth-card text-center">
         <div class="auth-logo"><img src="/images/logo.png" alt="DGCS" /></div>
-        <h2>Something went wrong</h2>
-        <p style="color:var(--muted)">An unexpected error occurred while processing your request.</p>
+        <h2>Access Denied</h2>
+        <p style="color:var(--muted)">You don't have permission to view this page.</p>
         <a class="btn btn-brand" asp-controller="Home" asp-action="Dashboard">Back to Dashboard</a>
     </div>
 </div>

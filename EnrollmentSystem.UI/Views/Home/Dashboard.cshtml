@@ -1,0 +1,63 @@
+﻿@* File: EnrollmentSystem.UI/Views/Home/Dashboard.cshtml *@
+@model DashboardViewModel
+@{
+    ViewData["Title"] = "Dashboard";
+}
+<h1 class="page-title">Dashboard</h1>
+<p class="page-subtitle">Welcome back, <strong>@Model.DisplayName</strong>! Here's an overview of the system.</p>
+
+@if (User.IsInRole("Admin"))
+{
+    <div class="stat-grid">
+        <div class="stat-card">
+            <div class="stat-icon blue"><i data-lucide="graduation-cap"></i></div>
+            <div><div class="stat-value">@Model.Stats.TotalStudents</div><div class="stat-label">Total Students</div></div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon yellow"><i data-lucide="file-text"></i></div>
+            <div><div class="stat-value">@Model.Stats.TotalApplications</div><div class="stat-label">Applications</div></div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon ink"><i data-lucide="clock"></i></div>
+            <div><div class="stat-value">@Model.Stats.PendingApplications</div><div class="stat-label">Pending Applications</div></div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon blue"><i data-lucide="clipboard-check"></i></div>
+            <div><div class="stat-value">@Model.Stats.PendingEnrollments</div><div class="stat-label">Pending Enrollments</div></div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon yellow"><i data-lucide="school"></i></div>
+            <div><div class="stat-value">@Model.Stats.TotalSections</div><div class="stat-label">Sections</div></div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon ink"><i data-lucide="book-open"></i></div>
+            <div><div class="stat-value">@Model.Stats.TotalTeachers</div><div class="stat-label">Teachers</div></div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="content-card">
+        <h3>Welcome to the DGCS Enrollment System</h3>
+        <p style="color:var(--muted)">Use the menu on the left to navigate your portal.</p>
+    </div>
+}
+
+<div class="content-card">
+    <h3><i data-lucide="megaphone"></i> Recent Announcements</h3>
+    @if (Model.RecentAnnouncements.Any())
+    {
+        foreach (var a in Model.RecentAnnouncements)
+        {
+            <div style="padding:12px 0;border-bottom:1px solid var(--border);">
+                <strong>@a.Title</strong>
+                <span style="float:right;color:var(--muted);font-size:12px;">@a.PostedDate.ToString("MMM dd, yyyy")</span>
+                <div style="color:var(--muted);font-size:14px;">@a.Content</div>
+            </div>
+        }
+    }
+    else
+    {
+        <p style="color:var(--muted)">No announcements yet.</p>
+    }
+</div>
