@@ -21,4 +21,5 @@ public class AuthUserDto
     public string UserName { get; set; } = string.Empty;
     public string? Email { get; set; }
     public List<string> Roles { get; set; } = new();
+    public bool MustChangePassword { get; set; }
 }

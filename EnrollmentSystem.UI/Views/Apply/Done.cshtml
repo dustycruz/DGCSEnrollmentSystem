@@ -1,0 +1,20 @@
+﻿@* File: EnrollmentSystem.UI/Views/Apply/Done.cshtml *@
+@{
+    ViewData["Title"] = "Application Started";
+    Layout = "_Layout";
+    var applicantNumber = ViewData["ApplicantNumber"] as string;
+}
+<div class="auth-wrap">
+    <div class="auth-card text-center">
+        <div class="auth-logo"><img src="/images/logo.png" alt="DGCS" /></div>
+        <div style="color:#157347;font-size:42px;line-height:1;"><i data-lucide="check-circle"></i></div>
+        <h2 style="margin-top:10px;">You're all set!</h2>
+        <p style="color:var(--muted)">Your account has been created. Your Applicant Number is:</p>
+        <div style="font-size:26px;font-weight:800;color:var(--primary);letter-spacing:1px;margin:10px 0 20px;">@applicantNumber</div>
+        <p style="color:var(--muted);font-size:14px;">We've also emailed this to you. Sign in with your Applicant Number and the password you created to complete your admission application.</p>
+        <a class="btn btn-brand w-100" asp-controller="Account" asp-action="Login">Go to Sign In</a>
+    </div>
+</div>
+@section Scripts {
+    <script>if (window.lucide) lucide.createIcons();</script>
+}

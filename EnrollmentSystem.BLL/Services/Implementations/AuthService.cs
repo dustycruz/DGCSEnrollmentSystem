@@ -48,7 +48,7 @@ public class AuthService : IAuthService
 
     public async Task<ServiceResult<AuthUserDto>> LoginAsync(LoginDto dto)
     {
-        // Allow sign-in with either username OR email
+        // Allow sign-in with either username (Applicant/Student Number) OR email
         var user = await _userRepo.GetByUsernameAsync(dto.UserName)
                    ?? await _userRepo.GetByEmailAsync(dto.UserName);
 
@@ -64,10 +64,30 @@ public class AuthService : IAuthService
             Id = user.Id,
             UserName = user.UserName ?? string.Empty,
             Email = user.Email,
-            Roles = roles
+            Roles = roles,
+            MustChangePassword = user.MustChangePassword
         };
 
         return ServiceResult<AuthUserDto>.Ok(result, "Login successful.");
+    }
+
+    public async Task<ServiceResult> ChangePasswordAsync(string userId, string currentPassword, string newPassword)
+    {
+        var user = await _userRepo.GetByIdAsync(userId);
+        if (user is null || string.IsNullOrEmpty(user.PasswordHash))
+            return ServiceResult.Fail("User not found.");
+
+        if (!PasswordHasher.Verify(currentPassword, user.PasswordHash))
+            return ServiceResult.Fail("Current password is incorrect.");
+
+        if (string.IsNullOrWhiteSpace(newPassword) || newPassword.Length < 6)
+            return ServiceResult.Fail("New password must be at least 6 characters.");
+
+        user.PasswordHash = PasswordHasher.Hash(newPassword);
+        user.MustChangePassword = false;
+        await _userRepo.SaveAsync();
+
+        return ServiceResult.Ok("Password changed successfully.");
     }
 
     public async Task<IEnumerable<AspNetUser>> GetAllUsersAsync()
@@ -84,7 +104,8 @@ public class AuthService : IAuthService
             Id = user.Id,
             UserName = user.UserName ?? string.Empty,
             Email = user.Email,
-            Roles = roles
+            Roles = roles,
+            MustChangePassword = user.MustChangePassword
         };
     }
 

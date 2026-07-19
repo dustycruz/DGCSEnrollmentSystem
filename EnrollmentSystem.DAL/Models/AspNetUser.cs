@@ -1,11 +1,12 @@
-﻿using System;
+﻿// File: EnrollmentSystem.DAL/Models/AspNetUser.cs
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
 namespace EnrollmentSystem.DAL.Models;
 
+[Table("AspNetUsers")]
 public partial class AspNetUser
 {
     [Key]
@@ -18,6 +19,10 @@ public partial class AspNetUser
     public string? UserName { get; set; }
 
     public string? PasswordHash { get; set; }
+
+    public bool MustChangePassword { get; set; }
+
+    public bool EmailConfirmed { get; set; }
 
     [InverseProperty("User")]
     public virtual ICollection<AspNetUserRole> AspNetUserRoles { get; set; } = new List<AspNetUserRole>();

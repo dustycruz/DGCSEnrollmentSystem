@@ -104,6 +104,11 @@ public partial class Application
     public string? ModifiedBy { get; set; }
 
     public bool IsDeleted { get; set; }
+    [StringLength(50)]
+    public string? ApplicantType { get; set; }
+
+    [StringLength(500)]
+    public string? Remarks { get; set; }
 
     [InverseProperty("Application")]
     public virtual ICollection<ApplicantAcademicRecord> ApplicantAcademicRecords { get; set; } = new List<ApplicantAcademicRecord>();

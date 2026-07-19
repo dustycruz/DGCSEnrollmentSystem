@@ -507,3 +507,287 @@ a {
     width: 20px;
     height: 20px;
 }
+/* File: EnrollmentSystem.UI/wwwroot/css/site.css  (append at end) */
+
+/* ---------- Public homepage ---------- */
+.public-header {
+    background: #fff;
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 40;
+}
+
+.public-nav {
+    max-width: 1140px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 20px;
+}
+
+.public-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+    .public-brand img {
+        width: 46px;
+        height: 46px;
+        object-fit: contain;
+    }
+
+    .public-brand .n1 {
+        font-weight: 800;
+        color: var(--ink);
+        font-size: 16px;
+        line-height: 1.1;
+    }
+
+    .public-brand .n2 {
+        font-size: 12px;
+        color: var(--muted);
+    }
+
+.public-links {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+}
+
+    .public-links a {
+        color: var(--ink);
+        font-weight: 600;
+        font-size: 14px;
+    }
+
+.hero {
+    background: linear-gradient(135deg, var(--primary) 0%, #016fd0 100%);
+    color: #fff;
+}
+
+.hero-inner {
+    max-width: 1140px;
+    margin: 0 auto;
+    padding: 70px 20px;
+    text-align: center;
+}
+
+.hero h1 {
+    color: #fff;
+    font-size: 40px;
+    margin: 0 0 10px;
+}
+
+.hero p {
+    color: #eaf5ff;
+    font-size: 18px;
+    max-width: 680px;
+    margin: 0 auto 26px;
+}
+
+.hero .btn-accent {
+    font-size: 16px;
+    padding: 14px 30px;
+}
+
+.public-section {
+    max-width: 1140px;
+    margin: 0 auto;
+    padding: 46px 20px;
+}
+
+    .public-section h2 {
+        text-align: center;
+        font-size: 26px;
+        margin-bottom: 6px;
+    }
+
+    .public-section .lead {
+        text-align: center;
+        color: var(--muted);
+        margin-bottom: 30px;
+    }
+
+.req-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+}
+
+.req-card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px;
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+}
+
+    .req-card .ic {
+        width: 42px;
+        height: 42px;
+        border-radius: 12px;
+        background: var(--primary-soft);
+        color: var(--primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex: 0 0 auto;
+    }
+
+.schedule-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 14px 4px;
+    border-bottom: 1px solid var(--border);
+}
+
+.public-footer {
+    background: var(--ink);
+    color: #cdc7e6;
+    text-align: center;
+    padding: 26px 20px;
+    font-size: 13px;
+}
+
+/* ---------- Onboarding wizard steps ---------- */
+.steps {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    margin-bottom: 24px;
+}
+
+.step {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 600;
+}
+
+    .step .dot {
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        background: var(--border);
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+    }
+
+    .step.active .dot {
+        background: var(--primary);
+    }
+
+    .step.active {
+        color: var(--ink);
+    }
+
+    .step.done .dot {
+        background: #157347;
+    }
+
+/* ---------- Topbar + notification bell ---------- */
+.topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: -8px 0 18px;
+}
+
+.topbar-title {
+    font-weight: 700;
+    color: var(--muted);
+    font-size: 14px;
+}
+
+.topbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.bell-btn {
+    position: relative;
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    width: 42px;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--ink);
+}
+
+    .bell-btn svg {
+        width: 20px;
+        height: 20px;
+    }
+
+.bell-badge {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    background: #dc2626;
+    color: #fff;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    min-width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 4px;
+}
+
+.notif-menu {
+    width: 340px;
+    max-height: 420px;
+    overflow-y: auto;
+    padding: 0;
+}
+
+.notif-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border);
+    font-weight: 700;
+}
+
+.notif-item {
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border);
+}
+
+    .notif-item.unread {
+        background: var(--primary-soft);
+    }
+
+    .notif-item .t {
+        font-weight: 700;
+        font-size: 14px;
+        color: var(--ink);
+    }
+
+    .notif-item .m {
+        font-size: 13px;
+        color: var(--muted);
+    }
+
+    .notif-item .d {
+        font-size: 11px;
+        color: var(--muted);
+        margin-top: 4px;
+    }

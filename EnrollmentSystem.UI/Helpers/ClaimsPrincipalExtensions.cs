@@ -17,9 +17,13 @@ public static class ClaimsPrincipalExtensions
     public static string? GetPrimaryRole(this ClaimsPrincipal user)
         => user.FindFirst(ClaimTypes.Role)?.Value;
 
+    /// <summary>Friendly name for greetings (falls back to the login username).</summary>
+    public static string GetDisplayName(this ClaimsPrincipal user)
+        => user.FindFirst("DisplayName")?.Value ?? user.GetUserName();
+
     public static string GetInitials(this ClaimsPrincipal user)
     {
-        var name = user.GetUserName();
+        var name = user.GetDisplayName();
         var parts = name.Split(' ', StringSplitOptions.RemoveEmptyEntries);
         if (parts.Length == 0) return "U";
         if (parts.Length == 1) return parts[0][..1].ToUpperInvariant();

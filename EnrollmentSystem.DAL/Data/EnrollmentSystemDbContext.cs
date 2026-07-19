@@ -79,6 +79,8 @@ public partial class EnrollmentSystemDbContext : DbContext
     public virtual DbSet<Subject> Subjects { get; set; }
 
     public virtual DbSet<Teacher> Teachers { get; set; }
+    public virtual DbSet<EmailVerification> EmailVerifications { get; set; }
+    public virtual DbSet<Notification> Notifications { get; set; }
 
 
 

@@ -1,0 +1,25 @@
+﻿@* File: EnrollmentSystem.UI/Views/Notification/Index.cshtml *@
+@model IEnumerable<Notification>
+@{
+    ViewData["Title"] = "Notifications";
+}
+<h1 class="page-title">Notifications</h1>
+<p class="page-subtitle">Your recent updates.</p>
+
+<div class="content-card">
+    @if (Model.Any())
+    {
+        foreach (var n in Model)
+        {
+            <div class="notif-item @(n.IsRead ? "" : "unread")" style="border-radius:8px;">
+                <div class="t">@n.Title</div>
+                <div class="m">@n.Message</div>
+                <div class="d">@n.CreatedAt.ToString("MMM dd, yyyy h:mm tt")</div>
+            </div>
+        }
+    }
+    else
+    {
+        <p style="color:var(--muted)">You have no notifications.</p>
+    }
+</div>

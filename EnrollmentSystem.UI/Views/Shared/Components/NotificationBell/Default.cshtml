@@ -1,0 +1,37 @@
+﻿@* File: EnrollmentSystem.UI/Views/Shared/Components/NotificationBell/Default.cshtml *@
+@model NotificationBellViewModel
+<div class="dropdown">
+    <button class="bell-btn" type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
+        <i data-lucide="bell"></i>
+        @if (Model.UnreadCount > 0)
+        {
+            <span class="bell-badge">@(Model.UnreadCount > 9 ? "9+" : Model.UnreadCount.ToString())</span>
+        }
+    </button>
+    <div class="dropdown-menu dropdown-menu-end notif-menu">
+        <div class="notif-head">
+            <span>Notifications</span>
+            <form asp-controller="Notification" asp-action="MarkAllRead" method="post" style="margin:0;">
+                <button type="submit" style="background:none;border:none;color:var(--primary);font-size:12px;font-weight:700;cursor:pointer;">Mark all read</button>
+            </form>
+        </div>
+        @if (Model.Items.Any())
+        {
+            foreach (var n in Model.Items)
+            {
+                <div class="notif-item @(n.IsRead ? "" : "unread")">
+                    <div class="t">@n.Title</div>
+                    <div class="m">@n.Message</div>
+                    <div class="d">@n.CreatedAt.ToString("MMM dd, yyyy h:mm tt")</div>
+                </div>
+            }
+            <div style="text-align:center;padding:10px;">
+                <a asp-controller="Notification" asp-action="Index" style="font-size:13px;">View all</a>
+            </div>
+        }
+        else
+        {
+            <div class="notif-item"><div class="m">No notifications yet.</div></div>
+        }
+    </div>
+</div>

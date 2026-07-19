@@ -20,12 +20,13 @@ public class HomeController : Controller
     }
 
     [AllowAnonymous]
-    public IActionResult Index()
+    public async Task<IActionResult> Index()
     {
         if (User.Identity?.IsAuthenticated ?? false)
             return RedirectToAction(nameof(Dashboard));
 
-        return RedirectToAction("Login", "Account");
+        var announcements = await _announcementService.GetRecentAsync(4);
+        return View(announcements);
     }
 
     [Authorize]
@@ -36,7 +37,7 @@ public class HomeController : Controller
         var model = new DashboardViewModel
         {
             Role = role,
-            DisplayName = User.GetUserName(),
+            DisplayName = User.GetDisplayName(),
             RecentAnnouncements = await _announcementService.GetRecentAsync(5)
         };
 

@@ -7,6 +7,7 @@ using EnrollmentSystem.DAL.Repositories.Interfaces;
 using EnrollmentSystem.UI.Middleware;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
+using EnrollmentSystem.BLL.Common;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +18,7 @@ builder.Services.AddHttpContextAccessor();
 // ---------- Database (EF Core, connection string from appsettings) ----------
 builder.Services.AddDbContext<EnrollmentSystemDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.Configure<SmtpSettings>(builder.Configuration.GetSection("Smtp"));
 
 // ---------- Cookie Authentication ----------
 builder.Services
@@ -81,7 +83,9 @@ builder.Services.AddScoped<ISubjectService, SubjectService>();
 builder.Services.AddScoped<ICurriculumService, CurriculumService>();
 builder.Services.AddScoped<IAnnouncementService, AnnouncementService>();
 builder.Services.AddScoped<IReportingService, ReportingService>();
-
+builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<INotificationService, NotificationService>();
+builder.Services.AddScoped<IApplicantOnboardingService, ApplicantOnboardingService>();
 var app = builder.Build();
 
 // ---------- Seed roles + default admin ----------
@@ -105,6 +109,7 @@ app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseMiddleware<PasswordChangeMiddleware>();
 app.UseSession();
 
 app.MapControllerRoute(

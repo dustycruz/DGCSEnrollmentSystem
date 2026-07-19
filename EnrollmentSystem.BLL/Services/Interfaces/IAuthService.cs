@@ -9,6 +9,7 @@ public interface IAuthService
 {
     Task<ServiceResult> RegisterAsync(RegisterDto dto);
     Task<ServiceResult<AuthUserDto>> LoginAsync(LoginDto dto);
+    Task<ServiceResult> ChangePasswordAsync(string userId, string currentPassword, string newPassword);
     Task<IEnumerable<AspNetUser>> GetAllUsersAsync();
     Task<AuthUserDto?> GetUserAsync(string id);
     Task EnsureSeedDataAsync();

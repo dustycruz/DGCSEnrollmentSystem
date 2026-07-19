@@ -45,6 +45,8 @@ public partial class ProofOfPayment
     public string? ModifiedBy { get; set; }
 
     public bool IsDeleted { get; set; }
+    [StringLength(50)]
+    public string Purpose { get; set; } = "ApplicationFee";
 
     [ForeignKey("ApplicationId")]
     [InverseProperty("ProofOfPayments")]

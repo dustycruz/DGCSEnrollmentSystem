@@ -77,4 +77,11 @@ public class UserRepository : IUserRepository
 
     public async Task<int> SaveAsync()
         => await _context.SaveChangesAsync();
+
+    public async Task<string?> GetLastUserNameByPrefixAsync(string prefix)
+       => await _context.AspNetUsers
+           .Where(u => u.UserName != null && u.UserName.StartsWith(prefix))
+           .OrderByDescending(u => u.UserName)
+           .Select(u => u.UserName)
+           .FirstOrDefaultAsync();
 }

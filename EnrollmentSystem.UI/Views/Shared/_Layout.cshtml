@@ -32,7 +32,7 @@
                 <div class="user-card">
                     <div class="avatar">@User.GetInitials()</div>
                     <div>
-                        <div class="name">@User.GetUserName()</div>
+                        <div class="name">@User.GetDisplayName()</div>
                         <div class="role">@role</div>
                     </div>
                 </div>
@@ -100,6 +100,12 @@
             </aside>
 
             <main class="main-content">
+                <div class="topbar">
+                    <div class="topbar-title">@ViewData["Title"]</div>
+                    <div class="topbar-actions">
+                        @await Component.InvokeAsync("NotificationBell")
+                    </div>
+                </div>
                 @RenderBody()
             </main>
         </div>

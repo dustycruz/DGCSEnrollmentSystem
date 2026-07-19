@@ -11,15 +11,27 @@ public class StudentService : IStudentService
     private readonly IStudentRepository _studentRepo;
     private readonly IEnrollmentRepository _enrollmentRepo;
     private readonly IScheduleRepository _scheduleRepo;
+    private readonly IApplicationRepository _applicationRepo;
+    private readonly IUserRepository _userRepo;
+    private readonly IEmailService _emailService;
+    private readonly INotificationService _notificationService;
 
     public StudentService(
         IStudentRepository studentRepo,
         IEnrollmentRepository enrollmentRepo,
-        IScheduleRepository scheduleRepo)
+        IScheduleRepository scheduleRepo,
+        IApplicationRepository applicationRepo,
+        IUserRepository userRepo,
+        IEmailService emailService,
+        INotificationService notificationService)
     {
         _studentRepo = studentRepo;
         _enrollmentRepo = enrollmentRepo;
         _scheduleRepo = scheduleRepo;
+        _applicationRepo = applicationRepo;
+        _userRepo = userRepo;
+        _emailService = emailService;
+        _notificationService = notificationService;
     }
 
     public async Task<IEnumerable<Student>> GetAllAsync()
@@ -85,6 +97,69 @@ public class StudentService : IStudentService
         await _studentRepo.SaveAsync();
 
         return ServiceResult<int>.Ok(student.StudentId, $"Student record created ({student.StudentNumber}).");
+    }
+
+    public async Task<ServiceResult<int>> FinalizeEnrollmentAsync(int applicationId, string modifiedBy)
+    {
+        var application = await _applicationRepo.GetByIdAsync(applicationId);
+        if (application is null)
+            return ServiceResult<int>.Fail("Application not found.");
+
+        if (application.Status == ApplicationStatuses.Enrolled)
+            return ServiceResult<int>.Fail("This application is already enrolled.");
+
+        if (application.Status != ApplicationStatuses.Approved)
+            return ServiceResult<int>.Fail("Only approved applications can be finalized.");
+
+        if (string.IsNullOrWhiteSpace(application.EmailAddress))
+            return ServiceResult<int>.Fail("The application has no email address on file.");
+
+        // 1. Create the Student record
+        var created = await CreateFromApplicationAsync(application, modifiedBy);
+        if (!created.Success)
+            return created;
+
+        var student = await _studentRepo.GetByIdAsync(created.Data);
+        var studentNumber = student!.StudentNumber!;
+
+        // 2. Create the student login: UserName = Student Number, temp password, forced change
+        var tempPassword = CredentialGenerator.GenerateTempPassword();
+        var hash = PasswordHasher.Hash(tempPassword);
+        var user = new AspNetUser
+        {
+            Id = Guid.NewGuid().ToString(),
+            UserName = studentNumber,
+            Email = application.EmailAddress,
+            PasswordHash = hash,
+            EmailConfirmed = true,
+            MustChangePassword = true
+        };
+        var role = await _userRepo.EnsureRoleAsync("Student");
+        await _userRepo.AddUserAsync(user);
+        await _userRepo.AddUserToRoleAsync(user.Id, role.Id, studentNumber, hash);
+        await _userRepo.SaveAsync();
+
+        // 3. Mark the application Enrolled
+        application.Status = ApplicationStatuses.Enrolled;
+        application.ModifiedBy = modifiedBy;
+        _applicationRepo.Update(application);
+        await _applicationRepo.SaveAsync();
+
+        // 4. Notify: email credentials + portal notification to the applicant account
+        await _emailService.SendStudentCredentialsAsync(application.EmailAddress, studentNumber, tempPassword);
+
+        var applicantUser = string.IsNullOrWhiteSpace(application.CreatedBy)
+            ? null
+            : await _userRepo.GetByUsernameAsync(application.CreatedBy);
+        if (applicantUser is not null)
+        {
+            await _notificationService.NotifyAsync(applicantUser.Id,
+                "You are officially enrolled!",
+                $"Your Student Number is {studentNumber}. Check your email for your Student Portal credentials.");
+        }
+
+        return ServiceResult<int>.Ok(created.Data,
+            $"Enrollment finalized. Student Number {studentNumber} created and credentials emailed.");
     }
 
     public async Task<IEnumerable<Enrollment>> GetEnrollmentsAsync(int studentId)

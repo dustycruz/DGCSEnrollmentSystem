@@ -1,0 +1,37 @@
+﻿@* File: EnrollmentSystem.UI/Views/Apply/Index.cshtml *@
+@model EmailEntryViewModel
+@{
+    ViewData["Title"] = "Apply";
+    Layout = "_Layout";
+}
+<div class="auth-wrap">
+    <div class="auth-card">
+        <div class="auth-logo"><img src="/images/logo.png" alt="DGCS" /></div>
+        <div class="auth-title">Start Your Application</div>
+        <div class="auth-sub">Step 1 — Enter your email address</div>
+
+        <div class="steps">
+            <div class="step active"><span class="dot">1</span> Email</div>
+            <div class="step"><span class="dot">2</span> Verify</div>
+            <div class="step"><span class="dot">3</span> Password</div>
+        </div>
+
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger" style="@(ViewData.ModelState.ErrorCount > 0 ? "" : "display:none")"></div>
+
+        <form asp-action="Index" method="post">
+            <div class="mb-3">
+                <label class="form-label" asp-for="Email"></label>
+                <input class="form-control" asp-for="Email" placeholder="name@gmail.com" autofocus />
+                <span asp-validation-for="Email" class="text-validation"></span>
+            </div>
+            <button type="submit" class="btn btn-brand w-100">Send Verification Code</button>
+        </form>
+
+        <p class="text-center mt-3" style="font-size:14px;">
+            Already have an account? <a asp-controller="Account" asp-action="Login">Sign in</a>
+        </p>
+    </div>
+</div>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

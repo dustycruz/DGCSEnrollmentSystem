@@ -2,6 +2,7 @@
 using System.Security.Claims;
 using EnrollmentSystem.BLL.DTOs;
 using EnrollmentSystem.BLL.Services.Interfaces;
+using EnrollmentSystem.UI.Helpers;
 using EnrollmentSystem.UI.ViewModels;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -54,7 +55,9 @@ public class AccountController : Controller
         {
             new(ClaimTypes.NameIdentifier, user.Id),
             new(ClaimTypes.Name, user.UserName),
-            new(ClaimTypes.Email, user.Email ?? string.Empty)
+            new(ClaimTypes.Email, user.Email ?? string.Empty),
+            new("DisplayName", BuildDisplayName(user)),
+            new("MustChangePassword", user.MustChangePassword ? "true" : "false")
         };
         foreach (var r in user.Roles)
             claims.Add(new Claim(ClaimTypes.Role, r));
@@ -63,6 +66,9 @@ public class AccountController : Controller
         await HttpContext.SignInAsync(
             CookieAuthenticationDefaults.AuthenticationScheme,
             new ClaimsPrincipal(identity));
+
+        if (user.MustChangePassword)
+            return RedirectToAction(nameof(ChangePassword));
 
         if (!string.IsNullOrEmpty(model.ReturnUrl) && Url.IsLocalUrl(model.ReturnUrl))
             return Redirect(model.ReturnUrl);
@@ -74,35 +80,35 @@ public class AccountController : Controller
     [AllowAnonymous]
     public IActionResult Register()
     {
-        if (User.Identity?.IsAuthenticated ?? false)
-            return RedirectToAction("Dashboard", "Home");
-
-        return View(new RegisterViewModel());
+        // Public sign-ups now go through the Apply Now wizard (email verification).
+        return RedirectToAction("Index", "Apply");
     }
 
+    [HttpGet]
+    [Authorize]
+    public IActionResult ChangePassword() => View(new ChangePasswordViewModel());
+
     [HttpPost]
-    [AllowAnonymous]
+    [Authorize]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Register(RegisterViewModel model)
+    public async Task<IActionResult> ChangePassword(ChangePasswordViewModel model)
     {
-        if (!ModelState.IsValid)
-            return View(model);
+        if (!ModelState.IsValid) return View(model);
 
-        var result = await _authService.RegisterAsync(new RegisterDto
-        {
-            UserName = model.UserName,
-            Email = model.Email,
-            Password = model.Password,
-            Role = "Applicant"   // public sign-ups start as Applicant
-        });
+        var userId = User.GetUserId();
+        if (string.IsNullOrEmpty(userId))
+            return RedirectToAction(nameof(Login));
 
+        var result = await _authService.ChangePasswordAsync(userId, model.CurrentPassword, model.NewPassword);
         if (!result.Success)
         {
-            ModelState.AddModelError(string.Empty, result.Message ?? "Registration failed.");
+            ModelState.AddModelError(string.Empty, result.Message ?? "Could not change password.");
             return View(model);
         }
 
-        TempData["Success"] = "Account created. You can now sign in.";
+        // Sign out so the stale MustChangePassword claim is discarded; user signs in fresh.
+        await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+        TempData["Success"] = "Password changed. Please sign in with your new password.";
         return RedirectToAction(nameof(Login));
     }
 
@@ -117,4 +123,18 @@ public class AccountController : Controller
     [HttpGet]
     [AllowAnonymous]
     public IActionResult AccessDenied() => View();
+    private static string BuildDisplayName(EnrollmentSystem.BLL.DTOs.AuthUserDto user)
+    {
+        if (user.Roles.Contains("Admin"))
+            return "Administrator";
+
+        if (!string.IsNullOrWhiteSpace(user.Email) && user.Email.Contains('@'))
+        {
+            var local = user.Email[..user.Email.IndexOf('@')];
+            if (local.Length > 0)
+                return char.ToUpper(local[0]) + local[1..];
+        }
+
+        return user.UserName;
+    }
 }

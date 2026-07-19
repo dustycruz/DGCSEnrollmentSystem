@@ -1,6 +1,99 @@
 ﻿@* File: EnrollmentSystem.UI/Views/Home/Index.cshtml *@
+@model IEnumerable<Announcement>
 @{
     ViewData["Title"] = "Home";
     Layout = null;
 }
-<p>Redirecting…</p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Divine Grace Center of Studies — Enrollment</title>
+    <link rel="icon" href="/images/logo.png" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+    <header class="public-header">
+        <div class="public-nav">
+            <div class="public-brand">
+                <img src="/images/logo.png" alt="DGCS" />
+                <div>
+                    <div class="n1">Divine Grace Center of Studies</div>
+                    <div class="n2"> Integrated System</div>
+                </div>
+            </div>
+            <nav class="public-links">
+                <a href="#requirements">Requirements</a>
+                <a href="#schedule">Schedule</a>
+                <a href="#announcements">Announcements</a>
+                <a class="btn btn-outline-brand" asp-controller="Account" asp-action="Login">Sign In</a>
+                <a class="btn btn-accent" asp-controller="Apply" asp-action="Index">Apply Now</a>
+            </nav>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="hero-inner">
+            <h1>Enroll at Divine Grace Center of Studies</h1>
+            <p>Start your admission application online. Verify your email, submit your requirements, and track your status.</p>
+            <a class="btn btn-accent" asp-controller="Apply" asp-action="Index">Apply Now</a>
+        </div>
+    </section>
+
+    <section class="public-section" id="requirements">
+        <h2>Admission Requirements</h2>
+        <p class="lead">Prepare these documents before you apply.</p>
+        <div class="req-grid">
+            <div class="req-card"><div class="ic"><i data-lucide="file-badge"></i></div><div><strong>PSA Birth Certificate</strong><div style="color:var(--muted);font-size:13px;">Original & photocopy</div></div></div>
+            <div class="req-card"><div class="ic"><i data-lucide="clipboard-list"></i></div><div><strong>Report Card (Form 138)</strong><div style="color:var(--muted);font-size:13px;">Previous school year</div></div></div>
+            <div class="req-card"><div class="ic"><i data-lucide="award"></i></div><div><strong>Good Moral Certificate</strong><div style="color:var(--muted);font-size:13px;">From previous school</div></div></div>
+            <div class="req-card"><div class="ic"><i data-lucide="image"></i></div><div><strong>2×2 ID Picture</strong><div style="color:var(--muted);font-size:13px;">White background</div></div></div>
+            <div class="req-card"><div class="ic"><i data-lucide="repeat"></i></div><div><strong>Certificate of Transfer</strong><div style="color:var(--muted);font-size:13px;">Transferees only</div></div></div>
+        </div>
+    </section>
+
+    <section class="public-section" id="schedule" style="background:#fff;border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
+        <h2>Enrollment Schedule</h2>
+        <p class="lead">School Year 2026–2027</p>
+        <div style="max-width:640px;margin:0 auto;">
+            <div class="schedule-row"><span><strong>Online Application</strong></span><span style="color:var(--muted)">June 1 – July 15, 2026</span></div>
+            <div class="schedule-row"><span><strong>Document Verification</strong></span><span style="color:var(--muted)">June 5 – July 20, 2026</span></div>
+            <div class="schedule-row"><span><strong>Enrollment Confirmation</strong></span><span style="color:var(--muted)">July 1 – July 31, 2026</span></div>
+            <div class="schedule-row"><span><strong>Start of Classes</strong></span><span style="color:var(--muted)">August 10, 2026</span></div>
+        </div>
+    </section>
+
+    <section class="public-section" id="announcements">
+        <h2>Announcements</h2>
+        <p class="lead">Latest news from the registrar.</p>
+        <div style="max-width:760px;margin:0 auto;">
+            @if (Model.Any())
+            {
+                foreach (var a in Model)
+                {
+                    <div class="content-card">
+                        <div style="display:flex;justify-content:space-between;">
+                            <strong>@a.Title</strong>
+                            <span style="color:var(--muted);font-size:12px;">@a.PostedDate.ToString("MMM dd, yyyy")</span>
+                        </div>
+                        <div style="color:var(--muted);font-size:14px;margin-top:6px;">@a.Content</div>
+                    </div>
+                }
+            }
+            else
+            {
+                <p style="text-align:center;color:var(--muted)">No announcements at this time.</p>
+            }
+        </div>
+    </section>
+
+    <footer class="public-footer">
+        © @DateTime.Now.Year Divine Grace Center of Studies · Web-Based Enrollment System
+    </footer>
+
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    <script>if (window.lucide) { lucide.createIcons(); }</script>
+</body>
+</html>
