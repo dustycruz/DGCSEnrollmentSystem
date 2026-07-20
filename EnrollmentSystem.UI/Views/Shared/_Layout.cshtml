@@ -58,28 +58,21 @@
 
                     @if (User.IsInRole("Student"))
                     {
-                        <a class="nav-link-item @ActiveAction("Student", "Index")" asp-controller="Student" asp-action="Index">
-                            <i data-lucide="graduation-cap"></i> My Portal
-                        </a>
-                        <a class="nav-link-item @ActiveAction("Student", "Profile")" asp-controller="Student" asp-action="Profile">
-                            <i data-lucide="user"></i> My Profile
-                        </a>
-                        <a class="nav-link-item @ActiveAction("Student", "Schedule")" asp-controller="Student" asp-action="Schedule">
-                            <i data-lucide="calendar"></i> Class Schedule
-                        </a>
-                        <a class="nav-link-item @ActiveAction("Student", "Grades")" asp-controller="Student" asp-action="Grades">
-                            <i data-lucide="bar-chart-3"></i> My Grades
-                        </a>
-                        <a class="nav-link-item @ActiveAction("Student", "Announcements")" asp-controller="Student" asp-action="Announcements">
-                            <i data-lucide="megaphone"></i> Announcements
-                        </a>
+                        <a class="nav-link-item @ActiveAction("Student", "Index")" asp-controller="Student" asp-action="Index"><i data-lucide="graduation-cap"></i> My Portal</a>
+                        <a class="nav-link-item @ActiveAction("Student", "Profile")" asp-controller="Student" asp-action="Profile"><i data-lucide="user"></i> My Profile</a>
+                        <a class="nav-link-item @ActiveAction("Student", "Subjects")" asp-controller="Student" asp-action="Subjects"><i data-lucide="book"></i> My Subjects</a>
+                        <a class="nav-link-item @ActiveAction("Student", "Schedule")" asp-controller="Student" asp-action="Schedule"><i data-lucide="clock"></i> Class Schedule</a>
+                        <a class="nav-link-item @ActiveAction("Student", "Calendar")" asp-controller="Student" asp-action="Calendar"><i data-lucide="calendar"></i> Calendar</a>
+                        <a class="nav-link-item @ActiveAction("Student", "Grades")" asp-controller="Student" asp-action="Grades"><i data-lucide="bar-chart-3"></i> My Grades</a>
+                        <a class="nav-link-item @ActiveAction("Student", "Payments")" asp-controller="Student" asp-action="Payments"><i data-lucide="wallet"></i> Payments</a>
+                        <a class="nav-link-item @ActiveAction("Student", "Announcements")" asp-controller="Student" asp-action="Announcements"><i data-lucide="megaphone"></i> Announcements</a>
                     }
 
                     @if (User.IsInRole("Teacher"))
                     {
-                        <a class="nav-link-item @ActiveIf("Teacher")" asp-controller="Teacher" asp-action="Index">
-                            <i data-lucide="book-open"></i> My Classes
-                        </a>
+                        <a class="nav-link-item @ActiveAction("Teacher", "Index")" asp-controller="Teacher" asp-action="Index"><i data-lucide="book-open"></i> My Classes</a>
+                        <a class="nav-link-item @ActiveAction("Teacher", "Schedule")" asp-controller="Teacher" asp-action="Schedule"><i data-lucide="clock"></i> My Schedule</a>
+                        <a class="nav-link-item @ActiveAction("Teacher", "Calendar")" asp-controller="Teacher" asp-action="Calendar"><i data-lucide="calendar"></i> Calendar</a>
                     }
 
                     @if (User.IsInRole("Admin"))
@@ -102,13 +95,21 @@
                         </a>
 
                         <div class="nav-group-label">Administration</div>
-                        <a class="nav-link-item @ActiveIf("Admin")" asp-controller="Admin" asp-action="Users">
+                        <a class="nav-link-item @ActiveAction("Admin", "Users")" asp-controller="Admin" asp-action="Users">
                             <i data-lucide="users"></i> User Accounts
+                        </a>
+                        <a class="nav-link-item @ActiveAction("Admin", "Calendar")" asp-controller="Admin" asp-action="Calendar">
+                            <i data-lucide="calendar"></i> Calendar
                         </a>
                         <a class="nav-link-item @ActiveIf("Report")" asp-controller="Report" asp-action="Index">
                             <i data-lucide="bar-chart-3"></i> Reports
                         </a>
                     }
+
+                    <div class="nav-group-label">Account</div>
+                    <a class="nav-link-item @ActiveIf("Settings")" asp-controller="Settings" asp-action="Index">
+                        <i data-lucide="settings"></i> Settings
+                    </a>
                 </nav>
 
                 <div class="sidebar-footer">
@@ -141,7 +142,6 @@
     <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
     <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
 
-    <!-- Lucide icons (browser build) -->
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 
     @await RenderSectionAsync("Scripts", required: false)

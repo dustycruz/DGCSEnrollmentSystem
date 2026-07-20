@@ -10,4 +10,5 @@ public interface IProofOfPaymentService
     Task<IEnumerable<ProofOfPayment>> GetByApplicationAsync(int applicationId);
     Task<IEnumerable<ProofOfPayment>> GetPendingAsync();
     Task<ServiceResult> VerifyAsync(int id, string status, string? remarks, string modifiedBy);
+    Task<IEnumerable<ProofOfPayment>> GetByStudentAsync(int studentId);
 }

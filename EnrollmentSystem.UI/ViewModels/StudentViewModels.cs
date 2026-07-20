@@ -29,3 +29,9 @@ public class StudentProfileViewModel
     public string? GuardianRelationship { get; set; }
     [EmailAddress] public string? GuardianEmailAddress { get; set; }
 }
+public class StudentCalendarViewModel
+{
+    public int Year { get; set; }
+    public int Month { get; set; }
+    public List<Schedule> Schedules { get; set; } = new();
+}

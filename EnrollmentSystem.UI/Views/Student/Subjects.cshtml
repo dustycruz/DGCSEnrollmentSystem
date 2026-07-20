@@ -1,0 +1,60 @@
+﻿@* File: EnrollmentSystem.UI/Views/Student/Subjects.cshtml *@
+@model IEnumerable<Schedule>
+@{
+    ViewData["Title"] = "My Classes";
+    var sec = Model.FirstOrDefault()?.Section;
+}
+<h1 class="page-title">My Classes</h1>
+<p class="page-subtitle">Your enrolled subjects for the current school year.</p>
+
+@if (sec is not null)
+{
+    <div class="content-card" style="display:flex;gap:36px;flex-wrap:wrap;">
+        <div><div class="stat-label">School Year</div><strong>@(sec.SchoolYear?.Name ?? "-")</strong></div>
+        <div><div class="stat-label">Grade Level</div><strong>@(sec.GradeLevel?.Name ?? "-")</strong></div>
+        <div><div class="stat-label">Section</div><strong>@sec.Name</strong></div>
+    </div>
+}
+
+@if (Model.Any())
+{
+    <div class="class-grid">
+        @foreach (var s in Model)
+        {
+            var t = s.Teacher?.Employee is null ? "TBA" : $"{s.Teacher.Employee.FirstName} {s.Teacher.Employee.LastName}";
+            var codeSection = (s.Subject?.Code ?? "") + (string.IsNullOrEmpty(s.Section?.Name) ? "" : " · " + s.Section!.Name);
+            <div class="class-card">
+                <div class="title">@s.Subject?.Name</div>
+                <div class="sec">@codeSection</div>
+                <div class="fac">@t</div>
+                <div class="meta">
+                    @foreach (var d in s.ScheduleDetails)
+                    {
+                        var time = d.StartTime.HasValue && d.EndTime.HasValue
+                            ? $"{d.StartTime.Value.ToString("hh:mm tt")} - {d.EndTime.Value.ToString("hh:mm tt")}"
+                            : "TBA";
+                        <div class="row2">
+                            <i data-lucide="calendar"></i> @(d.Day ?? "TBA")
+                            <i data-lucide="clock"></i> @time
+                        </div>
+                    }
+                    @if (!s.ScheduleDetails.Any())
+                    {
+                        <div class="row2" style="color:var(--muted)">Schedule not set</div>
+                    }
+                </div>
+                <div class="class-actions">
+                    <a class="btn btn-brand" asp-action="Schedule"><i data-lucide="clock"></i> Schedule</a>
+                    <a class="btn btn-success" asp-action="Grades"><i data-lucide="bar-chart-3"></i> Grades</a>
+                </div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <div class="content-card"><div class="empty-state"><i data-lucide="book-x"></i><p>You have no classes yet.</p></div></div>
+}
+@section Scripts {
+    <script>if (window.lucide) lucide.createIcons();</script>
+}

@@ -905,3 +905,375 @@ a {
         background: #b91c1c;
         color: #fff;
     }
+
+/* File: EnrollmentSystem.UI/wwwroot/css/site.css  (append at end) */
+
+/* Weekly calendar */
+.cal-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
+}
+
+.cal-day {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px;
+    min-height: 130px;
+}
+
+    .cal-day h4 {
+        margin: 0 0 10px;
+        font-size: 14px;
+        color: var(--primary);
+    }
+
+.cal-event {
+    background: var(--primary-soft);
+    border-left: 3px solid var(--primary);
+    border-radius: 8px;
+    padding: 8px 10px;
+    margin-bottom: 8px;
+}
+
+    .cal-event .t {
+        font-weight: 700;
+        color: var(--ink);
+        font-size: 13px;
+    }
+
+    .cal-event .m {
+        color: var(--muted);
+        font-size: 12px;
+    }
+
+/* Empty states */
+.empty-state {
+    text-align: center;
+    padding: 30px 10px;
+    color: var(--muted);
+}
+
+    .empty-state svg {
+        width: 40px;
+        height: 40px;
+        margin-bottom: 8px;
+        color: var(--border);
+    }
+
+    .empty-state p {
+        margin: 0;
+    }
+
+/* Nicer nav hover/active */
+.nav-link-item {
+    transition: background .12s ease, color .12s ease;
+}
+
+    .nav-link-item.active svg {
+        color: #fff;
+    }
+
+.stat-card {
+    transition: transform .12s ease, box-shadow .12s ease;
+}
+
+    .stat-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 18px rgba(16,24,40,.08);
+    }
+
+a.content-card:hover {
+    border-color: var(--primary);
+}
+
+@media (max-width: 900px) {
+    .cal-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+/* File: EnrollmentSystem.UI/wwwroot/css/site.css  (append at end) */
+
+/* ---------- Monthly calendar ---------- */
+.month-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+}
+
+.month-nav {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+}
+
+    .month-nav a {
+        border: 1px solid var(--border);
+        background: #fff;
+        border-radius: 8px;
+        padding: 6px 9px;
+        color: var(--ink);
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+    }
+
+        .month-nav a svg {
+            width: 16px;
+            height: 16px;
+        }
+
+    .month-nav .today {
+        color: var(--primary);
+    }
+
+.month-title {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--ink);
+}
+
+.month-grid {
+    display: grid;
+    grid-template-columns: repeat(7,1fr);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    background: #fff;
+}
+
+.month-dow {
+    background: var(--ink);
+    color: #fff;
+    padding: 9px;
+    text-align: center;
+    font-weight: 700;
+    font-size: 13px;
+}
+
+.month-cell {
+    min-height: 104px;
+    border-right: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    padding: 6px;
+    position: relative;
+}
+
+    .month-cell .num {
+        font-size: 12px;
+        color: var(--ink);
+        position: absolute;
+        top: 6px;
+        right: 8px;
+    }
+
+    .month-cell.dim {
+        background: #f8fafc;
+    }
+
+        .month-cell.dim .num {
+            color: #c7ccd6;
+        }
+
+    .month-cell.today .num {
+        background: var(--secondary);
+        color: var(--ink);
+        border-radius: 50%;
+        width: 22px;
+        height: 22px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+        top: 5px;
+        right: 6px;
+    }
+
+.m-event {
+    margin-top: 20px;
+    margin-bottom: 3px;
+    background: var(--primary-soft);
+    border-left: 3px solid var(--primary);
+    border-radius: 4px;
+    padding: 2px 6px;
+    font-size: 11px;
+    color: var(--ink);
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+    .m-event + .m-event {
+        margin-top: 3px;
+    }
+
+.m-more {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 2px;
+}
+
+/* ---------- Page banner (My Classes) ---------- */
+.page-banner {
+    background: linear-gradient(120deg, var(--ink) 0%, var(--primary) 100%);
+    color: #fff;
+    border-radius: 16px;
+    padding: 22px 24px;
+    margin-bottom: 18px;
+}
+
+    .page-banner .chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(255,255,255,.15);
+        color: var(--secondary);
+        font-weight: 700;
+        font-size: 12px;
+        padding: 4px 12px;
+        border-radius: 999px;
+        margin-bottom: 10px;
+    }
+
+        .page-banner .chip svg {
+            width: 14px;
+            height: 14px;
+        }
+
+    .page-banner h1 {
+        color: #fff;
+        margin: 0;
+        font-size: 26px;
+    }
+
+    .page-banner p {
+        color: #e7eefc;
+        margin: 6px 0 0;
+        font-size: 14px;
+        max-width: 720px;
+    }
+
+/* ---------- Class cards ---------- */
+.class-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px,1fr));
+    gap: 16px;
+}
+
+.class-card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px;
+}
+
+    .class-card .title {
+        color: var(--primary);
+        font-weight: 800;
+        font-size: 16px;
+    }
+
+    .class-card .sec {
+        color: var(--ink);
+        font-weight: 600;
+        font-size: 13px;
+        margin-top: 2px;
+    }
+
+    .class-card .fac {
+        color: var(--ink);
+        font-size: 13px;
+        margin-top: 6px;
+    }
+
+    .class-card .meta {
+        border-top: 1px solid var(--border);
+        margin-top: 12px;
+        padding-top: 10px;
+    }
+
+    .class-card .row2 {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 13px;
+        color: var(--muted);
+        margin-bottom: 5px;
+    }
+
+        .class-card .row2 svg {
+            width: 14px;
+            height: 14px;
+        }
+
+.class-actions {
+    display: flex;
+    gap: 6px;
+    margin-top: 12px;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+}
+
+/* ---------- Weekly timetable ---------- */
+.timetable {
+    display: grid;
+    grid-template-columns: 74px repeat(6,1fr);
+    grid-template-rows: 40px repeat(24,26px);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    background: #fff;
+    min-width: 820px;
+}
+
+.tt-corner, .tt-dayhead {
+    background: #f4f6fb;
+    border-right: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 13px;
+    color: var(--ink);
+}
+
+.tt-time {
+    font-size: 11px;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 8px;
+    border-right: 1px solid var(--border);
+    border-bottom: 1px dashed #eef1f5;
+}
+
+.tt-cell {
+    border-right: 1px solid var(--border);
+    border-bottom: 1px dashed #eef1f5;
+}
+
+.tt-event {
+    margin: 2px;
+    border-radius: 8px;
+    background: var(--primary-soft);
+    border: 1px solid #bfe0ff;
+    padding: 4px 6px;
+    font-size: 11px;
+    overflow: hidden;
+    z-index: 1;
+}
+
+    .tt-event .c {
+        font-weight: 800;
+        color: var(--ink);
+    }
+
+    .tt-event .s {
+        color: var(--muted);
+        font-size: 10px;
+        line-height: 1.3;
+    }

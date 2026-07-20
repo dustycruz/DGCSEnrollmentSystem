@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿// File: EnrollmentSystem.DAL/Models/ProofOfPayment.cs
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
 namespace EnrollmentSystem.DAL.Models;
 
@@ -12,7 +11,9 @@ public partial class ProofOfPayment
     [Key]
     public int ProofOfPaymentId { get; set; }
 
-    public int ApplicationId { get; set; }
+    public int? ApplicationId { get; set; }
+
+    public int? StudentId { get; set; }
 
     [StringLength(100)]
     public string? ReferenceNumber { get; set; }
@@ -34,6 +35,8 @@ public partial class ProofOfPayment
 
     [StringLength(250)]
     public string? Remarks { get; set; }
+    [StringLength(50)]
+    public string Purpose { get; set; } = "ApplicationFee";
 
     [StringLength(100)]
     public string? CreatedBy { get; set; }
@@ -45,10 +48,8 @@ public partial class ProofOfPayment
     public string? ModifiedBy { get; set; }
 
     public bool IsDeleted { get; set; }
-    [StringLength(50)]
-    public string Purpose { get; set; } = "ApplicationFee";
 
     [ForeignKey("ApplicationId")]
     [InverseProperty("ProofOfPayments")]
-    public virtual Application Application { get; set; } = null!;
+    public virtual Application? Application { get; set; }
 }

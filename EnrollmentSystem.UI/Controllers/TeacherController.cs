@@ -100,4 +100,17 @@ public class TeacherController : Controller
         TempData["Success"] = $"{saved} grade(s) saved for {vm.Quarter}.";
         return RedirectToAction(nameof(EncodeGrades), new { scheduleId = vm.ScheduleId, quarter = vm.Quarter });
     }
+    public async Task<IActionResult> Schedule()
+    {
+        var teacher = await MeAsync();
+        if (teacher is null) return RedirectToAction(nameof(Index));
+        return View(await _teacherService.GetScheduleAsync(teacher.TeacherId));
+    }
+    public async Task<IActionResult> Calendar(int? year, int? month)
+    {
+        var teacher = await MeAsync();
+        if (teacher is null) return RedirectToAction(nameof(Index));
+        var schedules = await _teacherService.GetScheduleAsync(teacher.TeacherId);
+        return View(EnrollmentSystem.UI.Helpers.CalendarBuilder.FromSchedules(schedules, year, month, "Teaching Calendar"));
+    }
 }

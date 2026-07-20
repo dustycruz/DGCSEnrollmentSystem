@@ -51,4 +51,6 @@ public class ProofOfPaymentService : IProofOfPaymentService
 
         return ServiceResult.Ok($"Payment marked as {status}.");
     }
+    public async Task<IEnumerable<ProofOfPayment>> GetByStudentAsync(int studentId)
+    => await _proofRepo.GetByStudentAsync(studentId);
 }

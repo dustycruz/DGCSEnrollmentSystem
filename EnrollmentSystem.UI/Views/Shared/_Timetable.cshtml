@@ -1,0 +1,74 @@
+﻿@* File: EnrollmentSystem.UI/Views/Shared/_Timetable.cshtml *@
+@model IEnumerable<EnrollmentSystem.DAL.Models.Schedule>
+@{
+    var days = new[] { "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" };
+    int DayCol(string? d) => Array.IndexOf(days, d) >= 0 ? Array.IndexOf(days, d) + 2 : 0;
+    int Slot(TimeOnly t) => (t.Hour - 8) * 2 + t.Minute / 30;
+    string Abbrev(string? d) => d switch
+    {
+        "Monday" => "M",
+        "Tuesday" => "T",
+        "Wednesday" => "W",
+        "Thursday" => "Th",
+        "Friday" => "F",
+        "Saturday" => "S",
+        "Sunday" => "Su",
+        _ => d ?? ""
+    };
+}
+<div class="content-card" style="overflow-x:auto;">
+    <h3 style="text-align:center;">Weekly Schedule</h3>
+    <div class="timetable">
+        <div class="tt-corner"></div>
+        @foreach (var d in days)
+        {
+            <div class="tt-dayhead">@d.Substring(0, 3)</div>
+        }
+        @for (var r = 0; r < 24; r++)
+        {
+            var label = new TimeOnly(8, 0).AddMinutes(r * 30);
+            <div class="tt-time" style="grid-row:@(r + 2);grid-column:1;">@label.ToString("hh:mm tt")</div>
+            @for (var c = 2; c <= 7; c++)
+            {
+                <div class="tt-cell" style="grid-row:@(r + 2);grid-column:@c;"></div>
+            }
+        }
+        @foreach (var s in Model)
+        {
+            foreach (var dt in s.ScheduleDetails)
+            {
+                var col = DayCol(dt.Day);
+                if (col > 0 && dt.StartTime.HasValue && dt.EndTime.HasValue)
+                {
+                    var rs = Slot(dt.StartTime.Value) + 2;
+                    var span = Math.Max(1, Slot(dt.EndTime.Value) - Slot(dt.StartTime.Value));
+                    <div class="tt-event" style="grid-column:@col;grid-row:@rs / span @span;">
+                        <div class="c">@(s.Subject?.Code ?? s.Subject?.Name)</div>
+                        <div class="s">@s.Section?.Name</div>
+                        <div class="s">@(dt.Room?.Name)</div>
+                        <div class="s">@(dt.StartTime?.ToString("hh:mm tt")) - @(dt.EndTime?.ToString("hh:mm tt"))</div>
+                    </div>
+                }
+            }
+        }
+    </div>
+</div>
+<div class="content-card" style="overflow-x:auto;">
+    <table class="table">
+        <thead><tr><th>Code</th><th>Title</th><th>Section</th><th>Days</th><th>Time</th><th>Room</th><th>Faculty</th></tr></thead>
+        <tbody>
+            @foreach (var s in Model)
+            {
+                var t = s.Teacher?.Employee is null ? "" : $"{s.Teacher.Employee.FirstName} {s.Teacher.Employee.LastName}";
+                var daysStr = string.Join(" / ", s.ScheduleDetails.Select(d => Abbrev(d.Day)));
+                var timeStr = string.Join(" / ", s.ScheduleDetails.Select(d => $"{d.StartTime?.ToString("hh:mm tt")} - {d.EndTime?.ToString("hh:mm tt")}"));
+                var roomStr = string.Join(" / ", s.ScheduleDetails.Select(d => d.Room?.Name));
+                <tr><td><strong>@s.Subject?.Code</strong></td><td>@s.Subject?.Name</td><td>@s.Section?.Name</td><td>@daysStr</td><td>@timeStr</td><td>@roomStr</td><td>@t.ToUpper()</td></tr>
+            }
+            @if (!Model.Any())
+            {
+                <tr><td colspan="7" style="text-align:center;color:var(--muted)">No schedule yet.</td></tr>
+            }
+        </tbody>
+    </table>
+</div>

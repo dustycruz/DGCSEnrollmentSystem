@@ -1,0 +1,88 @@
+﻿@* File: EnrollmentSystem.UI/Views/Student/Payments.cshtml *@
+@model StudentPaymentsViewModel
+@{
+    ViewData["Title"] = "Payments"; var p = Model.Info!;
+}
+<h1 class="page-title">Payments &amp; Balance</h1>
+<p class="page-subtitle">View your balance and submit proof of payment.</p>
+
+@if (TempData["Success"] is string ok)
+{
+    <div class="alert alert-success">@ok</div>
+}
+@if (TempData["Error"] is string err)
+{
+    <div class="alert alert-danger">@err</div>
+}
+
+<div class="stat-grid">
+    <div class="stat-card"><div class="stat-icon yellow"><i data-lucide="wallet"></i></div><div><div class="stat-value">₱@Model.TotalFee.ToString("N2")</div><div class="stat-label">Total Fee</div></div></div>
+    <div class="stat-card"><div class="stat-icon blue"><i data-lucide="check-circle"></i></div><div><div class="stat-value">₱@Model.Paid.ToString("N2")</div><div class="stat-label">Verified Paid</div></div></div>
+    <div class="stat-card"><div class="stat-icon ink"><i data-lucide="alert-circle"></i></div><div><div class="stat-value">₱@Model.Balance.ToString("N2")</div><div class="stat-label">Remaining Balance</div></div></div>
+</div>
+
+<div class="row g-3">
+    <div class="col-md-5">
+        <div class="content-card">
+            <h3><i data-lucide="landmark"></i> Payment Instructions</h3>
+            <table class="table">
+                <tr><td><strong>Bank</strong></td><td>@p.BankName</td></tr>
+                <tr><td><strong>Account Name</strong></td><td>@p.AccountName</td></tr>
+                <tr><td><strong>Account No.</strong></td><td>@p.AccountNumber</td></tr>
+                <tr><td><strong>GCash</strong></td><td>@p.GcashNumber</td></tr>
+            </table>
+        </div>
+    </div>
+    <div class="col-md-7">
+        <div class="content-card">
+            <h3><i data-lucide="upload"></i> Submit Proof of Payment</h3>
+            @if (Model.Balance <= 0)
+            {
+                <div class="alert alert-success">You have no outstanding balance. 🎉</div>
+            }
+            <form asp-action="UploadPayment" method="post" enctype="multipart/form-data">
+                <div class="row g-2">
+                    <div class="col-md-6 mb-2"><label class="form-label">Reference No.</label><input class="form-control" name="referenceNumber" /></div>
+                    <div class="col-md-6 mb-2"><label class="form-label">Amount</label><input class="form-control" name="amountPaid" type="number" step="0.01" /></div>
+                    <div class="col-md-6 mb-2"><label class="form-label">Method</label><select class="form-select" name="paymentMethod"><option>GCash</option><option>Bank Transfer</option><option>Cash</option></select></div>
+                    <div class="col-md-6 mb-2"><label class="form-label">Receipt</label><input class="form-control" name="file" type="file" required /></div>
+                </div>
+                <button type="submit" class="btn btn-brand">Submit Payment</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="content-card">
+    <h3><i data-lucide="receipt"></i> Payment History</h3>
+    @if (Model.Payments.Any())
+    {
+        <table class="table">
+            <thead><tr><th>Date</th><th>Reference</th><th>Amount</th><th>Status</th><th>Receipt</th></tr></thead>
+            <tbody>
+                @foreach (var pay in Model.Payments)
+                {
+                    var cls = pay.Status == "Verified" ? "badge-approved" : pay.Status == "Rejected" ? "badge-rejected" : "badge-pending";
+                    <tr>
+                        <td>@pay.PaymentDate?.ToString("MMM dd, yyyy")</td>
+                        <td>@pay.ReferenceNumber</td>
+                        <td>₱@pay.AmountPaid</td>
+                        <td><span class="badge-status @cls">@pay.Status</span></td>
+                        <td>@if (!string.IsNullOrEmpty(pay.FilePath)) {
+                            <a href="@pay.FilePath" target="_blank">View</a>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+    else
+{
+
+    <p style="color:var(--muted)">No payments yet.</p>
+}
+</div>
+@section Scripts {
+    <script>if (window.lucide) lucide.createIcons();</script>
+}

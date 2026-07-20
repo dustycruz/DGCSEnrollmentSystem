@@ -276,12 +276,8 @@ public partial class EnrollmentSystemDbContext : DbContext
 
         modelBuilder.Entity<ProofOfPayment>(entity =>
         {
-            entity.HasKey(e => e.ProofOfPaymentId).HasName("PK__ProofOfP__17668496C119AB4B");
-
-            entity.Property(e => e.Status).HasDefaultValue("Pending");
-
             entity.HasOne(d => d.Application).WithMany(p => p.ProofOfPayments)
-                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasForeignKey(d => d.ApplicationId)
                 .HasConstraintName("FK_ProofOfPayment_Application");
         });
 

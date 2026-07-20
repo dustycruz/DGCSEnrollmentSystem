@@ -1,0 +1,45 @@
+﻿@* File: EnrollmentSystem.UI/Views/Settings/Index.cshtml *@
+@model ChangePasswordViewModel
+@{
+    ViewData["Title"] = "Settings";
+}
+<h1 class="page-title">Settings</h1>
+<p class="page-subtitle">Manage your account.</p>
+
+@if (TempData["Success"] is string ok)
+{
+    <div class="alert alert-success">@ok</div>
+}
+@if (TempData["Error"] is string err)
+{
+    <div class="alert alert-danger">@err</div>
+}
+
+<div class="row g-3">
+    <div class="col-md-5">
+        <div class="content-card">
+            <h3><i data-lucide="user-round"></i> Account</h3>
+            <table class="table">
+                <tr><td><strong>Username</strong></td><td>@ViewBag.UserName</td></tr>
+                <tr><td><strong>Email</strong></td><td>@ViewBag.Email</td></tr>
+                <tr><td><strong>Role</strong></td><td>@ViewBag.Role</td></tr>
+            </table>
+        </div>
+    </div>
+    <div class="col-md-7">
+        <div class="content-card">
+            <h3><i data-lucide="lock"></i> Change Password</h3>
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger" style="@(ViewData.ModelState.ErrorCount > 0 ? "" : "display:none")"></div>
+            <form asp-action="ChangePassword" method="post">
+                <div class="mb-3"><label class="form-label" asp-for="CurrentPassword"></label><input class="form-control" asp-for="CurrentPassword" type="password" /><span asp-validation-for="CurrentPassword" class="text-validation"></span></div>
+                <div class="mb-3"><label class="form-label" asp-for="NewPassword"></label><input class="form-control" asp-for="NewPassword" type="password" /><span asp-validation-for="NewPassword" class="text-validation"></span></div>
+                <div class="mb-3"><label class="form-label" asp-for="ConfirmPassword"></label><input class="form-control" asp-for="ConfirmPassword" type="password" /><span asp-validation-for="ConfirmPassword" class="text-validation"></span></div>
+                <button type="submit" class="btn btn-brand">Update Password</button>
+            </form>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>if (window.lucide) lucide.createIcons();</script>
+}

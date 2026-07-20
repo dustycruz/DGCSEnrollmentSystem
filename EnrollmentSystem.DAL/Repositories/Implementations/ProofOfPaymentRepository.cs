@@ -27,4 +27,9 @@ public class ProofOfPaymentRepository : GenericRepository<ProofOfPayment>, IProo
         => await _dbSet
             .Include(p => p.Application)
             .FirstOrDefaultAsync(p => p.ProofOfPaymentId == proofOfPaymentId && !p.IsDeleted);
+    public async Task<IEnumerable<ProofOfPayment>> GetByStudentAsync(int studentId)
+    => await _dbSet.AsNoTracking()
+        .Where(p => !p.IsDeleted && p.StudentId == studentId)
+        .OrderByDescending(p => p.PaymentDate)
+        .ToListAsync();
 }

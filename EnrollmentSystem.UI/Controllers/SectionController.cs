@@ -66,7 +66,22 @@ public class SectionController : Controller
     {
         if (vm.SubjectId is null)
         {
-            TempData["Error"] = "Please select a subject before adding a schedule.";
+            TempData["Error"] = "Please select a subject.";
+            return RedirectToAction(nameof(Details), new { id = vm.SectionId });
+        }
+        if (string.IsNullOrWhiteSpace(vm.Day))
+        {
+            TempData["Error"] = "Please select a day.";
+            return RedirectToAction(nameof(Details), new { id = vm.SectionId });
+        }
+        if (vm.StartTime is null || vm.EndTime is null)
+        {
+            TempData["Error"] = "Please set both a start and end time.";
+            return RedirectToAction(nameof(Details), new { id = vm.SectionId });
+        }
+        if (vm.EndTime <= vm.StartTime)
+        {
+            TempData["Error"] = "End time must be after the start time.";
             return RedirectToAction(nameof(Details), new { id = vm.SectionId });
         }
 

@@ -1,0 +1,44 @@
+﻿@* File: EnrollmentSystem.UI/Views/Shared/_MonthCalendar.cshtml *@
+@model EnrollmentSystem.UI.ViewModels.CalendarViewModel
+@{
+    var first = new DateTime(Model.Year, Model.Month, 1);
+    var start = first.AddDays(-(int)first.DayOfWeek);
+    var today = DateTime.Today;
+    var prev = first.AddMonths(-1);
+    var next = first.AddMonths(1);
+    var dows = new[] { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" };
+}
+<div class="month-head">
+    <div class="month-nav">
+        <a asp-action="Calendar" asp-route-year="@prev.Year" asp-route-month="@prev.Month"><i data-lucide="chevron-left"></i></a>
+        <a asp-action="Calendar" asp-route-year="@next.Year" asp-route-month="@next.Month"><i data-lucide="chevron-right"></i></a>
+        <a class="today" asp-action="Calendar">Today</a>
+    </div>
+    <div class="month-title">@first.ToString("MMMM yyyy")</div>
+</div>
+<div class="month-grid">
+    @foreach (var d in dows)
+    {
+        <div class="month-dow">@d</div>
+    }
+    @for (var i = 0; i < 42; i++)
+    {
+        var date = start.AddDays(i);
+        var dim = date.Month != Model.Month;
+        var isToday = date.Date == today.Date;
+        var dayName = date.DayOfWeek.ToString();
+        var don = DateOnly.FromDateTime(date);
+        var events = Model.Events.Where(e => e.WeeklyDay == dayName || e.OnDate == don).OrderBy(e => e.Time).ToList();
+        <div class="month-cell @(dim ? "dim" : "") @(isToday ? "today" : "")">
+            <span class="num">@date.Day</span>
+            @foreach (var e in events.Take(3))
+            {
+                <div class="m-event">@(e.Time.HasValue ? e.Time.Value.ToString("HH:mm") + " " : "")@e.Label</div>
+            }
+            @if (events.Count > 3)
+            {
+                <div class="m-more">+@(events.Count - 3) more</div>
+            }
+        </div>
+    }
+</div>
