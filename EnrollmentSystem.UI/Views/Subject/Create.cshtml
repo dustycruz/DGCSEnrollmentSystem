@@ -1,0 +1,19 @@
+﻿@* File: EnrollmentSystem.UI/Views/Subject/Create.cshtml *@
+@model SubjectCreateViewModel
+@{
+    ViewData["Title"] = "New Subject";
+}
+<h1 class="page-title">New Subject</h1>
+<form asp-action="Create" method="post">
+    <div class="content-card">
+        <div class="row g-3">
+            <div class="col-md-8"><label class="form-label" asp-for="Name"></label><input class="form-control" asp-for="Name" /><span asp-validation-for="Name" class="text-validation"></span></div>
+            <div class="col-md-4"><label class="form-label" asp-for="Code"></label><input class="form-control" asp-for="Code" /></div>
+        </div>
+    </div>
+    <button type="submit" class="btn btn-brand">Create</button>
+    <a class="btn btn-outline-brand" asp-action="Index">Cancel</a>
+</form>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

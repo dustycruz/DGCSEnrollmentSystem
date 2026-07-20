@@ -2,8 +2,14 @@
 @{
     var isAuthed = User.Identity?.IsAuthenticated ?? false;
     var role = User.GetPrimaryRole() ?? "";
+
     string ActiveIf(string ctrl) =>
         string.Equals(ViewContext.RouteData.Values["controller"]?.ToString(), ctrl, StringComparison.OrdinalIgnoreCase)
+            ? "active" : "";
+
+    string ActiveAction(string ctrl, string act) =>
+        string.Equals(ViewContext.RouteData.Values["controller"]?.ToString(), ctrl, StringComparison.OrdinalIgnoreCase)
+        && string.Equals(ViewContext.RouteData.Values["action"]?.ToString(), act, StringComparison.OrdinalIgnoreCase)
             ? "active" : "";
 }
 <!DOCTYPE html>
@@ -39,10 +45,6 @@
 
                 <nav>
                     <div class="nav-group-label">Main Menu</div>
-                    <div class="nav-group-label">Management</div>
-                    <a class="nav-link-item @ActiveIf("Admission")" asp-controller="Admission" asp-action="Index">
-                        <i data-lucide="inbox"></i> Admissions
-                    </a>
                     <a class="nav-link-item @ActiveIf("Home")" asp-controller="Home" asp-action="Dashboard">
                         <i data-lucide="layout-dashboard"></i> Dashboard
                     </a>
@@ -56,8 +58,20 @@
 
                     @if (User.IsInRole("Student"))
                     {
-                        <a class="nav-link-item @ActiveIf("Student")" asp-controller="Student" asp-action="Index">
+                        <a class="nav-link-item @ActiveAction("Student", "Index")" asp-controller="Student" asp-action="Index">
                             <i data-lucide="graduation-cap"></i> My Portal
+                        </a>
+                        <a class="nav-link-item @ActiveAction("Student", "Profile")" asp-controller="Student" asp-action="Profile">
+                            <i data-lucide="user"></i> My Profile
+                        </a>
+                        <a class="nav-link-item @ActiveAction("Student", "Schedule")" asp-controller="Student" asp-action="Schedule">
+                            <i data-lucide="calendar"></i> Class Schedule
+                        </a>
+                        <a class="nav-link-item @ActiveAction("Student", "Grades")" asp-controller="Student" asp-action="Grades">
+                            <i data-lucide="bar-chart-3"></i> My Grades
+                        </a>
+                        <a class="nav-link-item @ActiveAction("Student", "Announcements")" asp-controller="Student" asp-action="Announcements">
+                            <i data-lucide="megaphone"></i> Announcements
                         </a>
                     }
 
@@ -71,7 +85,10 @@
                     @if (User.IsInRole("Admin"))
                     {
                         <div class="nav-group-label">Management</div>
-                        <a class="nav-link-item @ActiveIf("Enrollment")" asp-controller="Enrollment" asp-action="Pending">
+                        <a class="nav-link-item @ActiveIf("Admission")" asp-controller="Admission" asp-action="Index">
+                            <i data-lucide="inbox"></i> Admissions
+                        </a>
+                        <a class="nav-link-item @ActiveIf("Enrollment")" asp-controller="Enrollment" asp-action="Index">
                             <i data-lucide="clipboard-check"></i> Enrollment
                         </a>
                         <a class="nav-link-item @ActiveIf("Section")" asp-controller="Section" asp-action="Index">
@@ -130,7 +147,6 @@
     @await RenderSectionAsync("Scripts", required: false)
 
     <script>
-        // Render all <i data-lucide="..."> into real SVG icons
         if (window.lucide) { lucide.createIcons(); }
     </script>
 </body>

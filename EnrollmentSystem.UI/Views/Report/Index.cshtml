@@ -1,0 +1,15 @@
+﻿@* File: EnrollmentSystem.UI/Views/Report/Index.cshtml *@
+@{
+    ViewData["Title"] = "Reports";
+}
+<h1 class="page-title">Reports</h1>
+<p class="page-subtitle">Official school reports.</p>
+<div class="stat-grid">
+    <a class="content-card" style="text-decoration:none;" asp-action="EnrollmentStats"><h3><i data-lucide="bar-chart-3"></i> Enrollment Stats</h3><p style="color:var(--muted);margin:0;">Enrolled count per section.</p></a>
+    <a class="content-card" style="text-decoration:none;" asp-action="ClassList"><h3><i data-lucide="list"></i> Class List</h3><p style="color:var(--muted);margin:0;">Students per section.</p></a>
+    <a class="content-card" style="text-decoration:none;" asp-action="MasterList"><h3><i data-lucide="users"></i> Master List</h3><p style="color:var(--muted);margin:0;">All enrolled students.</p></a>
+    <a class="content-card" style="text-decoration:none;" asp-action="ReportCard"><h3><i data-lucide="graduation-cap"></i> Report Card</h3><p style="color:var(--muted);margin:0;">A student's grades.</p></a>
+</div>
+@section Scripts {
+    <script>if (window.lucide) lucide.createIcons();</script>
+}

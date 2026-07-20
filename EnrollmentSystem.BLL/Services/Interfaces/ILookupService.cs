@@ -13,4 +13,5 @@ public interface ILookupService
     Task<IEnumerable<Curriculum>> GetCurriculaAsync();
     Task<IEnumerable<Teacher>> GetTeachersAsync();
     Task<IEnumerable<Document>> GetAdmissionDocumentsAsync();
+    Task<IEnumerable<Room>> GetRoomsAsync();
 }

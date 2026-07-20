@@ -1,0 +1,28 @@
+﻿@* File: EnrollmentSystem.UI/Views/Report/ReportCard.cshtml *@
+@model EnrollmentSystem.BLL.DTOs.ReportCardDto
+@{
+    ViewData["Title"] = "Report Card"; var students = ViewBag.Students as IEnumerable<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>;
+}
+<h1 class="page-title">Report Card</h1>
+<div class="content-card">
+    <form method="get" style="display:flex;gap:8px;">
+        <select name="studentId" class="form-select" style="max-width:400px;" asp-items="students"><option value="">— Select student —</option></select>
+        <button class="btn btn-brand">View</button>
+    </form>
+</div>
+@if (Model is not null)
+{
+    <div class="content-card">
+        <h3>@Model.FullName <span style="color:var(--muted);font-size:14px;">(@Model.StudentNumber)</span></h3>
+        <table class="table">
+            <thead><tr><th>Subject</th><th>Q1</th><th>Q2</th><th>Q3</th><th>Q4</th><th>Final</th></tr></thead>
+            <tbody>
+                @foreach (var l in Model.Lines)
+                {
+                    <tr><td>@l.Subject</td><td>@(l.Q1?.ToString("0.##") ?? "-")</td><td>@(l.Q2?.ToString("0.##") ?? "-")</td><td>@(l.Q3?.ToString("0.##") ?? "-")</td><td>@(l.Q4?.ToString("0.##") ?? "-")</td><td><strong>@(l.Final?.ToString("0.##") ?? "-")</strong></td></tr>
+                }
+            </tbody>
+            <tfoot><tr><td colspan="5" style="text-align:right;"><strong>General Average</strong></td><td><strong style="color:var(--primary);">@(Model.GeneralAverage?.ToString("0.##") ?? "-")</strong></td></tr></tfoot>
+        </table>
+    </div>
+}

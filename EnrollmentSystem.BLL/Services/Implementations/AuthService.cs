@@ -125,4 +125,35 @@ public class AuthService : IAuthService
             });
         }
     }
+    public async Task<ServiceResult<string>> ResetPasswordAsync(string userId)
+    {
+        var user = await _userRepo.GetByIdAsync(userId);
+        if (user is null) return ServiceResult<string>.Fail("User not found.");
+
+        var temp = CredentialGenerator.GenerateTempPassword();
+        user.PasswordHash = PasswordHasher.Hash(temp);
+        user.MustChangePassword = true;
+        await _userRepo.SaveAsync();
+
+        return ServiceResult<string>.Ok(temp, "Password reset. A new temporary password was generated.");
+    }
+
+    public async Task<IEnumerable<AuthUserDto>> GetAllUsersWithRolesAsync()
+    {
+        var users = await _userRepo.GetAllAsync();
+        var list = new List<AuthUserDto>();
+        foreach (var u in users)
+        {
+            var roles = (await _userRepo.GetUserRoleNamesAsync(u.Id)).ToList();
+            list.Add(new AuthUserDto
+            {
+                Id = u.Id,
+                UserName = u.UserName ?? string.Empty,
+                Email = u.Email,
+                Roles = roles,
+                MustChangePassword = u.MustChangePassword
+            });
+        }
+        return list;
+    }
 }

@@ -62,7 +62,6 @@
             }
             else
             {
-
                 <p style="color:var(--muted)">No requirements uploaded.</p>
             }
         </div>
@@ -84,8 +83,8 @@
                             <input type="hidden" name="proofId" value="@pay.ProofOfPaymentId" />
                             <input type="hidden" name="applicationId" value="@Model.ApplicationId" />
                             <input name="remarks" class="form-control" placeholder="Remarks" style="max-width:150px;" />
-                            <button name="status" value="Verified" class="btn btn-brand" style="padding:6px 10px;">Verify</button>
-                            <button name="status" value="Rejected" class="btn btn-ink" style="padding:6px 10px;">Reject</button>
+                            <button name="status" value="Verified" class="btn btn-success" style="padding:6px 10px;">Verify</button>
+                            <button name="status" value="Rejected" class="btn btn-danger" style="padding:6px 10px;">Reject</button>
                         </form>
                     </div>
                 }
@@ -108,8 +107,8 @@
                 <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:12px;">
                     <button name="status" value="@ApplicationStatuses.UnderReview" class="btn btn-outline-brand" style="flex:1;">Under Review</button>
                     <button name="status" value="@ApplicationStatuses.AdditionalRequirements" class="btn btn-accent" style="flex:1;">Request Docs</button>
-                    <button name="status" value="@ApplicationStatuses.Approved" class="btn btn-brand" style="flex:1;">Approve</button>
-                    <button name="status" value="@ApplicationStatuses.Rejected" class="btn btn-ink" style="flex:1;">Reject</button>
+                    <button name="status" value="@ApplicationStatuses.Approved" class="btn btn-success" style="flex:1;">Approve</button>
+                    <button name="status" value="@ApplicationStatuses.Rejected" class="btn btn-danger" style="flex:1;">Reject</button>
                 </div>
             </form>
         </div>
@@ -125,7 +124,7 @@
                 }
                 <form asp-action="Finalize" method="post" onsubmit="return confirm('Finalize enrollment and create the student account?');">
                     <input type="hidden" name="id" value="@Model.ApplicationId" />
-                    <button type="submit" class="btn btn-brand w-100">Finalize &amp; Create Student</button>
+                    <button type="submit" class="btn btn-success w-100">Finalize &amp; Create Student</button>
                 </form>
             </div>
         }

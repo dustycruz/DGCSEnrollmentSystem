@@ -1,0 +1,24 @@
+﻿@* File: EnrollmentSystem.UI/Views/Report/ClassList.cshtml *@
+@model IEnumerable<EnrollmentSystem.BLL.DTOs.ClassListRowDto>
+@{
+    ViewData["Title"] = "Class List"; var sections = ViewBag.Sections as IEnumerable<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>;
+}
+<h1 class="page-title">Class List</h1>
+<div class="content-card">
+    <form method="get" style="display:flex;gap:8px;">
+        <select name="sectionId" class="form-select" style="max-width:340px;" asp-items="sections"><option value="">— Select section —</option></select>
+        <button class="btn btn-brand">View</button>
+    </form>
+</div>
+@if (Model.Any())
+{
+    <div class="content-card">
+        <table class="table">
+            <thead><tr><th>#</th><th>Student No.</th><th>Name</th><th>Gender</th><th>Status</th></tr></thead>
+            <tbody>@foreach (var r in Model) {
+                <tr><td>@r.Number</td><td>@r.StudentNumber</td><td>@r.FullName</td><td>@r.Gender</td><td>@r.Status</td></tr>
+            }
+        </tbody>
+    </table>
+</div>
+}

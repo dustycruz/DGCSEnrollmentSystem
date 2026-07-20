@@ -1,0 +1,27 @@
+﻿@* File: EnrollmentSystem.UI/Views/Report/MasterList.cshtml *@
+@model IEnumerable<EnrollmentSystem.BLL.DTOs.MasterListRowDto>
+@{
+    ViewData["Title"] = "Master List"; var years = ViewBag.SchoolYears as IEnumerable<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>;
+}
+<h1 class="page-title">Master List</h1>
+<div class="content-card">
+    <form method="get" style="display:flex;gap:8px;">
+        <select name="schoolYearId" class="form-select" style="max-width:340px;" asp-items="years"><option value="">— All school years —</option></select>
+        <button class="btn btn-brand">Filter</button>
+    </form>
+</div>
+<div class="content-card">
+    <table class="table">
+        <thead><tr><th>#</th><th>Student No.</th><th>Name</th><th>Section</th><th>Grade</th><th>SY</th><th>Status</th></tr></thead>
+        <tbody>
+            @foreach (var r in Model)
+            {
+                <tr><td>@r.Number</td><td>@r.StudentNumber</td><td>@r.FullName</td><td>@r.Section</td><td>@r.GradeLevel</td><td>@r.SchoolYear</td><td>@r.Status</td></tr>
+            }
+            @if (!Model.Any())
+            {
+                <tr><td colspan="7" style="text-align:center;color:var(--muted)">No enrolled students.</td></tr>
+            }
+        </tbody>
+    </table>
+</div>

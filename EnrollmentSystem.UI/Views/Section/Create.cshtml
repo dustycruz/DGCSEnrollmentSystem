@@ -1,0 +1,22 @@
+﻿@* File: EnrollmentSystem.UI/Views/Section/Create.cshtml *@
+@model SectionCreateViewModel
+@{
+    ViewData["Title"] = "New Section";
+}
+<h1 class="page-title">New Section</h1>
+<form asp-action="Create" method="post">
+    <div asp-validation-summary="ModelOnly" class="alert alert-danger" style="@(ViewData.ModelState.ErrorCount > 0 ? "" : "display:none")"></div>
+    <div class="content-card">
+        <div class="row g-3">
+            <div class="col-md-6"><label class="form-label" asp-for="Name">Section Name</label><input class="form-control" asp-for="Name" placeholder="e.g. Grade 7 - Rizal" /><span asp-validation-for="Name" class="text-validation"></span></div>
+            <div class="col-md-6"><label class="form-label">School Year</label><select class="form-select" asp-for="SchoolYearId" asp-items="Model.SchoolYears"><option value="">— Select —</option></select><span asp-validation-for="SchoolYearId" class="text-validation"></span></div>
+            <div class="col-md-6"><label class="form-label">Grade Level</label><select class="form-select" asp-for="GradeLevelId" asp-items="Model.GradeLevels"><option value="">— Select —</option></select><span asp-validation-for="GradeLevelId" class="text-validation"></span></div>
+            <div class="col-md-6"><label class="form-label">Curriculum (optional)</label><select class="form-select" asp-for="CurriculumId" asp-items="Model.Curricula"><option value="">— None —</option></select></div>
+        </div>
+    </div>
+    <button type="submit" class="btn btn-brand">Create Section</button>
+    <a class="btn btn-outline-brand" asp-action="Index">Cancel</a>
+</form>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

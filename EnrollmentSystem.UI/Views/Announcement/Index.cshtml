@@ -1,0 +1,36 @@
+﻿@* File: EnrollmentSystem.UI/Views/Announcement/Index.cshtml *@
+@model IEnumerable<Announcement>
+@{
+    ViewData["Title"] = "Announcements";
+}
+<h1 class="page-title">Announcements</h1>
+<p class="page-subtitle">Post school-wide news.</p>
+@if (TempData["Success"] is string ok)
+{
+    <div class="alert alert-success">@ok</div>
+}
+<a class="btn btn-brand" asp-action="Create" style="margin-bottom:14px;"><i data-lucide="plus"></i> New Announcement</a>
+<div class="content-card">
+    @if (Model.Any())
+    {
+        foreach (var a in Model)
+        {
+            <div style="padding:14px 0;border-bottom:1px solid var(--border);">
+                <div style="display:flex;justify-content:space-between;align-items:center;">
+                    <strong>@a.Title</strong>
+                    <form asp-action="Delete" method="post" onsubmit="return confirm('Delete?');"><input type="hidden" name="id" value="@a.AnnouncementId" /><button class="btn btn-danger" style="padding:4px 10px;font-size:12px;">Delete</button></form>
+                </div>
+                <div style="color:var(--muted);font-size:14px;">@a.Content</div>
+                <div style="color:var(--muted);font-size:12px;">@a.PostedDate.ToString("MMM dd, yyyy")</div>
+            </div>
+        }
+    }
+    else
+    {
+
+        <p style="color:var(--muted)">No announcements.</p>
+    }
+</div>
+@section Scripts {
+    <script>if (window.lucide) lucide.createIcons();</script>
+}

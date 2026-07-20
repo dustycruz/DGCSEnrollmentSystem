@@ -1,0 +1,21 @@
+﻿@* File: EnrollmentSystem.UI/Views/Report/EnrollmentStats.cshtml *@
+@model IEnumerable<EnrollmentSystem.BLL.DTOs.EnrollmentStatDto>
+@{
+    ViewData["Title"] = "Enrollment Stats";
+}
+<h1 class="page-title">Enrollment Statistics</h1>
+<div class="content-card">
+    <table class="table">
+        <thead><tr><th>Section</th><th>Grade Level</th><th>School Year</th><th>Enrolled</th></tr></thead>
+        <tbody>
+            @foreach (var s in Model)
+            {
+                <tr><td>@s.SectionName</td><td>@s.GradeLevel</td><td>@s.SchoolYear</td><td><strong>@s.EnrolledCount</strong></td></tr>
+            }
+            @if (!Model.Any())
+            {
+                <tr><td colspan="4" style="text-align:center;color:var(--muted)">No data.</td></tr>
+            }
+        </tbody>
+    </table>
+</div>

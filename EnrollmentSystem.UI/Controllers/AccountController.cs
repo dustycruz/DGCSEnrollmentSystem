@@ -122,8 +122,16 @@ public class AccountController : Controller
 
     [HttpGet]
     [AllowAnonymous]
-    public IActionResult AccessDenied() => View();
-    private static string BuildDisplayName(EnrollmentSystem.BLL.DTOs.AuthUserDto user)
+    public IActionResult AccessDenied()
+    {
+        // Logged-in users are sent to their own dashboard instead of seeing the denied page.
+        if (User.Identity?.IsAuthenticated ?? false)
+            return RedirectToAction("Dashboard", "Home");
+
+        return View();
+    }
+
+    private static string BuildDisplayName(AuthUserDto user)
     {
         if (user.Roles.Contains("Admin"))
             return "Administrator";

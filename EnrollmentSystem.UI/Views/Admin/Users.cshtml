@@ -1,0 +1,53 @@
+﻿@* File: EnrollmentSystem.UI/Views/Admin/Users.cshtml *@
+@model IEnumerable<EnrollmentSystem.BLL.DTOs.AuthUserDto>
+@{
+    ViewData["Title"] = "User Accounts";
+}
+<h1 class="page-title">User Accounts</h1>
+<p class="page-subtitle">Manage all system accounts.</p>
+
+@if (TempData["Success"] is string ok)
+{
+    <div class="alert alert-success">@ok</div>
+}
+@if (TempData["Error"] is string err)
+{
+    <div class="alert alert-danger">@err</div>
+}
+@if (TempData["ResetTempPassword"] is string tp)
+{
+    <div class="content-card" style="border:2px solid var(--primary);">
+        <h3 style="color:var(--primary);"><i data-lucide="key-round"></i> Password Reset</h3>
+        <p style="margin:0;">
+            Temporary password for <strong>@TempData["ResetUserId"]</strong>'s account:
+            <strong style="font-size:16px;letter-spacing:1px;">@tp</strong>
+        </p>
+        <p style="color:var(--muted);font-size:13px;margin-top:6px;">The user must change it on next login.</p>
+    </div>
+}
+
+<div class="content-card">
+    <table class="table">
+        <thead><tr><th>Username</th><th>Email</th><th>Roles</th><th>Status</th><th></th></tr></thead>
+        <tbody>
+            @foreach (var u in Model)
+            {
+                <tr>
+                    <td><strong>@u.UserName</strong></td>
+                    <td>@u.Email</td>
+                    <td>@string.Join(", ", u.Roles)</td>
+                    <td>@(u.MustChangePassword ? "Must change password" : "Active")</td>
+                    <td>
+                        <form asp-action="ResetPassword" method="post" onsubmit="return confirm('Reset this user\'s password?');">
+                            <input type="hidden" name="userId" value="@u.Id" />
+                            <button type="submit" class="btn btn-accent" style="padding:6px 12px;font-size:13px;">Reset Password</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+@section Scripts {
+    <script>if (window.lucide) lucide.createIcons();</script>
+}

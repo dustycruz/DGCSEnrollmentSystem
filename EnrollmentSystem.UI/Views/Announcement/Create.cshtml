@@ -1,0 +1,17 @@
+﻿@* File: EnrollmentSystem.UI/Views/Announcement/Create.cshtml *@
+@model AnnouncementCreateViewModel
+@{
+    ViewData["Title"] = "New Announcement";
+}
+<h1 class="page-title">New Announcement</h1>
+<form asp-action="Create" method="post">
+    <div class="content-card">
+        <div class="mb-3"><label class="form-label" asp-for="Title"></label><input class="form-control" asp-for="Title" /><span asp-validation-for="Title" class="text-validation"></span></div>
+        <div class="mb-3"><label class="form-label" asp-for="Content"></label><textarea class="form-control" asp-for="Content" rows="5"></textarea></div>
+    </div>
+    <button type="submit" class="btn btn-brand">Post</button>
+    <a class="btn btn-outline-brand" asp-action="Index">Cancel</a>
+</form>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

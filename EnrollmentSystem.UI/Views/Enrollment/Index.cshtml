@@ -1,0 +1,27 @@
+﻿@* File: EnrollmentSystem.UI/Views/Enrollment/Index.cshtml *@
+@model IEnumerable<Section>
+@{
+    ViewData["Title"] = "Enrollment";
+}
+<h1 class="page-title">Enrollment</h1>
+<p class="page-subtitle">Select a section to assign students.</p>
+<div class="content-card">
+    <table class="table">
+        <thead><tr><th>Section</th><th>Grade Level</th><th>School Year</th><th></th></tr></thead>
+        <tbody>
+            @foreach (var s in Model)
+            {
+                <tr>
+                    <td><strong>@s.Name</strong></td>
+                    <td>@(s.GradeLevel?.Name ?? "-")</td>
+                    <td>@(s.SchoolYear?.Name ?? "-")</td>
+                    <td><a class="btn btn-brand" style="padding:6px 12px;font-size:13px;" asp-action="Manage" asp-route-sectionId="@s.SectionId">Manage Enrollment</a></td>
+                </tr>
+            }
+            @if (!Model.Any())
+            {
+                <tr><td colspan="4" style="text-align:center;color:var(--muted)">No sections. Create one first.</td></tr>
+            }
+        </tbody>
+    </table>
+</div>

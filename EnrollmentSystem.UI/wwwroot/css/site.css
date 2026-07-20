@@ -884,3 +884,24 @@ a {
 }
 
 /* Bootstrap grid helpers already ship with bootstrap.min.css (row / col-md-*) */
+
+/* File: EnrollmentSystem.UI/wwwroot/css/site.css  (append at end) */
+.btn-success {
+    background: #16a34a;
+    color: #fff;
+}
+
+    .btn-success:hover {
+        background: #15803d;
+        color: #fff;
+    }
+
+.btn-danger {
+    background: #dc2626;
+    color: #fff;
+}
+
+    .btn-danger:hover {
+        background: #b91c1c;
+        color: #fff;
+    }
