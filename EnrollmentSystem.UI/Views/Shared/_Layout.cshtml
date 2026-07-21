@@ -81,6 +81,9 @@
                         <a class="nav-link-item @ActiveIf("Admission")" asp-controller="Admission" asp-action="Index">
                             <i data-lucide="inbox"></i> Admissions
                         </a>
+                        <a class="nav-link-item @ActiveIf("Payment")" asp-controller="Payment" asp-action="Index">
+                            <i data-lucide="wallet"></i> Payments
+                        </a>
                         <a class="nav-link-item @ActiveIf("Enrollment")" asp-controller="Enrollment" asp-action="Index">
                             <i data-lucide="clipboard-check"></i> Enrollment
                         </a>
@@ -92,6 +95,12 @@
                         </a>
                         <a class="nav-link-item @ActiveIf("Announcement")" asp-controller="Announcement" asp-action="Index">
                             <i data-lucide="megaphone"></i> Announcements
+                        </a>
+                        <a class="nav-link-item @ActiveIf("Faculty")" asp-controller="Faculty" asp-action="Index">
+                            <i data-lucide="user-round"></i> Teachers
+                        </a>
+                        <a class="nav-link-item @ActiveIf("Schedule")" asp-controller="Schedule" asp-action="Index">
+                            <i data-lucide="calendar-clock"></i> Schedules
                         </a>
 
                         <div class="nav-group-label">Administration</div>

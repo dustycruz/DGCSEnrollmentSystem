@@ -88,6 +88,7 @@ builder.Services.AddScoped<IReportingService, ReportingService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddScoped<IApplicantOnboardingService, ApplicantOnboardingService>();
+builder.Services.AddScoped<IPaymentService, PaymentService>();
 var app = builder.Build();
 
 // ---------- Seed roles + default admin ----------

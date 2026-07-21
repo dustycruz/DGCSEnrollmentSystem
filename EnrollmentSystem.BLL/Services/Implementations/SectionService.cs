@@ -83,4 +83,6 @@ public class SectionService : ISectionService
 
         return ServiceResult<int>.Ok(schedule.ScheduleId, "Schedule added to section.");
     }
+    public async Task<IEnumerable<Schedule>> GetAllSchedulesAsync()
+    => await _scheduleRepo.GetAllWithDetailsAsync();
 }

@@ -8,4 +8,5 @@ public interface IScheduleRepository : IGenericRepository<Schedule>
     Task<IEnumerable<Schedule>> GetBySectionAsync(int sectionId);
     Task<IEnumerable<Schedule>> GetByTeacherAsync(int teacherId);
     Task<Schedule?> GetFullAsync(int scheduleId);
+    Task<IEnumerable<Schedule>> GetAllWithDetailsAsync();
 }

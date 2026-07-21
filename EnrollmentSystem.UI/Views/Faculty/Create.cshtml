@@ -1,0 +1,23 @@
+﻿@* File: EnrollmentSystem.UI/Views/Faculty/Create.cshtml *@
+@model TeacherCreateViewModel
+@{
+    ViewData["Title"] = "Add Teacher";
+}
+<h1 class="page-title">Add Teacher</h1>
+<form asp-action="Create" method="post">
+    <div asp-validation-summary="ModelOnly" class="alert alert-danger" style="@(ViewData.ModelState.ErrorCount > 0 ? "" : "display:none")"></div>
+    <div class="content-card">
+        <div class="row g-3">
+            <div class="col-md-4"><label class="form-label" asp-for="FirstName"></label><input class="form-control" asp-for="FirstName" /><span asp-validation-for="FirstName" class="text-validation"></span></div>
+            <div class="col-md-4"><label class="form-label" asp-for="MiddleName"></label><input class="form-control" asp-for="MiddleName" /></div>
+            <div class="col-md-4"><label class="form-label" asp-for="LastName"></label><input class="form-control" asp-for="LastName" /><span asp-validation-for="LastName" class="text-validation"></span></div>
+            <div class="col-md-6"><label class="form-label" asp-for="EmployeeNumber"></label><input class="form-control" asp-for="EmployeeNumber" placeholder="Auto-generated if blank" /></div>
+            <div class="col-md-6"><label class="form-label" asp-for="EmailAddress"></label><input class="form-control" asp-for="EmailAddress" /></div>
+        </div>
+    </div>
+    <button type="submit" class="btn btn-brand">Create Teacher</button>
+    <a class="btn btn-outline-brand" asp-action="Index">Cancel</a>
+</form>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

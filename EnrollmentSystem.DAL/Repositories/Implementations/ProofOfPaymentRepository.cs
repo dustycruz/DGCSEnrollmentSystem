@@ -32,4 +32,11 @@ public class ProofOfPaymentRepository : GenericRepository<ProofOfPayment>, IProo
         .Where(p => !p.IsDeleted && p.StudentId == studentId)
         .OrderByDescending(p => p.PaymentDate)
         .ToListAsync();
+
+    public async Task<IEnumerable<ProofOfPayment>> GetAllWithDetailsAsync()
+    => await _dbSet.AsNoTracking()
+        .Where(p => !p.IsDeleted)
+        .Include(p => p.Application)
+        .OrderByDescending(p => p.PaymentDate)
+        .ToListAsync();
 }

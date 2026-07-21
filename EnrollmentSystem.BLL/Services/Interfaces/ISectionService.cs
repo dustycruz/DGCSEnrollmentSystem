@@ -13,4 +13,5 @@ public interface ISectionService
     Task<ServiceResult> UpdateAsync(Section section, string modifiedBy);
     Task<ServiceResult> DeleteAsync(int id, string modifiedBy);
     Task<ServiceResult<int>> AddScheduleAsync(Schedule schedule, ScheduleDetail? detail, string createdBy);
+    Task<IEnumerable<Schedule>> GetAllSchedulesAsync();
 }

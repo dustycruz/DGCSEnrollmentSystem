@@ -1,0 +1,83 @@
+﻿@* File: EnrollmentSystem.UI/Views/Payment/Index.cshtml *@
+@model IEnumerable<EnrollmentSystem.BLL.DTOs.PaymentRowDto>
+@{
+    ViewData["Title"] = "Payments";
+    var current = ViewData["Status"] as string ?? "All";
+    var filters = new[] { "All", "Pending", "Verified", "Rejected" };
+}
+<h1 class="page-title">Payments</h1>
+<p class="page-subtitle">Review and verify applicant and student payments.</p>
+
+@if (TempData["Success"] is string ok)
+{
+    <div class="alert alert-success">@ok</div>
+}
+@if (TempData["Error"] is string err)
+{
+    <div class="alert alert-danger">@err</div>
+}
+
+<div class="content-card">
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;">
+        @foreach (var f in filters)
+        {
+            <a class="btn @(f == current ? "btn-brand" : "btn-outline-brand")" style="padding:6px 14px;font-size:13px;"
+               asp-action="Index" asp-route-status="@f">@f</a>
+        }
+    </div>
+
+    <table class="table">
+        <thead><tr><th>Payer</th><th>Type</th><th>Purpose</th><th>Reference</th><th>Amount</th><th>Method</th><th>Date</th><th>Status</th><th>Receipt</th><th>Decision</th></tr></thead>
+        <tbody>
+            @foreach (var p in Model)
+            {
+                var cls = p.Status == "Verified" ? "badge-approved" : p.Status == "Rejected" ? "badge-rejected" : "badge-pending";
+                <tr>
+                    <td><strong>@p.PayerName</strong></td>
+                    <td>@p.PayerType</td>
+                    <td>@p.Purpose</td>
+                    <td>@p.Reference</td>
+                    <td>₱@p.Amount</td>
+                    <td>@p.Method</td>
+                    <td>@p.Date?.ToString("MMM dd, yyyy")</td>
+                    <td>
+                        <span class="badge-status @cls">@p.Status</span>
+                        @if (p.Status != "Pending" && !string.IsNullOrWhiteSpace(p.ReviewedBy))
+                        {
+                            <div style="font-size:11px;color:var(--muted);margin-top:3px;">by @p.ReviewedBy</div>
+                        }
+                    </td>
+                    <td>@if (!string.IsNullOrEmpty(p.FilePath)) {
+                        <a href="@p.FilePath" target="_blank">View</a>
+                    }
+                </td>
+                <td>
+                    <form asp-action="Review" method="post" style="display:flex;gap:4px;align-items:flex-start;">
+                        <input type="hidden" name="proofId" value="@p.ProofOfPaymentId" />
+                        <input name="remarks" class="form-control" placeholder="Remarks" style="max-width:120px;font-size:12px;" value="@p.Remarks" />
+                        @if (p.Status == "Verified")
+                        {
+                            <button type="button" class="btn btn-success" style="padding:5px 9px;font-size:12px;" disabled>✓ Verified</button>
+                            <button name="status" value="Rejected" class="btn btn-outline-danger" style="padding:5px 9px;font-size:12px;" title="Change decision to Rejected">Reject</button>
+                        }
+                        else if (p.Status == "Rejected")
+                        {
+                            <button name="status" value="Verified" class="btn btn-outline-success" style="padding:5px 9px;font-size:12px;" title="Change decision to Verified">Verify</button>
+                            <button type="button" class="btn btn-danger" style="padding:5px 9px;font-size:12px;" disabled>✗ Rejected</button>
+                        }
+                        else
+                        {
+                            <button name="status" value="Verified" class="btn btn-success" style="padding:5px 9px;font-size:12px;">Verify</button>
+                            <button name="status" value="Rejected" class="btn btn-danger" style="padding:5px 9px;font-size:12px;">Reject</button>
+                        }
+                    </form>
+                </td>
+            </tr>
+        }
+        @if (!Model.Any())
+        {
+            <tr><td colspan="10" style="text-align:center;color:var(--muted)">No payments.</td></tr>
+        }
+    </tbody>
+</table>
+</div>

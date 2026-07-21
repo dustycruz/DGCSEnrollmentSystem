@@ -9,4 +9,5 @@ public interface IProofOfPaymentRepository : IGenericRepository<ProofOfPayment>
     Task<IEnumerable<ProofOfPayment>> GetPendingAsync();
     Task<ProofOfPayment?> GetWithApplicationAsync(int proofOfPaymentId);
     Task<IEnumerable<ProofOfPayment>> GetByStudentAsync(int studentId);
+    Task<IEnumerable<ProofOfPayment>> GetAllWithDetailsAsync();
 }

@@ -33,4 +33,12 @@ public class ScheduleRepository : GenericRepository<Schedule>, IScheduleReposito
             .Include(s => s.Teacher).ThenInclude(t => t!.Employee)
             .Include(s => s.ScheduleDetails).ThenInclude(d => d.Room)
             .FirstOrDefaultAsync(s => s.ScheduleId == scheduleId && !s.IsDeleted);
+    public async Task<IEnumerable<Schedule>> GetAllWithDetailsAsync()
+    => await _dbSet.AsNoTracking()
+        .Where(s => !s.IsDeleted)
+        .Include(s => s.Section).ThenInclude(x => x!.GradeLevel)
+        .Include(s => s.Subject)
+        .Include(s => s.Teacher).ThenInclude(t => t!.Employee)
+        .Include(s => s.ScheduleDetails).ThenInclude(d => d.Room)
+        .ToListAsync();
 }

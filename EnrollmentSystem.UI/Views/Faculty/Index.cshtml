@@ -1,0 +1,52 @@
+﻿@* File: EnrollmentSystem.UI/Views/Faculty/Index.cshtml *@
+@model IEnumerable<Teacher>
+@{
+    ViewData["Title"] = "Teachers";
+}
+<h1 class="page-title">Teachers</h1>
+<p class="page-subtitle">Manage faculty accounts.</p>
+
+@if (TempData["Success"] is string ok)
+{
+    <div class="alert alert-success">@ok</div>
+}
+@if (TempData["Error"] is string err)
+{
+    <div class="alert alert-danger">@err</div>
+}
+@if (TempData["NewTeacherUser"] is string tu)
+{
+    <div class="content-card" style="border:2px solid var(--primary);">
+        <h3 style="color:var(--primary);"><i data-lucide="key-round"></i> Teacher Account Created</h3>
+        <p style="margin:0 0 8px;">Give these to the new teacher. They'll change the password on first login.</p>
+        <table class="table" style="max-width:420px;">
+            <tr><td><strong>Username</strong></td><td style="font-size:16px;"><strong>@tu</strong></td></tr>
+            <tr><td><strong>Temporary Password</strong></td><td style="font-size:16px;letter-spacing:1px;"><strong>@TempData["NewTeacherPass"]</strong></td></tr>
+        </table>
+    </div>
+}
+
+<a class="btn btn-brand" asp-action="Create" style="margin-bottom:14px;"><i data-lucide="user-plus"></i> Add Teacher</a>
+
+<div class="content-card">
+    <table class="table">
+        <thead><tr><th>Name</th><th>Employee No. (Username)</th><th>Email</th></tr></thead>
+        <tbody>
+            @foreach (var t in Model)
+            {
+                <tr>
+                    <td><strong>@t.Employee?.LastName, @t.Employee?.FirstName @t.Employee?.MiddleName</strong></td>
+                    <td>@t.Employee?.EmployeeNumber</td>
+                    <td>@t.Employee?.EmailAddress</td>
+                </tr>
+            }
+            @if (!Model.Any())
+            {
+                <tr><td colspan="3" style="text-align:center;color:var(--muted)">No teachers yet.</td></tr>
+            }
+        </tbody>
+    </table>
+</div>
+@section Scripts {
+    <script>if (window.lucide) lucide.createIcons();</script>
+}

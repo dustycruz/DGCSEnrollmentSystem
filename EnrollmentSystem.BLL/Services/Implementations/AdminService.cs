@@ -120,4 +120,53 @@ public class AdminService : IAdminService
         await _userRepo.AddUserToRoleAsync(user.Id, role.Id, empNo, hash);
         await _userRepo.SaveAsync();
     }
+    public async Task<ServiceResult<AccountCredentialsDto>> CreateTeacherAsync(Employee employee, string createdBy)
+    {
+        if (string.IsNullOrWhiteSpace(employee.FirstName) || string.IsNullOrWhiteSpace(employee.LastName))
+            return ServiceResult<AccountCredentialsDto>.Fail("First and last name are required.");
+
+        // Employee number doubles as the login username; auto-generate if blank.
+        var empNo = employee.EmployeeNumber?.Trim();
+        if (string.IsNullOrWhiteSpace(empNo))
+        {
+            var year = DateTime.Now.Year;
+            var n = await _employeeRepo.CountAsync() + 1;
+            empNo = $"EMP-{year}-{n:D4}";
+            while (await _userRepo.UserNameExistsAsync(empNo)) { n++; empNo = $"EMP-{year}-{n:D4}"; }
+        }
+        else if (await _userRepo.UserNameExistsAsync(empNo))
+        {
+            return ServiceResult<AccountCredentialsDto>.Fail("That employee number is already in use.");
+        }
+
+        employee.EmployeeNumber = empNo;
+        employee.CreatedBy = createdBy;
+        employee.IsDeleted = false;
+        await _employeeRepo.AddAsync(employee);
+        await _employeeRepo.SaveAsync();
+
+        var teacher = new Teacher { EmployeeId = employee.EmployeeId, CreatedBy = createdBy, IsDeleted = false };
+        await _teacherRepo.AddAsync(teacher);
+        await _teacherRepo.SaveAsync();
+
+        var temp = CredentialGenerator.GenerateTempPassword();
+        var hash = PasswordHasher.Hash(temp);
+        var user = new AspNetUser
+        {
+            Id = Guid.NewGuid().ToString(),
+            UserName = empNo,
+            Email = employee.EmailAddress,
+            PasswordHash = hash,
+            EmailConfirmed = true,
+            MustChangePassword = true
+        };
+        var role = await _userRepo.EnsureRoleAsync("Teacher");
+        await _userRepo.AddUserAsync(user);
+        await _userRepo.AddUserToRoleAsync(user.Id, role.Id, empNo, hash);
+        await _userRepo.SaveAsync();
+
+        return ServiceResult<AccountCredentialsDto>.Ok(
+            new AccountCredentialsDto { UserName = empNo, TempPassword = temp },
+            $"Teacher account created ({empNo}).");
+    }
 }

@@ -1,0 +1,61 @@
+﻿@* File: EnrollmentSystem.UI/Views/Schedule/Index.cshtml *@
+@model ScheduleManageViewModel
+@{
+    ViewData["Title"] = "Schedules";
+}
+<h1 class="page-title">Schedules</h1>
+<p class="page-subtitle">Add and review class schedules across all sections.</p>
+
+@if (TempData["Success"] is string ok)
+{
+    <div class="alert alert-success">@ok</div>
+}
+@if (TempData["Error"] is string err)
+{
+    <div class="alert alert-danger">@err</div>
+}
+
+<div class="content-card">
+    <h3><i data-lucide="plus"></i> Add Schedule</h3>
+    <form asp-action="Add" method="post">
+        <div class="row g-3">
+            <div class="col-md-4"><label class="form-label">Section</label><select class="form-select" asp-for="AddForm.SectionId" asp-items="Model.Sections"><option value="">— Select —</option></select></div>
+            <div class="col-md-4"><label class="form-label">Subject</label><select class="form-select" asp-for="AddForm.SubjectId" asp-items="Model.AddForm.Subjects"><option value="">— Select —</option></select></div>
+            <div class="col-md-4"><label class="form-label">Teacher</label><select class="form-select" asp-for="AddForm.TeacherId" asp-items="Model.AddForm.Teachers"><option value="">— TBA —</option></select></div>
+            <div class="col-md-3"><label class="form-label">Day</label><select class="form-select" asp-for="AddForm.Day"><option value="">— Select —</option><option>Monday</option><option>Tuesday</option><option>Wednesday</option><option>Thursday</option><option>Friday</option><option>Saturday</option></select></div>
+            <div class="col-md-3"><label class="form-label">Start</label><input class="form-control" asp-for="AddForm.StartTime" type="time" /></div>
+            <div class="col-md-3"><label class="form-label">End</label><input class="form-control" asp-for="AddForm.EndTime" type="time" /></div>
+            <div class="col-md-3"><label class="form-label">Room</label><select class="form-select" asp-for="AddForm.RoomId" asp-items="Model.AddForm.Rooms"><option value="">— TBA —</option></select></div>
+        </div>
+        <button type="submit" class="btn btn-brand" style="margin-top:12px;">Add Schedule</button>
+    </form>
+</div>
+
+<div class="content-card" style="overflow-x:auto;">
+    <h3><i data-lucide="calendar-clock"></i> All Schedules</h3>
+    <table class="table">
+        <thead><tr><th>Section</th><th>Subject</th><th>Teacher</th><th>Day</th><th>Time</th><th>Room</th></tr></thead>
+        <tbody>
+            @foreach (var s in Model.Schedules)
+            {
+                var t = s.Teacher?.Employee is null ? "TBA" : $"{s.Teacher.Employee.FirstName} {s.Teacher.Employee.LastName}";
+                var d = s.ScheduleDetails.FirstOrDefault();
+                <tr>
+                    <td><strong>@s.Section?.Name</strong></td>
+                    <td>@s.Subject?.Name</td>
+                    <td>@t</td>
+                    <td>@(d?.Day ?? "-")</td>
+                    <td>@(d?.StartTime?.ToString("hh:mm tt")) - @(d?.EndTime?.ToString("hh:mm tt"))</td>
+                    <td>@(d?.Room?.Name ?? "-")</td>
+                </tr>
+            }
+            @if (!Model.Schedules.Any())
+            {
+                <tr><td colspan="6" style="text-align:center;color:var(--muted)">No schedules yet.</td></tr>
+            }
+        </tbody>
+    </table>
+</div>
+@section Scripts {
+    <script>if (window.lucide) lucide.createIcons();</script>
+}
