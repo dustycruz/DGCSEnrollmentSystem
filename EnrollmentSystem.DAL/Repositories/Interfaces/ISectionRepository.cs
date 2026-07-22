@@ -9,4 +9,5 @@ public interface ISectionRepository : IGenericRepository<Section>
     Task<IEnumerable<Section>> GetBySchoolYearAsync(int schoolYearId);
     Task<IEnumerable<Section>> GetByGradeLevelAsync(int gradeLevelId);
     Task<Section?> GetWithSchedulesAsync(int sectionId);
+    Task<IEnumerable<Section>> GetByAdviserAsync(int teacherId);
 }

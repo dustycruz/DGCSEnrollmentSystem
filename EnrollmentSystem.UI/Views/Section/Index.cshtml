@@ -1,37 +1,43 @@
 ﻿@* File: EnrollmentSystem.UI/Views/Section/Index.cshtml *@
 @model IEnumerable<Section>
 @{
-    ViewData["Title"] = "Sections";
+    ViewData["Title"] = "Classes";
 }
-<h1 class="page-title">Sections</h1>
-<p class="page-subtitle">Manage class sections and their schedules.</p>
+<h1 class="page-title">Classes</h1>
+<p class="page-subtitle">One class per grade level. Open a class to manage its schedules, students, and grades.</p>
 
 @if (TempData["Success"] is string ok)
 {
     <div class="alert alert-success">@ok</div>
 }
-<a class="btn btn-brand" asp-action="Create" style="margin-bottom:14px;"><i data-lucide="plus"></i> New Section</a>
+@if (TempData["Error"] is string err)
+{
+    <div class="alert alert-danger">@err</div>
+}
 
-<div class="content-card">
-    <table class="table">
-        <thead><tr><th>Section</th><th>Grade Level</th><th>School Year</th><th></th></tr></thead>
-        <tbody>
-            @foreach (var s in Model)
-            {
-                <tr>
-                    <td><strong>@s.Name</strong></td>
-                    <td>@(s.GradeLevel?.Name ?? "-")</td>
-                    <td>@(s.SchoolYear?.Name ?? "-")</td>
-                    <td><a class="btn btn-outline-brand" style="padding:6px 12px;font-size:13px;" asp-action="Details" asp-route-id="@s.SectionId">Manage</a></td>
-                </tr>
-            }
-            @if (!Model.Any())
-            {
-                <tr><td colspan="4" style="text-align:center;color:var(--muted)">No sections yet.</td></tr>
-            }
-        </tbody>
-    </table>
-</div>
+@if (Model.Any())
+{
+    <div class="class-grid">
+        @foreach (var s in Model.OrderBy(x => x.GradeLevelId))
+        {
+            var adviser = s.AdviserTeacher?.Employee is null ? "No adviser assigned" : $"{s.AdviserTeacher.Employee.FirstName} {s.AdviserTeacher.Employee.LastName}";
+            <div class="class-card">
+                <div class="title">@(s.GradeLevel?.Name ?? s.Name)</div>
+                <div class="sec">@(s.SchoolYear?.Name ?? "-")</div>
+                <div class="fac"><i data-lucide="user-check" style="width:14px;height:14px;vertical-align:-2px;"></i> Adviser: @adviser</div>
+                <div class="section-actions">
+                    <a class="btn btn-brand" asp-action="Details" asp-route-id="@s.SectionId"><i data-lucide="calendar-clock"></i> Schedules</a>
+                    <a class="btn btn-ink" asp-controller="Enrollment" asp-action="Manage" asp-route-sectionId="@s.SectionId"><i data-lucide="users"></i> Students</a>
+                    <a class="btn btn-success" asp-action="Grades" asp-route-id="@s.SectionId"><i data-lucide="bar-chart-3"></i> Grades</a>
+                </div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <div class="content-card"><div class="empty-state"><i data-lucide="school"></i><p>Classes are generated automatically per grade level. Restart the app if none appear.</p></div></div>
+}
 @section Scripts {
-    <script>if (window.lucide) lucide.createIcons();</script>
+    <script>if (window.lucide) lucide.createIcons(); </script>
 }

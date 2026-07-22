@@ -73,35 +73,20 @@
                         <a class="nav-link-item @ActiveAction("Teacher", "Index")" asp-controller="Teacher" asp-action="Index"><i data-lucide="book-open"></i> My Classes</a>
                         <a class="nav-link-item @ActiveAction("Teacher", "Schedule")" asp-controller="Teacher" asp-action="Schedule"><i data-lucide="clock"></i> My Schedule</a>
                         <a class="nav-link-item @ActiveAction("Teacher", "Calendar")" asp-controller="Teacher" asp-action="Calendar"><i data-lucide="calendar"></i> Calendar</a>
+                        <a class="nav-link-item @ActiveAction("Teacher", "Advisory")" asp-controller="Teacher" asp-action="Advisory"><i data-lucide="user-check"></i> My Advisory</a>
                     }
 
                     @if (User.IsInRole("Admin"))
                     {
                         <div class="nav-group-label">Management</div>
-                        <a class="nav-link-item @ActiveIf("Admission")" asp-controller="Admission" asp-action="Index">
-                            <i data-lucide="inbox"></i> Admissions
-                        </a>
-                        <a class="nav-link-item @ActiveIf("Payment")" asp-controller="Payment" asp-action="Index">
-                            <i data-lucide="wallet"></i> Payments
-                        </a>
-                        <a class="nav-link-item @ActiveIf("Enrollment")" asp-controller="Enrollment" asp-action="Index">
-                            <i data-lucide="clipboard-check"></i> Enrollment
-                        </a>
+                        <a class="nav-link-item @ActiveIf("Admission")" asp-controller="Admission" asp-action="Index"><i data-lucide="inbox"></i> Admissions</a>
                         <a class="nav-link-item @ActiveIf("Section")" asp-controller="Section" asp-action="Index">
-                            <i data-lucide="school"></i> Sections
+                            <i data-lucide="layout-grid"></i> Classes
                         </a>
-                        <a class="nav-link-item @ActiveIf("Subject")" asp-controller="Subject" asp-action="Index">
-                            <i data-lucide="book"></i> Subjects
-                        </a>
-                        <a class="nav-link-item @ActiveIf("Announcement")" asp-controller="Announcement" asp-action="Index">
-                            <i data-lucide="megaphone"></i> Announcements
-                        </a>
-                        <a class="nav-link-item @ActiveIf("Faculty")" asp-controller="Faculty" asp-action="Index">
-                            <i data-lucide="user-round"></i> Teachers
-                        </a>
-                        <a class="nav-link-item @ActiveIf("Schedule")" asp-controller="Schedule" asp-action="Index">
-                            <i data-lucide="calendar-clock"></i> Schedules
-                        </a>
+                        <a class="nav-link-item @ActiveIf("Subject")" asp-controller="Subject" asp-action="Index"><i data-lucide="book"></i> Subjects</a>
+                        <a class="nav-link-item @ActiveIf("Faculty")" asp-controller="Faculty" asp-action="Index"><i data-lucide="user-round"></i> Teachers</a>
+                        <a class="nav-link-item @ActiveIf("Payment")" asp-controller="Payment" asp-action="Index"><i data-lucide="wallet"></i> Payments</a>
+                        <a class="nav-link-item @ActiveIf("Announcement")" asp-controller="Announcement" asp-action="Index"><i data-lucide="megaphone"></i> Announcements</a>
 
                         <div class="nav-group-label">Administration</div>
                         <a class="nav-link-item @ActiveAction("Admin", "Users")" asp-controller="Admin" asp-action="Users">

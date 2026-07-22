@@ -15,4 +15,5 @@ public interface IAdminService
     Task<ServiceResult<AccountCredentialsDto>> CreateTeacherAsync(Employee employee, string createdBy);
     Task<ServiceResult> UpdateTeacherAsync(int teacherId, Employee updated, string modifiedBy);
     Task<ServiceResult> DeleteTeacherAsync(int teacherId, string modifiedBy);
+    Task EnsureGradeSectionsAsync();
 }

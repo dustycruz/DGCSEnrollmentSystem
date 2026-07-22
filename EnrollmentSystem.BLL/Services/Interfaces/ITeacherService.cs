@@ -13,4 +13,5 @@ public interface ITeacherService
     Task<IEnumerable<Schedule>> GetScheduleAsync(int teacherId);
     Task<IEnumerable<Section>> GetSectionsAsync(int teacherId);
     Task<IEnumerable<Enrollment>> GetClassListAsync(int sectionId);
+    Task<IEnumerable<Section>> GetAdvisoryAsync(int teacherId);
 }

@@ -1,0 +1,43 @@
+﻿@* File: EnrollmentSystem.UI/Views/Section/Grades.cshtml *@
+@model EnrollmentSystem.BLL.DTOs.SectionGradeSheetDto
+@{
+    ViewData["Title"] = "Section Grades";
+}
+<h1 class="page-title">Grades — @Model.SectionName</h1>
+<p class="page-subtitle">Final grade per subject (average of encoded quarters).</p>
+
+<div class="content-card" style="overflow-x:auto;">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Student No.</th>
+                <th>Name</th>
+                @foreach (var subj in Model.Subjects)
+                {
+                    <th>@subj</th>
+                }
+                <th>Gen. Ave.</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var r in Model.Rows)
+            {
+                <tr>
+                    <td>@r.StudentNumber</td>
+                    <td><strong>@r.StudentName</strong></td>
+                    @foreach (var subj in Model.Subjects)
+                    {
+                        var v = r.Finals.TryGetValue(subj, out var val) ? val : null;
+                        <td>@(v.HasValue ? v.Value.ToString("0.##") : "-")</td>
+                    }
+                    <td><strong style="color:var(--primary);">@(r.GeneralAverage?.ToString("0.##") ?? "-")</strong></td>
+                </tr>
+            }
+            @if (!Model.Rows.Any())
+            {
+                <tr><td colspan="@(Model.Subjects.Count + 3)" style="text-align:center;color:var(--muted)">No enrolled students.</td></tr>
+            }
+        </tbody>
+    </table>
+</div>
+<a class="btn btn-outline-brand" asp-action="Index">Back to Sections</a>

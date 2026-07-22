@@ -16,6 +16,8 @@ public class AdminService : IAdminService
     private readonly ITeacherRepository _teacherRepo;
     private readonly IEmployeeRepository _employeeRepo;
     private readonly IUserRepository _userRepo;
+    private readonly IGradeLevelRepository _gradeLevelRepo;
+    private readonly ISchoolYearRepository _schoolYearRepo;
 
     public AdminService(
         IStudentRepository studentRepo,
@@ -24,7 +26,9 @@ public class AdminService : IAdminService
         ISectionRepository sectionRepo,
         ITeacherRepository teacherRepo,
         IEmployeeRepository employeeRepo,
-        IUserRepository userRepo)
+        IUserRepository userRepo,
+        IGradeLevelRepository gradeLevelRepo,
+        ISchoolYearRepository schoolYearRepo)
     {
         _studentRepo = studentRepo;
         _applicationRepo = applicationRepo;
@@ -33,6 +37,8 @@ public class AdminService : IAdminService
         _teacherRepo = teacherRepo;
         _employeeRepo = employeeRepo;
         _userRepo = userRepo;
+        _gradeLevelRepo = gradeLevelRepo;
+        _schoolYearRepo = schoolYearRepo;
     }
 
     public async Task<DashboardStatsDto> GetDashboardStatsAsync()
@@ -218,5 +224,38 @@ public class AdminService : IAdminService
             await _userRepo.DeleteUserByUserNameAsync(teacher.Employee.EmployeeNumber);
 
         return ServiceResult.Ok("Teacher removed and login disabled.");
+
     }
+    public async Task EnsureGradeSectionsAsync()
+    {
+        var sy = await _schoolYearRepo.GetLatestAsync();
+        if (sy is null) return;
+
+        // One class per grade level, excluding Senior High.
+        var grades = (await _gradeLevelRepo.GetAllActiveAsync())
+            .Where(g => g.EducationalLevel?.Name != "Senior High School")
+            .ToList();
+
+        var added = false;
+        foreach (var g in grades)
+        {
+            var exists = await _sectionRepo.ExistsAsync(s =>
+                !s.IsDeleted && s.GradeLevelId == g.GradeLevelId && s.SchoolYearId == sy.SchoolYearId);
+
+            if (!exists)
+            {
+                await _sectionRepo.AddAsync(new Section
+                {
+                    Name = g.Name,          // the class is named after its grade (e.g., "Grade 10")
+                    GradeLevelId = g.GradeLevelId,
+                    SchoolYearId = sy.SchoolYearId,
+                    CreatedBy = "system",
+                    IsDeleted = false
+                });
+                added = true;
+            }
+        }
+        if (added) await _sectionRepo.SaveAsync();
+    }
+
 }

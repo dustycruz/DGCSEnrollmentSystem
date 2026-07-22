@@ -20,6 +20,7 @@ public partial class Section
     public int? GradeLevelId { get; set; }
 
     public int? CurriculumId { get; set; }
+    public int? AdviserTeacherId { get; set; }
 
     [StringLength(100)]
     public string? CreatedBy { get; set; }
@@ -31,6 +32,7 @@ public partial class Section
     public string? ModifiedBy { get; set; }
 
     public bool IsDeleted { get; set; }
+
 
     [InverseProperty("Section")]
     public virtual ICollection<Announcement> Announcements { get; set; } = new List<Announcement>();
@@ -52,4 +54,6 @@ public partial class Section
     [ForeignKey("SchoolYearId")]
     [InverseProperty("Sections")]
     public virtual SchoolYear? SchoolYear { get; set; }
+    [ForeignKey("AdviserTeacherId")]
+    public virtual Teacher? AdviserTeacher { get; set; }
 }

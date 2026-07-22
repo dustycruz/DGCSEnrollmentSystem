@@ -14,11 +14,13 @@ public class SectionController : Controller
 {
     private readonly ISectionService _sectionService;
     private readonly ILookupService _lookup;
+    private readonly IReportingService _reporting;
 
-    public SectionController(ISectionService sectionService, ILookupService lookup)
+    public SectionController(ISectionService sectionService, ILookupService lookup, IReportingService reporting)
     {
         _sectionService = sectionService;
         _lookup = lookup;
+        _reporting = reporting;
     }
 
     public async Task<IActionResult> Index()
@@ -52,38 +54,21 @@ public class SectionController : Controller
         var section = await _sectionService.GetWithSchedulesAsync(id);
         if (section is null) return NotFound();
 
-        var vm = new SectionDetailsViewModel
+        return View(new SectionDetailsViewModel
         {
             Section = section,
             AddSchedule = await BuildScheduleVmAsync(new ScheduleCreateViewModel { SectionId = id })
-        };
-        return View(vm);
+        });
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> AddSchedule([Bind(Prefix = "AddSchedule")] ScheduleCreateViewModel vm)
     {
-        if (vm.SubjectId is null)
-        {
-            TempData["Error"] = "Please select a subject.";
-            return RedirectToAction(nameof(Details), new { id = vm.SectionId });
-        }
-        if (string.IsNullOrWhiteSpace(vm.Day))
-        {
-            TempData["Error"] = "Please select a day.";
-            return RedirectToAction(nameof(Details), new { id = vm.SectionId });
-        }
-        if (vm.StartTime is null || vm.EndTime is null)
-        {
-            TempData["Error"] = "Please set both a start and end time.";
-            return RedirectToAction(nameof(Details), new { id = vm.SectionId });
-        }
-        if (vm.EndTime <= vm.StartTime)
-        {
-            TempData["Error"] = "End time must be after the start time.";
-            return RedirectToAction(nameof(Details), new { id = vm.SectionId });
-        }
+        if (vm.SubjectId is null) { TempData["Error"] = "Please select a subject."; return RedirectToAction(nameof(Details), new { id = vm.SectionId }); }
+        if (string.IsNullOrWhiteSpace(vm.Day)) { TempData["Error"] = "Please select a day."; return RedirectToAction(nameof(Details), new { id = vm.SectionId }); }
+        if (vm.StartTime is null || vm.EndTime is null) { TempData["Error"] = "Please set start and end times."; return RedirectToAction(nameof(Details), new { id = vm.SectionId }); }
+        if (vm.EndTime <= vm.StartTime) { TempData["Error"] = "End time must be after the start time."; return RedirectToAction(nameof(Details), new { id = vm.SectionId }); }
 
         var result = await _sectionService.AddScheduleAsync(
             new Schedule { SectionId = vm.SectionId, SubjectId = vm.SubjectId.Value, TeacherId = vm.TeacherId },
@@ -93,6 +78,18 @@ public class SectionController : Controller
         TempData[result.Success ? "Success" : "Error"] = result.Message;
         return RedirectToAction(nameof(Details), new { id = vm.SectionId });
     }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> AssignAdviser(int sectionId, int? teacherId)
+    {
+        var result = await _sectionService.AssignAdviserAsync(sectionId, teacherId, User.GetUserName());
+        TempData[result.Success ? "Success" : "Error"] = result.Message;
+        return RedirectToAction(nameof(Details), new { id = sectionId });
+    }
+
+    public async Task<IActionResult> Grades(int id)
+        => View(await _reporting.GetSectionGradesAsync(id));
 
     private async Task<SectionCreateViewModel> BuildCreateVmAsync(SectionCreateViewModel vm)
     {
@@ -105,8 +102,7 @@ public class SectionController : Controller
     private async Task<ScheduleCreateViewModel> BuildScheduleVmAsync(ScheduleCreateViewModel vm)
     {
         vm.Subjects = (await _lookup.GetSubjectsAsync()).Select(s => new SelectListItem(s.Name, s.SubjectId.ToString()));
-        vm.Teachers = (await _lookup.GetTeachersAsync())
-            .Select(t => new SelectListItem($"{t.Employee?.FirstName} {t.Employee?.LastName}", t.TeacherId.ToString()));
+        vm.Teachers = (await _lookup.GetTeachersAsync()).Select(t => new SelectListItem($"{t.Employee?.FirstName} {t.Employee?.LastName}", t.TeacherId.ToString()));
         vm.Rooms = (await _lookup.GetRoomsAsync()).Select(r => new SelectListItem(r.Name, r.RoomId.ToString()));
         return vm;
     }

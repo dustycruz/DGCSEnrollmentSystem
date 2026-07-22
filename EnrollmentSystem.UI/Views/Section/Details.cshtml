@@ -5,6 +5,24 @@
 }
 <h1 class="page-title">@s.Name</h1>
 <p class="page-subtitle">@(s.GradeLevel?.Name) · @(s.SchoolYear?.Name)</p>
+<div class="content-card">
+    <h3><i data-lucide="user-check"></i> Class Adviser</h3>
+    <p>
+        Current adviser:
+        <strong>
+            @(Model.Section.AdviserTeacher?.Employee is null
+                ? "None assigned"
+                : $"{Model.Section.AdviserTeacher.Employee.FirstName} {Model.Section.AdviserTeacher.Employee.LastName}")
+        </strong>
+    </p>
+    <form asp-action="AssignAdviser" method="post" style="display:flex;gap:8px;align-items:center;">
+        <input type="hidden" name="sectionId" value="@Model.Section.SectionId" />
+        <select name="teacherId" class="form-select" style="max-width:320px;" asp-items="Model.AddSchedule.Teachers">
+            <option value="">— None —</option>
+        </select>
+        <button type="submit" class="btn btn-brand">Assign Adviser</button>
+    </form>
+</div>
 
 @if (TempData["Success"] is string ok)
 {

@@ -92,11 +92,7 @@ builder.Services.AddScoped<IPaymentService, PaymentService>();
 var app = builder.Build();
 
 // ---------- Seed roles + default admin ----------
-using (var scope = app.Services.CreateScope())
-{
-    var authService = scope.ServiceProvider.GetRequiredService<IAuthService>();
-    await authService.EnsureSeedDataAsync();
-}
+// ---------- Seed roles, admin, demo teacher, and grade classes ----------
 using (var scope = app.Services.CreateScope())
 {
     var authService = scope.ServiceProvider.GetRequiredService<IAuthService>();
@@ -104,7 +100,9 @@ using (var scope = app.Services.CreateScope())
 
     var adminService = scope.ServiceProvider.GetRequiredService<IAdminService>();
     await adminService.EnsureDemoTeacherAsync();
+    await adminService.EnsureGradeSectionsAsync();
 }
+
 
 // ---------- HTTP pipeline ----------
 if (!app.Environment.IsDevelopment())

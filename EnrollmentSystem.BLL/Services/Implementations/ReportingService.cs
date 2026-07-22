@@ -134,4 +134,48 @@ public class ReportingService : IReportingService
 
         return rows;
     }
+    public async Task<SectionGradeSheetDto> GetSectionGradesAsync(int sectionId)
+    {
+        var section = await _sectionRepo.GetWithSchedulesAsync(sectionId);
+        var subjects = section?.Schedules
+            .Where(sc => !sc.IsDeleted && sc.Subject is not null)
+            .Select(sc => sc.Subject!)
+            .GroupBy(x => x.SubjectId)
+            .Select(g => g.First())
+            .ToList() ?? new List<EnrollmentSystem.DAL.Models.Subject>();
+
+        var dto = new SectionGradeSheetDto
+        {
+            SectionName = section?.Name ?? "-",
+            Subjects = subjects.Select(s => s.Name).ToList()
+        };
+
+        var enrollments = (await _enrollmentRepo.GetBySectionAsync(sectionId))
+            .Where(e => e.Status == "Enrolled")
+            .OrderBy(e => e.Student.LastName)
+            .ToList();
+
+        foreach (var e in enrollments)
+        {
+            var grades = (await _gradeRepo.GetByStudentAsync(e.StudentId)).ToList();
+            var row = new SectionGradeRowDto
+            {
+                StudentNumber = e.Student.StudentNumber ?? "-",
+                StudentName = $"{e.Student.LastName}, {e.Student.FirstName}"
+            };
+
+            var finals = new List<decimal>();
+            foreach (var subj in subjects)
+            {
+                var vals = grades.Where(g => g.SubjectId == subj.SubjectId && g.Grade1.HasValue)
+                                 .Select(g => g.Grade1!.Value).ToList();
+                decimal? final = vals.Count > 0 ? Math.Round(vals.Average(), 2) : null;
+                row.Finals[subj.Name] = final;
+                if (final.HasValue) finals.Add(final.Value);
+            }
+            row.GeneralAverage = finals.Count > 0 ? Math.Round(finals.Average(), 2) : null;
+            dto.Rows.Add(row);
+        }
+        return dto;
+    }
 }

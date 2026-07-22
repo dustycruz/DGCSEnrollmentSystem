@@ -11,17 +11,20 @@ public class TeacherService : ITeacherService
     private readonly IScheduleRepository _scheduleRepo;
     private readonly IEnrollmentRepository _enrollmentRepo;
     private readonly IEmployeeRepository _employeeRepo;
+    private readonly ISectionRepository _sectionRepo;
 
     public TeacherService(
         ITeacherRepository teacherRepo,
         IScheduleRepository scheduleRepo,
         IEnrollmentRepository enrollmentRepo,
-        IEmployeeRepository employeeRepo)
+        IEmployeeRepository employeeRepo,
+        ISectionRepository sectionRepo)
     {
         _teacherRepo = teacherRepo;
         _scheduleRepo = scheduleRepo;
         _enrollmentRepo = enrollmentRepo;
         _employeeRepo = employeeRepo;
+        _sectionRepo = sectionRepo;
     }
 
     public async Task<IEnumerable<Teacher>> GetAllAsync()
@@ -32,6 +35,16 @@ public class TeacherService : ITeacherService
 
     public async Task<Teacher?> GetByEmployeeIdAsync(int employeeId)
         => await _teacherRepo.GetByEmployeeIdAsync(employeeId);
+
+    public async Task<Teacher?> GetByEmployeeNumberAsync(string employeeNumber)
+    {
+        var employee = await _employeeRepo.GetByEmployeeNumberAsync(employeeNumber);
+        if (employee is null) return null;
+        return await _teacherRepo.GetByEmployeeIdAsync(employee.EmployeeId);
+    }
+
+    public async Task<Schedule?> GetClassAsync(int scheduleId)
+        => await _scheduleRepo.GetFullAsync(scheduleId);
 
     public async Task<IEnumerable<Schedule>> GetScheduleAsync(int teacherId)
         => await _scheduleRepo.GetByTeacherAsync(teacherId);
@@ -50,13 +63,6 @@ public class TeacherService : ITeacherService
     public async Task<IEnumerable<Enrollment>> GetClassListAsync(int sectionId)
         => await _enrollmentRepo.GetBySectionAsync(sectionId);
 
-    public async Task<Teacher?> GetByEmployeeNumberAsync(string employeeNumber)
-    {
-        var employee = await _employeeRepo.GetByEmployeeNumberAsync(employeeNumber);
-        if (employee is null) return null;
-        return await _teacherRepo.GetByEmployeeIdAsync(employee.EmployeeId);
-    }
-
-    public async Task<Schedule?> GetClassAsync(int scheduleId)
-        => await _scheduleRepo.GetFullAsync(scheduleId);
+    public async Task<IEnumerable<Section>> GetAdvisoryAsync(int teacherId)
+        => await _sectionRepo.GetByAdviserAsync(teacherId);
 }

@@ -25,6 +25,8 @@ public class SectionService : ISectionService
     public async Task<IEnumerable<Section>> GetAllAsync() => await _sectionRepo.GetAllActiveAsync();
     public async Task<Section?> GetAsync(int id) => await _sectionRepo.GetByIdAsync(id);
     public async Task<Section?> GetWithSchedulesAsync(int id) => await _sectionRepo.GetWithSchedulesAsync(id);
+    public async Task<IEnumerable<Schedule>> GetAllSchedulesAsync() => await _scheduleRepo.GetAllWithDetailsAsync();
+    public async Task<Schedule?> GetScheduleAsync(int scheduleId) => await _scheduleRepo.GetFullAsync(scheduleId);
 
     public async Task<ServiceResult<int>> CreateAsync(Section section, string createdBy)
     {
@@ -67,6 +69,13 @@ public class SectionService : ISectionService
 
     public async Task<ServiceResult<int>> AddScheduleAsync(Schedule schedule, ScheduleDetail? detail, string createdBy)
     {
+        if (detail is not null && !string.IsNullOrWhiteSpace(detail.Day) && detail.StartTime.HasValue && detail.EndTime.HasValue)
+        {
+            var conflict = await FindConflictAsync(schedule.SectionId, schedule.TeacherId,
+                detail.Day, detail.StartTime.Value, detail.EndTime.Value, detail.RoomId, 0);
+            if (conflict is not null) return ServiceResult<int>.Fail(conflict);
+        }
+
         schedule.CreatedBy = createdBy;
         schedule.IsDeleted = false;
         await _scheduleRepo.AddAsync(schedule);
@@ -80,9 +89,99 @@ public class SectionService : ISectionService
             await _scheduleDetailRepo.AddAsync(detail);
             await _scheduleDetailRepo.SaveAsync();
         }
-
-        return ServiceResult<int>.Ok(schedule.ScheduleId, "Schedule added to section.");
+        return ServiceResult<int>.Ok(schedule.ScheduleId, "Schedule added.");
     }
-    public async Task<IEnumerable<Schedule>> GetAllSchedulesAsync()
-    => await _scheduleRepo.GetAllWithDetailsAsync();
+
+    public async Task<ServiceResult> UpdateScheduleAsync(int scheduleId, int subjectId, int? teacherId, ScheduleDetail detail, string modifiedBy)
+    {
+        var schedule = await _scheduleRepo.GetFullAsync(scheduleId);
+        if (schedule is null) return ServiceResult.Fail("Schedule not found.");
+
+        if (!string.IsNullOrWhiteSpace(detail.Day) && detail.StartTime.HasValue && detail.EndTime.HasValue)
+        {
+            var conflict = await FindConflictAsync(schedule.SectionId, teacherId,
+                detail.Day, detail.StartTime.Value, detail.EndTime.Value, detail.RoomId, scheduleId);
+            if (conflict is not null) return ServiceResult.Fail(conflict);
+        }
+
+        schedule.SubjectId = subjectId;
+        schedule.TeacherId = teacherId;
+        schedule.ModifiedBy = modifiedBy;
+        _scheduleRepo.Update(schedule);
+
+        var existingDetail = schedule.ScheduleDetails.FirstOrDefault();
+        if (existingDetail is not null)
+        {
+            existingDetail.Day = detail.Day;
+            existingDetail.StartTime = detail.StartTime;
+            existingDetail.EndTime = detail.EndTime;
+            existingDetail.RoomId = detail.RoomId;
+            existingDetail.ModifiedBy = modifiedBy;
+            _scheduleDetailRepo.Update(existingDetail);
+        }
+        else
+        {
+            detail.ScheduleId = scheduleId;
+            detail.CreatedBy = modifiedBy;
+            detail.IsDeleted = false;
+            await _scheduleDetailRepo.AddAsync(detail);
+        }
+
+        await _scheduleRepo.SaveAsync();
+        return ServiceResult.Ok("Schedule updated.");
+    }
+
+    public async Task<ServiceResult> DeleteScheduleAsync(int scheduleId, string modifiedBy)
+    {
+        var schedule = await _scheduleRepo.GetByIdAsync(scheduleId);
+        if (schedule is null) return ServiceResult.Fail("Schedule not found.");
+
+        schedule.IsDeleted = true;
+        schedule.ModifiedBy = modifiedBy;
+        _scheduleRepo.Update(schedule);
+
+        var details = await _scheduleDetailRepo.FindAsync(d => d.ScheduleId == scheduleId);
+        foreach (var d in details) { d.IsDeleted = true; _scheduleDetailRepo.Update(d); }
+
+        await _scheduleRepo.SaveAsync();
+        return ServiceResult.Ok("Schedule deleted.");
+    }
+
+    /// <summary>Returns a message if the section, teacher, or room clashes at an overlapping time; otherwise null.</summary>
+    private async Task<string?> FindConflictAsync(int sectionId, int? teacherId, string day,
+        TimeOnly start, TimeOnly end, int? roomId, int excludeScheduleId)
+    {
+        var all = await _scheduleRepo.GetAllWithDetailsAsync();
+        foreach (var s in all)
+        {
+            if (s.ScheduleId == excludeScheduleId) continue;
+
+            foreach (var d in s.ScheduleDetails)
+            {
+                if (d.Day != day || !d.StartTime.HasValue || !d.EndTime.HasValue) continue;
+
+                var overlaps = start < d.EndTime.Value && d.StartTime.Value < end;
+                if (!overlaps) continue;
+
+                if (s.SectionId == sectionId)
+                    return $"This section already has a class on {day} at that time ({s.Subject?.Name}).";
+                if (teacherId.HasValue && s.TeacherId == teacherId)
+                    return $"That teacher is already booked on {day} at that time ({s.Subject?.Name} — {s.Section?.Name}).";
+                if (roomId.HasValue && d.RoomId == roomId)
+                    return $"That room is already in use on {day} at that time ({s.Subject?.Name} — {s.Section?.Name}).";
+            }
+        }
+        return null;
+    }
+    public async Task<ServiceResult> AssignAdviserAsync(int sectionId, int? teacherId, string modifiedBy)
+    {
+        var section = await _sectionRepo.GetByIdAsync(sectionId);
+        if (section is null) return ServiceResult.Fail("Section not found.");
+
+        section.AdviserTeacherId = teacherId;
+        section.ModifiedBy = modifiedBy;
+        _sectionRepo.Update(section);
+        await _sectionRepo.SaveAsync();
+        return ServiceResult.Ok(teacherId is null ? "Adviser removed." : "Adviser assigned.");
+    }
 }

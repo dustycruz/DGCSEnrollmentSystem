@@ -1,0 +1,25 @@
+﻿@* File: EnrollmentSystem.UI/Views/Schedule/Edit.cshtml *@
+@model ScheduleCreateViewModel
+@{ ViewData["Title"] = "Edit Schedule"; }
+<h1 class="page-title">Edit Schedule</h1>
+<p class="page-subtitle">Section: <strong>@Model.SectionName</strong></p>
+
+<form asp-action="Edit" method="post">
+    <input type="hidden" asp-for="ScheduleId" />
+    <input type="hidden" asp-for="SectionId" />
+    <input type="hidden" asp-for="SectionName" />
+    <div asp-validation-summary="ModelOnly" class="alert alert-danger" style="@(ViewData.ModelState.ErrorCount > 0 ? "" : "display:none")"></div>
+    <div class="content-card">
+        <div class="row g-3">
+            <div class="col-md-4"><label class="form-label">Subject</label><select class="form-select" asp-for="SubjectId" asp-items="Model.Subjects"><option value="">— Select —</option></select></div>
+            <div class="col-md-4"><label class="form-label">Teacher</label><select class="form-select" asp-for="TeacherId" asp-items="Model.Teachers"><option value="">— TBA —</option></select></div>
+            <div class="col-md-4"><label class="form-label">Room</label><select class="form-select" asp-for="RoomId" asp-items="Model.Rooms"><option value="">— TBA —</option></select></div>
+            <div class="col-md-4"><label class="form-label">Day</label><select class="form-select" asp-for="Day"><option value="">— Select —</option><option>Monday</option><option>Tuesday</option><option>Wednesday</option><option>Thursday</option><option>Friday</option><option>Saturday</option></select></div>
+            <div class="col-md-4"><label class="form-label">Start</label><input class="form-control" asp-for="StartTime" type="time" /></div>
+            <div class="col-md-4"><label class="form-label">End</label><input class="form-control" asp-for="EndTime" type="time" /></div>
+        </div>
+    </div>
+    <button type="submit" class="btn btn-brand">Save Changes</button>
+    <a class="btn btn-outline-brand" asp-action="Index">Cancel</a>
+</form>
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

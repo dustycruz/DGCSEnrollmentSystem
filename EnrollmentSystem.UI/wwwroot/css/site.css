@@ -1813,3 +1813,31 @@ a.content-card:hover {
         padding: 40px;
         font-size: 15px;
     }
+/* File: EnrollmentSystem.UI/wwwroot/css/site.css  (append at end) */
+
+/* Even, full-width section card buttons */
+.section-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+    margin-top: 16px;
+}
+
+    .section-actions .btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 9px 12px;
+        font-size: 13px;
+    }
+
+        .section-actions .btn svg {
+            width: 16px;
+            height: 16px;
+        }
+
+/* Buttons that are links should never underline */
+a.btn, a.btn:hover {
+    text-decoration: none;
+}

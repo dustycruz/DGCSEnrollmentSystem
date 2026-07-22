@@ -9,4 +9,5 @@ public interface IReportingService
     Task<IEnumerable<ClassListRowDto>> GetClassListAsync(int sectionId);
     Task<ReportCardDto?> GetReportCardAsync(int studentId);
     Task<IEnumerable<MasterListRowDto>> GetMasterListAsync(int? schoolYearId);
+    Task<SectionGradeSheetDto> GetSectionGradesAsync(int sectionId);
 }

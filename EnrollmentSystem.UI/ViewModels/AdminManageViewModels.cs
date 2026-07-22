@@ -26,6 +26,8 @@ public class ScheduleCreateViewModel
     [DataType(DataType.Time)] public TimeOnly? StartTime { get; set; }
     [DataType(DataType.Time)] public TimeOnly? EndTime { get; set; }
     public int? RoomId { get; set; }
+    public int ScheduleId { get; set; }
+    public string? SectionName { get; set; }
 
     public IEnumerable<SelectListItem> Subjects { get; set; } = new List<SelectListItem>();
     public IEnumerable<SelectListItem> Teachers { get; set; } = new List<SelectListItem>();

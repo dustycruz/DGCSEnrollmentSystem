@@ -326,6 +326,9 @@ public partial class EnrollmentSystemDbContext : DbContext
             entity.HasOne(d => d.GradeLevel).WithMany(p => p.Sections).HasConstraintName("FK_Section_GradeLevel");
 
             entity.HasOne(d => d.SchoolYear).WithMany(p => p.Sections).HasConstraintName("FK_Section_SchoolYear");
+            entity.HasOne(d => d.AdviserTeacher).WithMany()
+    .HasForeignKey(d => d.AdviserTeacherId)
+    .HasConstraintName("FK_Section_AdviserTeacher");
         });
 
         modelBuilder.Entity<Student>(entity =>

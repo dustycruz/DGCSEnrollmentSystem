@@ -34,7 +34,7 @@
 <div class="content-card" style="overflow-x:auto;">
     <h3><i data-lucide="calendar-clock"></i> All Schedules</h3>
     <table class="table">
-        <thead><tr><th>Section</th><th>Subject</th><th>Teacher</th><th>Day</th><th>Time</th><th>Room</th></tr></thead>
+        <thead><tr><th>Section</th><th>Subject</th><th>Teacher</th><th>Day</th><th>Time</th><th>Room</th><th></th></tr></thead>
         <tbody>
             @foreach (var s in Model.Schedules)
             {
@@ -47,11 +47,18 @@
                     <td>@(d?.Day ?? "-")</td>
                     <td>@(d?.StartTime?.ToString("hh:mm tt")) - @(d?.EndTime?.ToString("hh:mm tt"))</td>
                     <td>@(d?.Room?.Name ?? "-")</td>
+                    <td style="white-space:nowrap;">
+                        <a class="btn btn-outline-brand" style="padding:5px 11px;font-size:13px;" asp-action="Edit" asp-route-id="@s.ScheduleId">Edit</a>
+                        <form asp-action="Delete" method="post" style="display:inline;" onsubmit="return confirm('Delete this schedule?');">
+                            <input type="hidden" name="id" value="@s.ScheduleId" />
+                            <button type="submit" class="btn btn-danger" style="padding:5px 11px;font-size:13px;">Delete</button>
+                        </form>
+                    </td>
                 </tr>
             }
             @if (!Model.Schedules.Any())
             {
-                <tr><td colspan="6" style="text-align:center;color:var(--muted)">No schedules yet.</td></tr>
+                <tr><td colspan="7" style="text-align:center;color:var(--muted)">No schedules yet.</td></tr>
             }
         </tbody>
     </table>

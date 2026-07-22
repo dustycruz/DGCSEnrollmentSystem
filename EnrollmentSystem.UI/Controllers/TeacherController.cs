@@ -113,4 +113,10 @@ public class TeacherController : Controller
         var schedules = await _teacherService.GetScheduleAsync(teacher.TeacherId);
         return View(EnrollmentSystem.UI.Helpers.CalendarBuilder.FromSchedules(schedules, year, month, "Teaching Calendar"));
     }
+    public async Task<IActionResult> Advisory()
+    {
+        var teacher = await MeAsync();
+        if (teacher is null) return RedirectToAction(nameof(Index));
+        return View(await _teacherService.GetAdvisoryAsync(teacher.TeacherId));
+    }
 }
