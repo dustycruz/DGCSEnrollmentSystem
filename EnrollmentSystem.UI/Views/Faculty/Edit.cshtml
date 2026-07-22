@@ -1,0 +1,24 @@
+﻿@* File: EnrollmentSystem.UI/Views/Faculty/Edit.cshtml *@
+@model TeacherEditViewModel
+@{
+    ViewData["Title"] = "Edit Teacher";
+}
+<h1 class="page-title">Edit Teacher</h1>
+<form asp-action="Edit" method="post">
+    <input type="hidden" asp-for="TeacherId" />
+    <div asp-validation-summary="ModelOnly" class="alert alert-danger" style="@(ViewData.ModelState.ErrorCount > 0 ? "" : "display:none")"></div>
+    <div class="content-card">
+        <div class="row g-3">
+            <div class="col-md-4"><label class="form-label" asp-for="FirstName"></label><input class="form-control" asp-for="FirstName" /><span asp-validation-for="FirstName" class="text-validation"></span></div>
+            <div class="col-md-4"><label class="form-label" asp-for="MiddleName"></label><input class="form-control" asp-for="MiddleName" /></div>
+            <div class="col-md-4"><label class="form-label" asp-for="LastName"></label><input class="form-control" asp-for="LastName" /><span asp-validation-for="LastName" class="text-validation"></span></div>
+            <div class="col-md-6"><label class="form-label">Employee No. (Username)</label><input class="form-control" value="@Model.EmployeeNumber" disabled /><input type="hidden" asp-for="EmployeeNumber" /></div>
+            <div class="col-md-6"><label class="form-label" asp-for="EmailAddress"></label><input class="form-control" asp-for="EmailAddress" /></div>
+        </div>
+    </div>
+    <button type="submit" class="btn btn-brand">Save Changes</button>
+    <a class="btn btn-outline-brand" asp-action="Index">Cancel</a>
+</form>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

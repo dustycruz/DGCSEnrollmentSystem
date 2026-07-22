@@ -21,11 +21,10 @@
                 <img src="/images/logo.png" alt="DGCS" />
                 <div>
                     <div class="n1">Divine Grace Center of Studies</div>
-                    <div class="n2"> Integrated System</div>
+                    <div class="n2">Quezon City · Enrollment System</div>
                 </div>
             </div>
             <nav class="public-links">
-                <a href="#requirements">Requirements</a>
                 <a href="#schedule">Schedule</a>
                 <a href="#announcements">Announcements</a>
                 <a class="btn btn-outline-brand" asp-controller="Account" asp-action="Login">Sign In</a>
@@ -34,63 +33,87 @@
         </div>
     </header>
 
-    <section class="hero">
-        <div class="hero-inner">
-            <h1>Enroll at Divine Grace Center of Studies</h1>
-            <p>Start your admission application online. Verify your email, submit your requirements, and track your status.</p>
-            <a class="btn btn-accent" asp-controller="Apply" asp-action="Index">Apply Now</a>
+    <!-- Text-only hero (no photo) -->
+    <section class="hero2">
+        <div class="hero2-inner hero2-centered">
+            <span class="hero2-badge">Enrollment Open · S.Y. 2026–2027</span>
+            <h1>Your journey starts at <span>Divine Grace Center of Studies</span></h1>
+            <p class="hero2-tag">Nurturing the heart, mind, body &amp; soul.</p>
+            <p>Apply online, upload your requirements, and track your admission status from start to finish — no lines, no hassle.</p>
+            <div class="hero2-cta">
+                <a class="btn btn-accent" asp-controller="Apply" asp-action="Index">Apply Now</a>
+                <a class="btn btn-outline-ink" asp-controller="Account" asp-action="Login">Sign In</a>
+            </div>
         </div>
     </section>
 
-    <section class="public-section" id="requirements">
-        <h2>Admission Requirements</h2>
-        <p class="lead">Prepare these documents before you apply.</p>
-        <div class="req-grid">
-            <div class="req-card"><div class="ic"><i data-lucide="file-badge"></i></div><div><strong>PSA Birth Certificate</strong><div style="color:var(--muted);font-size:13px;">Original & photocopy</div></div></div>
-            <div class="req-card"><div class="ic"><i data-lucide="clipboard-list"></i></div><div><strong>Report Card (Form 138)</strong><div style="color:var(--muted);font-size:13px;">Previous school year</div></div></div>
-            <div class="req-card"><div class="ic"><i data-lucide="award"></i></div><div><strong>Good Moral Certificate</strong><div style="color:var(--muted);font-size:13px;">From previous school</div></div></div>
-            <div class="req-card"><div class="ic"><i data-lucide="image"></i></div><div><strong>2×2 ID Picture</strong><div style="color:var(--muted);font-size:13px;">White background</div></div></div>
-            <div class="req-card"><div class="ic"><i data-lucide="repeat"></i></div><div><strong>Certificate of Transfer</strong><div style="color:var(--muted);font-size:13px;">Transferees only</div></div></div>
+    <!-- Schedule -->
+    <section class="public-section" id="schedule">
+        <div class="panel-card panel-lg">
+            <div class="panel-head">Enrollment Schedule · S.Y. 2026–2027</div>
+            <div class="panel-body">
+                <div class="sched-row"><span class="lbl">Online Application</span><span class="val">June 1 – July 15, 2026</span></div>
+                <div class="sched-row"><span class="lbl">Document Verification</span><span class="val">June 5 – July 20, 2026</span></div>
+                <div class="sched-row"><span class="lbl">Enrollment Confirmation</span><span class="val">July 1 – July 31, 2026</span></div>
+                <div class="sched-row"><span class="lbl">Start of Classes</span><span class="val">August 10, 2026</span></div>
+            </div>
         </div>
     </section>
 
-    <section class="public-section" id="schedule" style="background:#fff;border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
-        <h2>Enrollment Schedule</h2>
-        <p class="lead">School Year 2026–2027</p>
-        <div style="max-width:640px;margin:0 auto;">
-            <div class="schedule-row"><span><strong>Online Application</strong></span><span style="color:var(--muted)">June 1 – July 15, 2026</span></div>
-            <div class="schedule-row"><span><strong>Document Verification</strong></span><span style="color:var(--muted)">June 5 – July 20, 2026</span></div>
-            <div class="schedule-row"><span><strong>Enrollment Confirmation</strong></span><span style="color:var(--muted)">July 1 – July 31, 2026</span></div>
-            <div class="schedule-row"><span><strong>Start of Classes</strong></span><span style="color:var(--muted)">August 10, 2026</span></div>
-        </div>
-    </section>
-
-    <section class="public-section" id="announcements">
-        <h2>Announcements</h2>
-        <p class="lead">Latest news from the registrar.</p>
-        <div style="max-width:760px;margin:0 auto;">
-            @if (Model.Any())
-            {
-                foreach (var a in Model)
+    <!-- Announcements -->
+    <section class="public-section" id="announcements" style="background:#fff;border-top:1px solid var(--border);">
+        <div class="panel-card panel-lg">
+            <div class="panel-head ink">Announcements</div>
+            <div class="panel-body">
+                @if (Model.Any())
                 {
-                    <div class="content-card">
-                        <div style="display:flex;justify-content:space-between;">
-                            <strong>@a.Title</strong>
-                            <span style="color:var(--muted);font-size:12px;">@a.PostedDate.ToString("MMM dd, yyyy")</span>
+                    foreach (var a in Model)
+                    {
+                        <div class="announce-item">
+                            <div style="display:flex;justify-content:space-between;">
+                                <span class="t">@a.Title</span>
+                                <span class="d">@a.PostedDate.ToString("MMM dd, yyyy")</span>
+                            </div>
+                            <div class="c">@a.Content</div>
                         </div>
-                        <div style="color:var(--muted);font-size:14px;margin-top:6px;">@a.Content</div>
-                    </div>
+                    }
                 }
-            }
-            else
-            {
-                <p style="text-align:center;color:var(--muted)">No announcements at this time.</p>
-            }
+                else
+                {
+                    <div class="announce-empty">No announcements at this time.</div>
+                }
+            </div>
         </div>
     </section>
 
-    <footer class="public-footer">
-        © @DateTime.Now.Year Divine Grace Center of Studies · Web-Based Enrollment System
+    <footer class="public-footer-rich">
+        <div class="footer-cols">
+            <div>
+                <div class="footer-brand">
+                    <img src="/images/logo.png" alt="DGCS" />
+                    <div>
+                        <div class="fn">Divine Grace Center of Studies</div>
+                        <div style="color:#b7afdc;font-size:12px;">Quezon City</div>
+                    </div>
+                </div>
+                <p>…developing students with mind, heart, body and soul.</p>
+            </div>
+            <div>
+                <h4>Contact</h4>
+                <p><i data-lucide="map-pin"></i> 47 General Avenue, GSIS Village, Tandang Sora, Quezon City</p>
+                <p><i data-lucide="phone"></i> (02) 7901-1644</p>
+                <p><i data-lucide="smartphone"></i> (0922) 899-9437</p>
+                <p><i data-lucide="badge-check"></i> School ID No. 482683</p>
+            </div>
+            <div>
+                <h4>Quick Links</h4>
+                <p><a asp-controller="Apply" asp-action="Index">Apply for Admission</a></p>
+                <p><a asp-controller="Account" asp-action="Login">Student / Teacher Sign In</a></p>
+                <p><a href="#schedule">Enrollment Schedule</a></p>
+                <p><a href="#announcements">Announcements</a></p>
+            </div>
+        </div>
+        <div class="footer-bottom">© @DateTime.Now.Year Divine Grace Center of Studies · Web-Based Enrollment System</div>
     </footer>
 
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>

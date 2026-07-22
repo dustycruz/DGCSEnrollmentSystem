@@ -23,3 +23,12 @@ public class ScheduleManageViewModel
     public ScheduleCreateViewModel AddForm { get; set; } = new();
     public IEnumerable<SelectListItem> Sections { get; set; } = new List<SelectListItem>();
 }
+public class TeacherEditViewModel
+{
+    public int TeacherId { get; set; }
+    [System.ComponentModel.DataAnnotations.Required] public string FirstName { get; set; } = string.Empty;
+    public string? MiddleName { get; set; }
+    [System.ComponentModel.DataAnnotations.Required] public string LastName { get; set; } = string.Empty;
+    public string? EmployeeNumber { get; set; }  // read-only (login username)
+    [System.ComponentModel.DataAnnotations.EmailAddress] public string? EmailAddress { get; set; }
+}

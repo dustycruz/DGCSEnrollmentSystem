@@ -13,4 +13,6 @@ public interface IAdminService
     Task<ServiceResult<int>> PromoteToTeacherAsync(int employeeId, string createdBy);
     Task EnsureDemoTeacherAsync();
     Task<ServiceResult<AccountCredentialsDto>> CreateTeacherAsync(Employee employee, string createdBy);
+    Task<ServiceResult> UpdateTeacherAsync(int teacherId, Employee updated, string modifiedBy);
+    Task<ServiceResult> DeleteTeacherAsync(int teacherId, string modifiedBy);
 }

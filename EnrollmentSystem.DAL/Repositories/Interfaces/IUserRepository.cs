@@ -18,4 +18,5 @@ public interface IUserRepository
     Task<bool> EmailExistsAsync(string email);
     Task<int> SaveAsync();
     Task<string?> GetLastUserNameByPrefixAsync(string prefix);
+    Task DeleteUserByUserNameAsync(string userName);
 }

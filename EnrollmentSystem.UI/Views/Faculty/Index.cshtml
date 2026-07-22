@@ -30,7 +30,7 @@
 
 <div class="content-card">
     <table class="table">
-        <thead><tr><th>Name</th><th>Employee No. (Username)</th><th>Email</th></tr></thead>
+        <thead><tr><th>Name</th><th>Employee No. (Username)</th><th>Email</th><th></th></tr></thead>
         <tbody>
             @foreach (var t in Model)
             {
@@ -38,11 +38,18 @@
                     <td><strong>@t.Employee?.LastName, @t.Employee?.FirstName @t.Employee?.MiddleName</strong></td>
                     <td>@t.Employee?.EmployeeNumber</td>
                     <td>@t.Employee?.EmailAddress</td>
+                    <td style="white-space:nowrap;">
+                        <a class="btn btn-outline-brand" style="padding:6px 12px;font-size:13px;" asp-action="Edit" asp-route-id="@t.TeacherId">Edit</a>
+                        <form asp-action="Delete" method="post" style="display:inline;" onsubmit="return confirm('Remove this teacher and disable their login?');">
+                            <input type="hidden" name="id" value="@t.TeacherId" />
+                            <button type="submit" class="btn btn-danger" style="padding:6px 12px;font-size:13px;">Delete</button>
+                        </form>
+                    </td>
                 </tr>
             }
             @if (!Model.Any())
             {
-                <tr><td colspan="3" style="text-align:center;color:var(--muted)">No teachers yet.</td></tr>
+                <tr><td colspan="4" style="text-align:center;color:var(--muted)">No teachers yet.</td></tr>
             }
         </tbody>
     </table>

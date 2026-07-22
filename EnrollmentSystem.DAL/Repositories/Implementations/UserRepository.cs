@@ -84,4 +84,18 @@ public class UserRepository : IUserRepository
            .OrderByDescending(u => u.UserName)
            .Select(u => u.UserName)
            .FirstOrDefaultAsync();
+    public async Task DeleteUserByUserNameAsync(string userName)
+    {
+        var user = await _context.AspNetUsers.FirstOrDefaultAsync(u => u.UserName == userName);
+        if (user is null) return;
+
+        var notifs = _context.Notifications.Where(n => n.UserId == user.Id);
+        _context.Notifications.RemoveRange(notifs);
+
+        var links = _context.AspNetUserRoles.Where(r => r.UserId == user.Id);
+        _context.AspNetUserRoles.RemoveRange(links);
+
+        _context.AspNetUsers.Remove(user);
+        await _context.SaveChangesAsync();
+    }
 }

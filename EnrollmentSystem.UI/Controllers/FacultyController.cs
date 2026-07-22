@@ -47,10 +47,51 @@ public class FacultyController : Controller
             TempData["NewTeacherUser"] = result.Data.UserName;
             TempData["NewTeacherPass"] = result.Data.TempPassword;
         }
-        else
+        else { TempData["Error"] = result.Message; }
+        return RedirectToAction(nameof(Index));
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Edit(int id)
+    {
+        var teacher = await _teacher.GetAsync(id);
+        if (teacher?.Employee is null) return NotFound();
+
+        return View(new TeacherEditViewModel
         {
-            TempData["Error"] = result.Message;
-        }
+            TeacherId = teacher.TeacherId,
+            FirstName = teacher.Employee.FirstName,
+            MiddleName = teacher.Employee.MiddleName,
+            LastName = teacher.Employee.LastName,
+            EmployeeNumber = teacher.Employee.EmployeeNumber,
+            EmailAddress = teacher.Employee.EmailAddress
+        });
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Edit(TeacherEditViewModel vm)
+    {
+        if (!ModelState.IsValid) return View(vm);
+
+        var result = await _admin.UpdateTeacherAsync(vm.TeacherId, new Employee
+        {
+            FirstName = vm.FirstName,
+            MiddleName = vm.MiddleName,
+            LastName = vm.LastName,
+            EmailAddress = vm.EmailAddress
+        }, User.GetUserName());
+
+        TempData[result.Success ? "Success" : "Error"] = result.Message;
+        return RedirectToAction(nameof(Index));
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Delete(int id)
+    {
+        var result = await _admin.DeleteTeacherAsync(id, User.GetUserName());
+        TempData[result.Success ? "Success" : "Error"] = result.Message;
         return RedirectToAction(nameof(Index));
     }
 }

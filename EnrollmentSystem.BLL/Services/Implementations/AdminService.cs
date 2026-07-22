@@ -169,4 +169,54 @@ public class AdminService : IAdminService
             new AccountCredentialsDto { UserName = empNo, TempPassword = temp },
             $"Teacher account created ({empNo}).");
     }
+    public async Task<ServiceResult> UpdateTeacherAsync(int teacherId, Employee updated, string modifiedBy)
+    {
+        var teacher = await _teacherRepo.GetWithEmployeeAsync(teacherId);
+        if (teacher?.Employee is null) return ServiceResult.Fail("Teacher not found.");
+
+        var emp = teacher.Employee;
+        emp.FirstName = updated.FirstName;
+        emp.MiddleName = updated.MiddleName;
+        emp.LastName = updated.LastName;
+        emp.EmailAddress = updated.EmailAddress;
+        emp.ModifiedBy = modifiedBy;
+        _employeeRepo.Update(emp);
+        await _employeeRepo.SaveAsync();
+
+        // keep the login email in sync
+        if (!string.IsNullOrWhiteSpace(emp.EmployeeNumber))
+        {
+            var user = await _userRepo.GetByUsernameAsync(emp.EmployeeNumber);
+            if (user is not null)
+            {
+                user.Email = emp.EmailAddress;
+                await _userRepo.SaveAsync();
+            }
+        }
+        return ServiceResult.Ok("Teacher updated.");
+    }
+
+    public async Task<ServiceResult> DeleteTeacherAsync(int teacherId, string modifiedBy)
+    {
+        var teacher = await _teacherRepo.GetWithEmployeeAsync(teacherId);
+        if (teacher is null) return ServiceResult.Fail("Teacher not found.");
+
+        teacher.IsDeleted = true;
+        teacher.ModifiedBy = modifiedBy;
+        _teacherRepo.Update(teacher);
+
+        if (teacher.Employee is not null)
+        {
+            teacher.Employee.IsDeleted = true;
+            teacher.Employee.ModifiedBy = modifiedBy;
+            _employeeRepo.Update(teacher.Employee);
+        }
+        await _teacherRepo.SaveAsync();
+
+        // remove the login so they can no longer sign in (grades stay via the soft-deleted Teacher record)
+        if (!string.IsNullOrWhiteSpace(teacher.Employee?.EmployeeNumber))
+            await _userRepo.DeleteUserByUserNameAsync(teacher.Employee.EmployeeNumber);
+
+        return ServiceResult.Ok("Teacher removed and login disabled.");
+    }
 }
