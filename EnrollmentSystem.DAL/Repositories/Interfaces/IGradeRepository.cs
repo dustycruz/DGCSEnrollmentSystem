@@ -10,4 +10,5 @@ public interface IGradeRepository : IGenericRepository<Grade>
     Task<IEnumerable<Grade>> GetByTeacherAsync(int teacherId);
     Task<IEnumerable<Grade>> GetBySubjectAsync(int subjectId);
     Task<Grade?> GetExistingAsync(int studentId, int subjectId, string quarter);
+    Task<IEnumerable<Grade>> GetAllActiveAsync();
 }

@@ -54,4 +54,19 @@ public class ReportController : Controller
         var card = studentId.HasValue ? await _reporting.GetReportCardAsync(studentId.Value) : null;
         return View(card);
     }
+    // GET: /Report/PrintReportCard/5   (5 = studentId)
+    public async Task<IActionResult> PrintReportCard(int id)
+    {
+        var model = await _reporting.GetReportCardAsync(id);
+        if (model == null) return NotFound();
+        return View("PrintReportCard", model);   // uses print layout
+    }
+
+    // GET: /Report/PrintClassList/3    (3 = sectionId)
+    public async Task<IActionResult> PrintClassList(int id)
+    {
+        var model = await _reporting.GetClassListAsync(id);
+        if (model == null) return NotFound();
+        return View("PrintClassList", model);
+    }
 }

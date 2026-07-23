@@ -11,17 +11,23 @@ public class ReportingService : IReportingService
     private readonly IEnrollmentRepository _enrollmentRepo;
     private readonly IStudentRepository _studentRepo;
     private readonly IGradeRepository _gradeRepo;
+    private readonly IApplicationRepository _applicationRepo;
+    private readonly IProofOfPaymentRepository _proofRepo;
 
     public ReportingService(
         ISectionRepository sectionRepo,
         IEnrollmentRepository enrollmentRepo,
         IStudentRepository studentRepo,
-        IGradeRepository gradeRepo)
+        IGradeRepository gradeRepo,
+        IApplicationRepository applicationRepo,
+        IProofOfPaymentRepository proofRepo)
     {
         _sectionRepo = sectionRepo;
         _enrollmentRepo = enrollmentRepo;
         _studentRepo = studentRepo;
         _gradeRepo = gradeRepo;
+        _applicationRepo = applicationRepo;
+        _proofRepo = proofRepo;
     }
 
     public async Task<IEnumerable<EnrollmentStatDto>> GetEnrollmentStatsAsync()
@@ -176,6 +182,59 @@ public class ReportingService : IReportingService
             row.GeneralAverage = finals.Count > 0 ? Math.Round(finals.Average(), 2) : null;
             dto.Rows.Add(row);
         }
+        return dto;
+    }
+    public async Task<DashboardChartsDto> GetDashboardChartsAsync()
+    {
+        var dto = new DashboardChartsDto();
+
+        // Enrolled students per grade level
+        var sections = await _sectionRepo.GetAllActiveAsync();
+        var byGrade = new Dictionary<string, int>();
+        foreach (var s in sections)
+        {
+            var enrolled = (await _enrollmentRepo.GetBySectionAsync(s.SectionId)).Count(e => e.Status == "Enrolled");
+            var g = s.GradeLevel?.Name ?? s.Name;
+            byGrade[g] = byGrade.GetValueOrDefault(g) + enrolled;
+        }
+        dto.GradeLabels = byGrade.Keys.ToList();
+        dto.GradeEnrollment = byGrade.Values.ToList();
+
+        // Applications by status
+        var apps = await _applicationRepo.GetAllActiveAsync();
+        foreach (var grp in apps.GroupBy(a => a.Status))
+        {
+            dto.AppStatusLabels.Add(grp.Key);
+            dto.AppStatusCounts.Add(grp.Count());
+        }
+
+        // Grade distribution
+        var grades = (await _gradeRepo.GetAllActiveAsync())
+            .Where(g => g.Grade1.HasValue).Select(g => g.Grade1!.Value).ToList();
+        var buckets = new (string label, Func<decimal, bool> test)[]
+        {
+            ("90–100", v => v >= 90),
+            ("85–89",  v => v >= 85 && v < 90),
+            ("80–84",  v => v >= 80 && v < 85),
+            ("75–79",  v => v >= 75 && v < 80),
+            ("Below 75", v => v < 75),
+        };
+        foreach (var b in buckets)
+        {
+            dto.GradeDistLabels.Add(b.label);
+            dto.GradeDistCounts.Add(grades.Count(b.test));
+        }
+
+        // Payments by status
+        var payments = await _proofRepo.GetAllWithDetailsAsync();
+        dto.PaymentLabels = new List<string> { "Verified", "Pending", "Rejected" };
+        dto.PaymentCounts = new List<int>
+        {
+            payments.Count(p => p.Status == "Verified"),
+            payments.Count(p => p.Status == "Pending"),
+            payments.Count(p => p.Status == "Rejected")
+        };
+
         return dto;
     }
 }

@@ -68,7 +68,7 @@ builder.Services.AddScoped<ISchoolYearRepository, SchoolYearRepository>();
 builder.Services.AddScoped<IEducationalLevelRepository, EducationalLevelRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IAdmissionService, AdmissionService>();
-
+builder.Services.AddScoped<IAuditLogRepository, AuditLogRepository>();
 // ---------- Services ----------
 builder.Services.AddScoped<IFileStorageService, FileStorageService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
@@ -89,6 +89,7 @@ builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddScoped<IApplicantOnboardingService, ApplicantOnboardingService>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
+builder.Services.AddScoped<IAuditService, AuditService>();
 var app = builder.Build();
 
 // ---------- Seed roles + default admin ----------

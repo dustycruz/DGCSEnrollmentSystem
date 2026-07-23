@@ -9,5 +9,6 @@ public class DashboardViewModel
     public string Role { get; set; } = string.Empty;
     public string DisplayName { get; set; } = string.Empty;
     public DashboardStatsDto Stats { get; set; } = new();
+    public EnrollmentSystem.BLL.DTOs.DashboardChartsDto? Charts { get; set; }
     public IEnumerable<Announcement> RecentAnnouncements { get; set; } = new List<Announcement>();
 }

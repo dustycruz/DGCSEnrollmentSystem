@@ -40,4 +40,6 @@ public class GradeRepository : GenericRepository<Grade>, IGradeRepository
     public async Task<Grade?> GetExistingAsync(int studentId, int subjectId, string quarter)
         => await _dbSet.FirstOrDefaultAsync(g =>
             !g.IsDeleted && g.StudentId == studentId && g.SubjectId == subjectId && g.Quarter == quarter);
+    public async Task<IEnumerable<Grade>> GetAllActiveAsync()
+    => await _dbSet.AsNoTracking().Where(g => !g.IsDeleted).ToListAsync();
 }

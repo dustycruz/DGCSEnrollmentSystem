@@ -12,11 +12,13 @@ public class HomeController : Controller
 {
     private readonly IAdminService _adminService;
     private readonly IAnnouncementService _announcementService;
+    private readonly IReportingService _reporting;
 
-    public HomeController(IAdminService adminService, IAnnouncementService announcementService)
+    public HomeController(IAdminService adminService, IAnnouncementService announcementService, IReportingService reporting)
     {
         _adminService = adminService;
         _announcementService = announcementService;
+        _reporting = reporting;
     }
 
     [AllowAnonymous]
@@ -24,16 +26,13 @@ public class HomeController : Controller
     {
         if (User.Identity?.IsAuthenticated ?? false)
             return RedirectToAction(nameof(Dashboard));
-
-        var announcements = await _announcementService.GetRecentAsync(4);
-        return View(announcements);
+        return View(await _announcementService.GetRecentAsync(4));
     }
 
     [Authorize]
     public async Task<IActionResult> Dashboard()
     {
         var role = User.GetPrimaryRole() ?? "User";
-
         var model = new DashboardViewModel
         {
             Role = role,
@@ -42,8 +41,10 @@ public class HomeController : Controller
         };
 
         if (User.IsInRole("Admin"))
+        {
             model.Stats = await _adminService.GetDashboardStatsAsync();
-
+            model.Charts = await _reporting.GetDashboardChartsAsync();
+        }
         return View(model);
     }
 

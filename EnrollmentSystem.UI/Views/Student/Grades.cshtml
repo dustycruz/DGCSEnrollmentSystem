@@ -6,9 +6,26 @@
 <h1 class="page-title">My Grades</h1>
 <p class="page-subtitle">Report card and quarterly averages.</p>
 
+@if (Model is not null && Model.Lines.Any())
+{
+    <div class="content-card no-print" style="display:flex;justify-content:flex-end;">
+        <button type="button" class="btn btn-accent" onclick="window.print()">🖨 Print Report Card</button>
+    </div>
+}
+
 <div class="content-card">
+    <div class="print-header">
+        <img src="~/images/logo.png" alt="DGCS" onerror="this.style.display='none'" />
+        <div>
+            <h2>Divine Grace Center of Studies</h2>
+            <p>47 General Avenue, GSIS Village, Tandang Sora, Quezon City &middot; School ID 482683</p>
+            <p>Tel (02) 7901-1644 &middot; (0922) 899-9437 &middot; Report Card</p>
+        </div>
+    </div>
+
     @if (Model is not null && Model.Lines.Any())
     {
+        <h3>@Model.FullName <span style="color:var(--muted);font-size:14px;">(@Model.StudentNumber)</span></h3>
         <table class="table">
             <thead><tr><th>Subject</th><th>Q1</th><th>Q2</th><th>Q3</th><th>Q4</th><th>Final</th></tr></thead>
             <tbody>
@@ -31,6 +48,10 @@
                 </tr>
             </tfoot>
         </table>
+        <div class="print-signatures">
+            <div><div class="line">Adviser's Signature</div></div>
+            <div><div class="line">Parent / Guardian's Signature</div></div>
+        </div>
     }
     else
     {

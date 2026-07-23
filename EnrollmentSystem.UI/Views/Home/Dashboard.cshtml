@@ -4,43 +4,32 @@
     ViewData["Title"] = "Dashboard";
 }
 <h1 class="page-title">Dashboard</h1>
-<p class="page-subtitle">Welcome!</p>
+<p class="page-subtitle">Welcome back, <strong>@Model.DisplayName</strong>! Here's an overview of the system.</p>
 
 @if (User.IsInRole("Admin"))
 {
     <div class="stat-grid">
-        <div class="stat-card">
-            <div class="stat-icon blue"><i data-lucide="graduation-cap"></i></div>
-            <div><div class="stat-value">@Model.Stats.TotalStudents</div><div class="stat-label">Total Students</div></div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-icon yellow"><i data-lucide="file-text"></i></div>
-            <div><div class="stat-value">@Model.Stats.TotalApplications</div><div class="stat-label">Applications</div></div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-icon ink"><i data-lucide="clock"></i></div>
-            <div><div class="stat-value">@Model.Stats.PendingApplications</div><div class="stat-label">Pending Applications</div></div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-icon blue"><i data-lucide="clipboard-check"></i></div>
-            <div><div class="stat-value">@Model.Stats.PendingEnrollments</div><div class="stat-label">Pending Enrollments</div></div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-icon yellow"><i data-lucide="school"></i></div>
-            <div><div class="stat-value">@Model.Stats.TotalSections</div><div class="stat-label">Sections</div></div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-icon ink"><i data-lucide="book-open"></i></div>
-            <div><div class="stat-value">@Model.Stats.TotalTeachers</div><div class="stat-label">Teachers</div></div>
-        </div>
+        <div class="stat-card"><div class="stat-icon blue"><i data-lucide="graduation-cap"></i></div><div><div class="stat-value">@Model.Stats.TotalStudents</div><div class="stat-label">Total Students</div></div></div>
+        <div class="stat-card"><div class="stat-icon yellow"><i data-lucide="file-text"></i></div><div><div class="stat-value">@Model.Stats.TotalApplications</div><div class="stat-label">Applications</div></div></div>
+        <div class="stat-card"><div class="stat-icon ink"><i data-lucide="clock"></i></div><div><div class="stat-value">@Model.Stats.PendingApplications</div><div class="stat-label">Pending Applications</div></div></div>
+        <div class="stat-card"><div class="stat-icon blue"><i data-lucide="clipboard-check"></i></div><div><div class="stat-value">@Model.Stats.PendingEnrollments</div><div class="stat-label">Pending Enrollments</div></div></div>
+        <div class="stat-card"><div class="stat-icon yellow"><i data-lucide="school"></i></div><div><div class="stat-value">@Model.Stats.TotalSections</div><div class="stat-label">Classes</div></div></div>
+        <div class="stat-card"><div class="stat-icon ink"><i data-lucide="book-open"></i></div><div><div class="stat-value">@Model.Stats.TotalTeachers</div><div class="stat-label">Teachers</div></div></div>
     </div>
+
+    @if (Model.Charts is not null)
+    {
+        <div class="chart-grid">
+            <div class="content-card"><h3><i data-lucide="bar-chart-3"></i> Enrollment per Grade</h3><canvas id="enrollChart"></canvas></div>
+            <div class="content-card"><h3><i data-lucide="pie-chart"></i> Applications by Status</h3><canvas id="appChart"></canvas></div>
+            <div class="content-card"><h3><i data-lucide="bar-chart-2"></i> Grade Distribution</h3><canvas id="gradeChart"></canvas></div>
+            <div class="content-card"><h3><i data-lucide="wallet"></i> Payments</h3><canvas id="payChart"></canvas></div>
+        </div>
+    }
 }
 else
 {
-    <div class="content-card">
-        <h3>Welcome to the DGCS Enrollment System</h3>
-        <p style="color:var(--muted)">Use the menu on the left to navigate your portal.</p>
-    </div>
+    <div class="content-card"><h3>Welcome to the DGCS Enrollment System</h3><p style="color:var(--muted)">Use the menu on the left to navigate your portal.</p></div>
 }
 
 <div class="content-card">
@@ -58,6 +47,35 @@ else
     }
     else
     {
+
         <p style="color:var(--muted)">No announcements yet.</p>
     }
 </div>
+
+@if (User.IsInRole("Admin") && Model.Charts is not null)
+{
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const CH = {
+        gradeLabels: @Json.Serialize(Model.Charts.GradeLabels),
+        gradeEnrollment: @Json.Serialize(Model.Charts.GradeEnrollment),
+        appLabels: @Json.Serialize(Model.Charts.AppStatusLabels),
+        appCounts: @Json.Serialize(Model.Charts.AppStatusCounts),
+        distLabels: @Json.Serialize(Model.Charts.GradeDistLabels),
+        distCounts: @Json.Serialize(Model.Charts.GradeDistCounts),
+        payLabels: @Json.Serialize(Model.Charts.PaymentLabels),
+        payCounts: @Json.Serialize(Model.Charts.PaymentCounts)
+        };
+        const palette = ['#0194fe', '#fdfc01', '#260b6a', '#16a34a', '#dc2626', '#f59e0b'];
+        const noLegend = { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }, maintainAspectRatio: false };
+        const donut = { plugins: { legend: { position: 'bottom' } }, maintainAspectRatio: false };
+
+        new Chart(document.getElementById('enrollChart'), { type: 'bar', data: { labels: CH.gradeLabels, datasets: [{ label: 'Enrolled', data: CH.gradeEnrollment, backgroundColor: '#0194fe', borderRadius: 6 }] }, options: noLegend });
+        new Chart(document.getElementById('appChart'), { type: 'doughnut', data: { labels: CH.appLabels, datasets: [{ data: CH.appCounts, backgroundColor: palette }] }, options: donut });
+        new Chart(document.getElementById('gradeChart'), { type: 'bar', data: { labels: CH.distLabels, datasets: [{ label: 'Students', data: CH.distCounts, backgroundColor: '#260b6a', borderRadius: 6 }] }, options: noLegend });
+        new Chart(document.getElementById('payChart'), { type: 'doughnut', data: { labels: CH.payLabels, datasets: [{ data: CH.payCounts, backgroundColor: ['#16a34a', '#f59e0b', '#dc2626'] }] }, options: donut });
+    </script>
+}
+@section Scripts {
+    <script>if (window.lucide) lucide.createIcons();</script>
+}

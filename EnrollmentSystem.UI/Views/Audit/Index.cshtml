@@ -1,0 +1,160 @@
+﻿@* File: EnrollmentSystem.UI/Views/Audit/Index.cshtml *@
+@model EnrollmentSystem.BLL.DTOs.AuditLogPageDto
+@{
+    ViewData["Title"] = "Audit Log";
+
+    string BadgeClass(string value)
+    {
+        var v = (value ?? "").ToLowerInvariant();
+        if (v.Contains("reject") || v.Contains("fail") || v.Contains("delete") || v.Contains("denied")) return "badge-rejected";
+        if (v.Contains("approve") || v.Contains("verified") || v.Contains("enroll") || v.Contains("success")) return "badge-approved";
+        return "badge-pending";
+    }
+
+    string PageUrl(int p) => Url.Action("Index", "Audit", new
+    {
+        page = p,
+        act = Model.Filter.Action,
+        entityName = Model.Filter.EntityName,
+        keyword = Model.Filter.Keyword,
+        fromDate = Model.Filter.FromDate?.ToString("yyyy-MM-dd"),
+        toDate = Model.Filter.ToDate?.ToString("yyyy-MM-dd")
+    }) ?? "#";
+}
+
+<h1 class="page-title">Audit Log</h1>
+<p class="page-subtitle">System activity trail. @Model.TotalCount record(s) match the current filter.</p>
+
+<div class="content-card">
+    <form method="get" asp-action="Index" class="audit-filter">
+        <div>
+            <label class="form-label">Action</label>
+            <select name="act" class="form-select">
+                <option value="">All actions</option>
+                @foreach (var a in Model.Actions)
+                {
+                    if (a == Model.Filter.Action)
+                    {
+                        <option value="@a" selected>@a</option>
+                    }
+                    else
+                    {
+                        <option value="@a">@a</option>
+                    }
+                }
+            </select>
+        </div>
+        <div>
+            <label class="form-label">Entity</label>
+            <select name="entityName" class="form-select">
+                <option value="">All entities</option>
+                @foreach (var e in Model.Entities)
+                {
+                    if (e == Model.Filter.EntityName)
+                    {
+                        <option value="@e" selected>@e</option>
+                    }
+                    else
+                    {
+                        <option value="@e">@e</option>
+                    }
+                }
+            </select>
+        </div>
+        <div>
+            <label class="form-label">From</label>
+            <input type="date" name="fromDate" class="form-control" value="@(Model.Filter.FromDate?.ToString("yyyy-MM-dd"))" />
+        </div>
+        <div>
+            <label class="form-label">To</label>
+            <input type="date" name="toDate" class="form-control" value="@(Model.Filter.ToDate?.ToString("yyyy-MM-dd"))" />
+        </div>
+        <div class="audit-filter-keyword">
+            <label class="form-label">Keyword</label>
+            <input type="text" name="keyword" class="form-control" placeholder="Search description, details…" value="@Model.Filter.Keyword" />
+        </div>
+        <div class="audit-filter-actions">
+            <button type="submit" class="btn btn-brand">Filter</button>
+            <a class="btn btn-outline-brand" asp-action="Index">Reset</a>
+        </div>
+    </form>
+</div>
+
+<div class="content-card" style="overflow-x:auto;">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Date / Time</th>
+                <th>Action</th>
+                <th>Entity</th>
+                <th>Subject</th>
+                <th>Description</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.Rows.Any())
+            {
+                @foreach (var r in Model.Rows)
+                {
+                    <tr>
+                        <td style="white-space:nowrap;">@r.Timestamp.ToString("MMM d, yyyy h:mm tt")</td>
+                        <td><strong>@r.Action</strong></td>
+                        <td>
+                            @r.EntityName
+                            @if (r.EntityId != "-" && !string.IsNullOrEmpty(r.EntityId))
+                            {
+                                <span style="color:var(--muted);">#@r.EntityId</span>
+                            }
+                        </td>
+                        <td>@r.Subject</td>
+                        <td>
+                            @r.Description
+                            @if (!string.IsNullOrWhiteSpace(r.Details))
+                            {
+                                <div style="color:var(--muted);font-size:12px;">@r.Details</div>
+                            }
+                        </td>
+                        <td>
+                            @if (!string.IsNullOrWhiteSpace(r.Status))
+                            {
+                                <span class="badge-status @BadgeClass(r.Status)">@r.Status</span>
+                            }
+                            else
+                            {
+                                <span style="color:var(--muted);">—</span>
+                            }
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr><td colspan="6" style="text-align:center;color:var(--muted);padding:24px;">No audit entries match this filter.</td></tr>
+            }
+        </tbody>
+    </table>
+
+    @if (Model.TotalPages > 1)
+    {
+        <div class="audit-pager">
+            @if (Model.HasPrevious)
+            {
+                <a class="btn btn-outline-brand" href="@PageUrl(Model.Page - 1)">← Previous</a>
+            }
+            else
+            {
+                <span></span>
+            }
+            <span class="audit-pager-info">Page @Model.Page of @Model.TotalPages</span>
+            @if (Model.HasNext)
+            {
+                <a class="btn btn-outline-brand" href="@PageUrl(Model.Page + 1)">Next →</a>
+            }
+            else
+            {
+                <span></span>
+            }
+        </div>
+    }
+</div>

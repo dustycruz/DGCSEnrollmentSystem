@@ -6,7 +6,19 @@
 <h1 class="page-title">Grades — @Model.SectionName</h1>
 <p class="page-subtitle">Final grade per subject (average of encoded quarters).</p>
 
+<div class="content-card no-print" style="display:flex;justify-content:flex-end;">
+    <button type="button" class="btn btn-ink" onclick="window.print()">🖨 Print Grade Sheet</button>
+</div>
+
 <div class="content-card" style="overflow-x:auto;">
+    <div class="print-header">
+        <img src="~/images/logo.png" alt="DGCS" onerror="this.style.display='none'" />
+        <div>
+            <h2>Divine Grace Center of Studies</h2>
+            <p>47 General Avenue, GSIS Village, Tandang Sora, Quezon City &middot; School ID 482683</p>
+            <p>Tel (02) 7901-1644 &middot; (0922) 899-9437 &middot; Grade Sheet — @Model.SectionName</p>
+        </div>
+    </div>
     <table class="table">
         <thead>
             <tr>
@@ -40,4 +52,4 @@
         </tbody>
     </table>
 </div>
-<a class="btn btn-outline-brand" asp-action="Index">Back to Sections</a>
+<a class="btn btn-outline-brand no-print" asp-action="Index">Back to Sections</a>

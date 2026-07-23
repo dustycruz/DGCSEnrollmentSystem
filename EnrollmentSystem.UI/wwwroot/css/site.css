@@ -339,30 +339,52 @@ a {
     }
 
 /* ---------- Tables ---------- */
+/* ---------- Tables ---------- */
 .table {
     width: 100%;
-    border-collapse: collapse;
+    border-collapse: separate;
+    border-spacing: 0;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--card);
 }
 
-    .table th {
+    .table thead th {
         text-align: left;
-        font-size: 12px;
+        font-size: 11.5px;
+        font-weight: 800;
         text-transform: uppercase;
-        letter-spacing: .04em;
-        color: var(--muted);
-        padding: 12px;
-        border-bottom: 2px solid var(--border);
+        letter-spacing: .05em;
+        color: var(--ink);
+        background: var(--primary-soft);
+        padding: 14px 16px;
+        border-bottom: 1px solid var(--border);
+        white-space: nowrap;
     }
 
     .table td {
-        padding: 12px;
-        border-bottom: 1px solid var(--border);
+        padding: 13px 16px;
+        border-bottom: 1px solid #eef0f3;
         color: var(--ink);
         font-size: 14px;
+        vertical-align: middle;
     }
 
-    .table tr:hover td {
-        background: #fafbff;
+    .table tbody td:first-child {
+        font-weight: 600;
+    }
+
+    .table tbody tr:nth-child(even) td {
+        background: #fafbfc;
+    }
+
+    .table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    .table tbody tr:hover td {
+        background: var(--primary-soft);
     }
 
 /* ---------- Badges ---------- */
@@ -1840,4 +1862,162 @@ a.content-card:hover {
 /* Buttons that are links should never underline */
 a.btn, a.btn:hover {
     text-decoration: none;
+}
+/* File: EnrollmentSystem.UI/wwwroot/css/site.css  (append at end) */
+.chart-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    margin-bottom: 22px;
+}
+
+    .chart-grid .content-card {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .chart-grid canvas {
+        max-height: 260px;
+        min-height: 220px;
+    }
+
+@media (max-width: 900px) {
+    .chart-grid {
+        grid-template-columns: 1fr;
+    }
+}
+/* ===== Printable documents (report card / class list) ===== */
+.print-header {
+    display: none;
+}
+
+@media print {
+    .sidebar, .topbar, .sidebar-footer, .no-print {
+        display: none !important;
+    }
+
+    .app-shell {
+        display: block !important;
+    }
+
+    .main-content {
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    body {
+        background: #fff !important;
+    }
+
+    .content-card {
+        box-shadow: none !important;
+        border: none !important;
+        padding: 0 !important;
+        margin: 0 0 12px 0 !important;
+        break-inside: avoid;
+    }
+
+    .page-title {
+        display: none !important;
+    }
+
+    .print-header {
+        display: flex !important;
+        align-items: center;
+        gap: 14px;
+        border-bottom: 3px solid #0194fe;
+        padding-bottom: 10px;
+        margin-bottom: 16px;
+        color: #260b6a;
+    }
+
+        .print-header img {
+            height: 60px;
+        }
+
+        .print-header h2 {
+            margin: 0;
+            font-size: 18px;
+        }
+
+        .print-header p {
+            margin: 2px 0;
+            font-size: 11px;
+            color: #555;
+        }
+
+    .table th, .table td {
+        border: 1px solid #94a3b8 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    .table th {
+        background: #0194fe !important;
+        color: #fff !important;
+    }
+
+    .print-signatures {
+        display: flex !important;
+        justify-content: space-between;
+        margin-top: 56px;
+    }
+
+        .print-signatures div {
+            width: 40%;
+            text-align: center;
+        }
+
+        .print-signatures .line {
+            border-top: 1px solid #260b6a;
+            padding-top: 6px;
+            font-size: 11px;
+        }
+
+    @page {
+        margin: 16mm;
+    }
+}
+/* ===== Audit-log viewer ===== */
+.audit-filter {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px 14px;
+    align-items: end;
+}
+
+    .audit-filter .audit-filter-keyword {
+        grid-column: span 2;
+    }
+
+    .audit-filter .audit-filter-actions {
+        grid-column: span 2;
+        display: flex;
+        gap: 8px;
+        align-items: end;
+    }
+
+.audit-pager {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 14px;
+}
+
+.audit-pager-info {
+    font-size: 13px;
+    color: var(--muted);
+    font-weight: 600;
+}
+
+@media (max-width: 900px) {
+    .audit-filter {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+        .audit-filter .audit-filter-keyword,
+        .audit-filter .audit-filter-actions {
+            grid-column: span 2;
+        }
 }

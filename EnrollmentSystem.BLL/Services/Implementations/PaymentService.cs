@@ -13,19 +13,22 @@ public class PaymentService : IPaymentService
     private readonly IUserRepository _userRepo;
     private readonly INotificationService _notification;
     private readonly IEmailService _email;
+    private readonly IAuditService _audit;
 
     public PaymentService(
         IProofOfPaymentRepository proofRepo,
         IStudentRepository studentRepo,
         IUserRepository userRepo,
         INotificationService notification,
-        IEmailService email)
+        IEmailService email,
+        IAuditService audit)
     {
         _proofRepo = proofRepo;
         _studentRepo = studentRepo;
         _userRepo = userRepo;
         _notification = notification;
         _email = email;
+        _audit = audit;
     }
 
     public async Task<IEnumerable<PaymentRowDto>> GetAllAsync(string? status)
@@ -108,6 +111,16 @@ public class PaymentService : IPaymentService
             if (!string.IsNullOrWhiteSpace(app.EmailAddress))
                 await _email.SendStatusUpdateAsync(app.EmailAddress, $"Payment {status}", remarks);
         }
+
+        // ---- Audit trail ----
+        await _audit.LogAsync(
+            action: $"Payment {status}",
+            entityName: "ProofOfPayment",
+            entityId: proof.ProofOfPaymentId.ToString(),
+            description: $"Payment (ref {proof.ReferenceNumber}) marked {status} by {reviewedBy}.",
+            status: status,
+            details: remarks,
+            studentId: proof.StudentId);
 
         return ServiceResult.Ok($"Payment marked as {status}.");
     }
