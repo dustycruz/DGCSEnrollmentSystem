@@ -11,15 +11,18 @@ public class SectionService : ISectionService
     private readonly ISectionRepository _sectionRepo;
     private readonly IScheduleRepository _scheduleRepo;
     private readonly IGenericRepository<ScheduleDetail> _scheduleDetailRepo;
+    private readonly IAuditService _audit;
 
     public SectionService(
         ISectionRepository sectionRepo,
         IScheduleRepository scheduleRepo,
-        IGenericRepository<ScheduleDetail> scheduleDetailRepo)
+        IGenericRepository<ScheduleDetail> scheduleDetailRepo,
+        IAuditService audit)
     {
         _sectionRepo = sectionRepo;
         _scheduleRepo = scheduleRepo;
         _scheduleDetailRepo = scheduleDetailRepo;
+        _audit = audit;
     }
 
     public async Task<IEnumerable<Section>> GetAllAsync() => await _sectionRepo.GetAllActiveAsync();
@@ -173,15 +176,36 @@ public class SectionService : ISectionService
         }
         return null;
     }
+
     public async Task<ServiceResult> AssignAdviserAsync(int sectionId, int? teacherId, string modifiedBy)
     {
         var section = await _sectionRepo.GetByIdAsync(sectionId);
         if (section is null) return ServiceResult.Fail("Section not found.");
 
+        // A teacher may advise only one class — block assigning one who already advises another.
+        if (teacherId.HasValue)
+        {
+            var alreadyAdvising = (await _sectionRepo.GetByAdviserAsync(teacherId.Value))
+                .FirstOrDefault(s => s.SectionId != sectionId);
+            if (alreadyAdvising is not null)
+                return ServiceResult.Fail(
+                    $"That teacher is already the adviser of {alreadyAdvising.Name}. Remove them from that class first, or choose a different teacher.");
+        }
+
         section.AdviserTeacherId = teacherId;
         section.ModifiedBy = modifiedBy;
         _sectionRepo.Update(section);
         await _sectionRepo.SaveAsync();
+
+        await _audit.LogAsync(
+            action: teacherId is null ? "Adviser Removed" : "Adviser Assigned",
+            entityName: "Section",
+            entityId: section.SectionId.ToString(),
+            description: teacherId is null
+                ? $"Adviser removed from {section.Name} by {modifiedBy}."
+                : $"Adviser (teacher #{teacherId}) assigned to {section.Name} by {modifiedBy}.",
+            status: teacherId is null ? "Removed" : "Assigned");
+
         return ServiceResult.Ok(teacherId is null ? "Adviser removed." : "Adviser assigned.");
     }
 }

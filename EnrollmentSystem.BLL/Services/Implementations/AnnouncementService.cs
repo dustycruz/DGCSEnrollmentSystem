@@ -9,10 +9,12 @@ namespace EnrollmentSystem.BLL.Services.Implementations;
 public class AnnouncementService : IAnnouncementService
 {
     private readonly IAnnouncementRepository _announcementRepo;
+    private readonly IAuditService _audit;
 
-    public AnnouncementService(IAnnouncementRepository announcementRepo)
+    public AnnouncementService(IAnnouncementRepository announcementRepo, IAuditService audit)
     {
         _announcementRepo = announcementRepo;
+        _audit = audit;
     }
 
     public async Task<IEnumerable<Announcement>> GetAllAsync()
@@ -39,6 +41,13 @@ public class AnnouncementService : IAnnouncementService
         await _announcementRepo.AddAsync(announcement);
         await _announcementRepo.SaveAsync();
 
+        await _audit.LogAsync(
+            action: "Announcement Posted",
+            entityName: "Announcement",
+            entityId: announcement.AnnouncementId.ToString(),
+            description: $"Announcement \"{announcement.Title}\" posted by {createdBy}.",
+            status: "Posted");
+
         return ServiceResult<int>.Ok(announcement.AnnouncementId, "Announcement posted.");
     }
 
@@ -52,6 +61,13 @@ public class AnnouncementService : IAnnouncementService
         existing.ModifiedBy = modifiedBy;
         _announcementRepo.Update(existing);
         await _announcementRepo.SaveAsync();
+
+        await _audit.LogAsync(
+            action: "Announcement Deleted",
+            entityName: "Announcement",
+            entityId: existing.AnnouncementId.ToString(),
+            description: $"Announcement \"{existing.Title}\" deleted by {modifiedBy}.",
+            status: "Deleted");
 
         return ServiceResult.Ok("Announcement deleted.");
     }

@@ -2,6 +2,9 @@
 @model IEnumerable<Teacher>
 @{
     ViewData["Title"] = "Teachers";
+    var advisoryByTeacher = ViewBag.AdvisoryByTeacher as Dictionary<int, EnrollmentSystem.DAL.Models.Section> ?? new();
+    var freeSections = ViewBag.FreeSections as IEnumerable<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>
+        ?? Enumerable.Empty<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>();
 }
 <h1 class="page-title">Teachers</h1>
 <p class="page-subtitle">Manage faculty accounts.</p>
@@ -30,14 +33,41 @@
 
 <div class="content-card">
     <table class="table">
-        <thead><tr><th>Name</th><th>Employee No. (Username)</th><th>Email</th><th></th></tr></thead>
+        <thead><tr><th>Name</th><th>Employee No. (Username)</th><th>Email</th><th>Advisory Class</th><th></th></tr></thead>
         <tbody>
             @foreach (var t in Model)
             {
+                advisoryByTeacher.TryGetValue(t.TeacherId, out var advisory);
                 <tr>
                     <td><strong>@t.Employee?.LastName, @t.Employee?.FirstName @t.Employee?.MiddleName</strong></td>
                     <td>@t.Employee?.EmployeeNumber</td>
                     <td>@t.Employee?.EmailAddress</td>
+                    <td>
+                        @if (advisory is not null)
+                        {
+                            <div style="display:flex;gap:8px;align-items:center;">
+                                <span class="badge-status badge-approved">@advisory.Name</span>
+                                <form asp-action="RemoveAdvisory" method="post" style="display:inline;" onsubmit="return confirm('Remove this advisory?');">
+                                    <input type="hidden" name="sectionId" value="@advisory.SectionId" />
+                                    <button type="submit" class="btn btn-danger" style="padding:4px 10px;font-size:12px;">Remove</button>
+                                </form>
+                            </div>
+                        }
+                        else
+                        {
+                            <form asp-action="AssignAdvisory" method="post" style="display:flex;gap:6px;align-items:center;">
+                                <input type="hidden" name="teacherId" value="@t.TeacherId" />
+                                <select name="sectionId" class="form-select" style="max-width:170px;padding:6px 10px;font-size:13px;" required>
+                                    <option value="">— Assign class —</option>
+                                    @foreach (var sec in freeSections)
+                                    {
+                                        <option value="@sec.Value">@sec.Text</option>
+                                    }
+                                </select>
+                                <button type="submit" class="btn btn-brand" style="padding:6px 12px;font-size:13px;">Assign</button>
+                            </form>
+                        }
+                    </td>
                     <td style="white-space:nowrap;">
                         <a class="btn btn-outline-brand" style="padding:6px 12px;font-size:13px;" asp-action="Edit" asp-route-id="@t.TeacherId">Edit</a>
                         <form asp-action="Delete" method="post" style="display:inline;" onsubmit="return confirm('Remove this teacher and disable their login?');">
@@ -49,7 +79,7 @@
             }
             @if (!Model.Any())
             {
-                <tr><td colspan="4" style="text-align:center;color:var(--muted)">No teachers yet.</td></tr>
+                <tr><td colspan="5" style="text-align:center;color:var(--muted)">No teachers yet.</td></tr>
             }
         </tbody>
     </table>

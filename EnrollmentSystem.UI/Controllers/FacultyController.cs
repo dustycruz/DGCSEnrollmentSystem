@@ -5,6 +5,7 @@ using EnrollmentSystem.UI.Helpers;
 using EnrollmentSystem.UI.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace EnrollmentSystem.UI.Controllers;
 
@@ -13,15 +14,53 @@ public class FacultyController : Controller
 {
     private readonly IAdminService _admin;
     private readonly ITeacherService _teacher;
+    private readonly ISectionService _section;
 
-    public FacultyController(IAdminService admin, ITeacherService teacher)
+    public FacultyController(IAdminService admin, ITeacherService teacher, ISectionService section)
     {
         _admin = admin;
         _teacher = teacher;
+        _section = section;
     }
 
     public async Task<IActionResult> Index()
-        => View(await _teacher.GetAllAsync());
+    {
+        var sections = (await _section.GetAllAsync()).ToList();
+
+        // teacherId -> the class they currently advise (one per teacher)
+        ViewBag.AdvisoryByTeacher = sections
+            .Where(s => s.AdviserTeacherId.HasValue)
+            .GroupBy(s => s.AdviserTeacherId!.Value)
+            .ToDictionary(g => g.Key, g => g.First());
+
+        // classes with no adviser yet — the pool a teacher can be assigned to
+        ViewBag.FreeSections = sections
+            .Where(s => s.AdviserTeacherId is null)
+            .Select(s => new SelectListItem(s.Name, s.SectionId.ToString()))
+            .ToList();
+
+        return View(await _teacher.GetAllAsync());
+    }
+
+    // Assign a class advisory to a teacher (guarded to one advisory per teacher in the service).
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> AssignAdvisory(int teacherId, int sectionId)
+    {
+        var result = await _section.AssignAdviserAsync(sectionId, teacherId, User.GetUserName());
+        TempData[result.Success ? "Success" : "Error"] = result.Message;
+        return RedirectToAction(nameof(Index));
+    }
+
+    // Remove a teacher's advisory by clearing the adviser on that class.
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> RemoveAdvisory(int sectionId)
+    {
+        var result = await _section.AssignAdviserAsync(sectionId, null, User.GetUserName());
+        TempData[result.Success ? "Success" : "Error"] = result.Message;
+        return RedirectToAction(nameof(Index));
+    }
 
     [HttpGet]
     public IActionResult Create() => View(new TeacherCreateViewModel());

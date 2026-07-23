@@ -1,0 +1,57 @@
+﻿@* File: EnrollmentSystem.UI/Views/Enrollment/StudentDetails.cshtml *@
+@model EnrollmentSystem.DAL.Models.Student
+@{
+    ViewData["Title"] = "Student Details";
+    var sectionId = ViewBag.SectionId as int?;
+    string V(string? s) => string.IsNullOrWhiteSpace(s) ? "—" : s!;
+}
+<h1 class="page-title">@Model.LastName, @Model.FirstName @Model.MiddleName</h1>
+<p class="page-subtitle">Student No. @V(Model.StudentNumber)</p>
+
+<div class="content-card">
+    <h3><i data-lucide="user"></i> Personal Information</h3>
+    <div class="detail-grid">
+        <div><span class="detail-label">Student Number</span><span class="detail-value">@V(Model.StudentNumber)</span></div>
+        <div><span class="detail-label">Full Name</span><span class="detail-value">@Model.FirstName @Model.MiddleName @Model.LastName</span></div>
+        <div><span class="detail-label">Gender</span><span class="detail-value">@V(Model.Gender)</span></div>
+        <div><span class="detail-label">Birthday</span><span class="detail-value">@(Model.Birthday?.ToString("MMMM d, yyyy") ?? "—")</span></div>
+        <div><span class="detail-label">Age</span><span class="detail-value">@(Model.Age?.ToString() ?? "—")</span></div>
+        <div><span class="detail-label">Place of Birth</span><span class="detail-value">@V(Model.PlaceOfBirth)</span></div>
+        <div><span class="detail-label">Religion</span><span class="detail-value">@V(Model.Religion)</span></div>
+        <div><span class="detail-label">LRN</span><span class="detail-value">@V(Model.LearnerReferenceNumber)</span></div>
+    </div>
+</div>
+
+<div class="content-card">
+    <h3><i data-lucide="phone"></i> Contact</h3>
+    <div class="detail-grid">
+        <div><span class="detail-label">Address</span><span class="detail-value">@V(Model.Address)</span></div>
+        <div><span class="detail-label">Mobile Number</span><span class="detail-value">@V(Model.MobileNumber)</span></div>
+        <div><span class="detail-label">Home Number</span><span class="detail-value">@V(Model.HomeNumber)</span></div>
+        <div><span class="detail-label">Email</span><span class="detail-value">@V(Model.EmailAddress)</span></div>
+    </div>
+</div>
+
+<div class="content-card">
+    <h3><i data-lucide="users"></i> Guardian</h3>
+    <div class="detail-grid">
+        <div><span class="detail-label">Guardian Name</span><span class="detail-value">@V(Model.GuardianName)</span></div>
+        <div><span class="detail-label">Relationship</span><span class="detail-value">@V(Model.GuardianRelationship)</span></div>
+        <div><span class="detail-label">Guardian Email</span><span class="detail-value">@V(Model.GuardianEmailAddress)</span></div>
+        <div><span class="detail-label">Guardian Home No.</span><span class="detail-value">@V(Model.GuardianHomeNumber)</span></div>
+        <div><span class="detail-label">Guardian Office No.</span><span class="detail-value">@V(Model.GuardianOfficeNumber)</span></div>
+    </div>
+</div>
+
+@if (sectionId.HasValue)
+{
+    <a class="btn btn-outline-brand" asp-action="Manage" asp-route-sectionId="@sectionId">← Back to Enrollment</a>
+}
+else
+{
+    <a class="btn btn-outline-brand" asp-controller="Section" asp-action="Index">← Back to Classes</a>
+}
+
+@section Scripts {
+    <script>if (window.lucide) lucide.createIcons();</script>
+}

@@ -18,6 +18,7 @@ public class AdminService : IAdminService
     private readonly IUserRepository _userRepo;
     private readonly IGradeLevelRepository _gradeLevelRepo;
     private readonly ISchoolYearRepository _schoolYearRepo;
+    private readonly IAuditService _audit;
 
     public AdminService(
         IStudentRepository studentRepo,
@@ -28,7 +29,8 @@ public class AdminService : IAdminService
         IEmployeeRepository employeeRepo,
         IUserRepository userRepo,
         IGradeLevelRepository gradeLevelRepo,
-        ISchoolYearRepository schoolYearRepo)
+        ISchoolYearRepository schoolYearRepo,
+        IAuditService audit)
     {
         _studentRepo = studentRepo;
         _applicationRepo = applicationRepo;
@@ -39,6 +41,7 @@ public class AdminService : IAdminService
         _userRepo = userRepo;
         _gradeLevelRepo = gradeLevelRepo;
         _schoolYearRepo = schoolYearRepo;
+        _audit = audit;
     }
 
     public async Task<DashboardStatsDto> GetDashboardStatsAsync()
@@ -89,6 +92,7 @@ public class AdminService : IAdminService
 
         return ServiceResult<int>.Ok(teacher.TeacherId, "Employee promoted to teacher.");
     }
+
     public async Task EnsureDemoTeacherAsync()
     {
         const string empNo = "EMP-2026-0001";
@@ -126,6 +130,7 @@ public class AdminService : IAdminService
         await _userRepo.AddUserToRoleAsync(user.Id, role.Id, empNo, hash);
         await _userRepo.SaveAsync();
     }
+
     public async Task<ServiceResult<AccountCredentialsDto>> CreateTeacherAsync(Employee employee, string createdBy)
     {
         if (string.IsNullOrWhiteSpace(employee.FirstName) || string.IsNullOrWhiteSpace(employee.LastName))
@@ -171,10 +176,18 @@ public class AdminService : IAdminService
         await _userRepo.AddUserToRoleAsync(user.Id, role.Id, empNo, hash);
         await _userRepo.SaveAsync();
 
+        await _audit.LogAsync(
+            action: "Teacher Created",
+            entityName: "Teacher",
+            entityId: teacher.TeacherId.ToString(),
+            description: $"Teacher {employee.FirstName} {employee.LastName} ({empNo}) created by {createdBy}.",
+            status: "Created");
+
         return ServiceResult<AccountCredentialsDto>.Ok(
             new AccountCredentialsDto { UserName = empNo, TempPassword = temp },
             $"Teacher account created ({empNo}).");
     }
+
     public async Task<ServiceResult> UpdateTeacherAsync(int teacherId, Employee updated, string modifiedBy)
     {
         var teacher = await _teacherRepo.GetWithEmployeeAsync(teacherId);
@@ -199,6 +212,14 @@ public class AdminService : IAdminService
                 await _userRepo.SaveAsync();
             }
         }
+
+        await _audit.LogAsync(
+            action: "Teacher Updated",
+            entityName: "Teacher",
+            entityId: teacherId.ToString(),
+            description: $"Teacher {emp.FirstName} {emp.LastName} ({emp.EmployeeNumber}) updated by {modifiedBy}.",
+            status: "Updated");
+
         return ServiceResult.Ok("Teacher updated.");
     }
 
@@ -223,9 +244,16 @@ public class AdminService : IAdminService
         if (!string.IsNullOrWhiteSpace(teacher.Employee?.EmployeeNumber))
             await _userRepo.DeleteUserByUserNameAsync(teacher.Employee.EmployeeNumber);
 
-        return ServiceResult.Ok("Teacher removed and login disabled.");
+        await _audit.LogAsync(
+            action: "Teacher Removed",
+            entityName: "Teacher",
+            entityId: teacherId.ToString(),
+            description: $"Teacher {teacher.Employee?.FirstName} {teacher.Employee?.LastName} ({teacher.Employee?.EmployeeNumber}) removed by {modifiedBy}; login disabled.",
+            status: "Deleted");
 
+        return ServiceResult.Ok("Teacher removed and login disabled.");
     }
+
     public async Task EnsureGradeSectionsAsync()
     {
         var sy = await _schoolYearRepo.GetLatestAsync();
@@ -257,5 +285,4 @@ public class AdminService : IAdminService
         }
         if (added) await _sectionRepo.SaveAsync();
     }
-
 }

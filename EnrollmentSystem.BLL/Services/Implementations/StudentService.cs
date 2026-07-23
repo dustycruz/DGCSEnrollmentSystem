@@ -15,6 +15,7 @@ public class StudentService : IStudentService
     private readonly IUserRepository _userRepo;
     private readonly IEmailService _emailService;
     private readonly INotificationService _notificationService;
+    private readonly IAuditService _audit;
 
     public StudentService(
         IStudentRepository studentRepo,
@@ -23,7 +24,8 @@ public class StudentService : IStudentService
         IApplicationRepository applicationRepo,
         IUserRepository userRepo,
         IEmailService emailService,
-        INotificationService notificationService)
+        INotificationService notificationService,
+        IAuditService audit)
     {
         _studentRepo = studentRepo;
         _enrollmentRepo = enrollmentRepo;
@@ -32,6 +34,7 @@ public class StudentService : IStudentService
         _userRepo = userRepo;
         _emailService = emailService;
         _notificationService = notificationService;
+        _audit = audit;
     }
 
     public async Task<IEnumerable<Student>> GetAllAsync()
@@ -157,6 +160,15 @@ public class StudentService : IStudentService
                 "You are officially enrolled!",
                 $"Your Student Number is {studentNumber}. Check your email for your Student Portal credentials.");
         }
+
+        // 5. Audit trail
+        await _audit.LogAsync(
+            action: "Enrollment Finalized",
+            entityName: "Student",
+            entityId: created.Data.ToString(),
+            description: $"{student.LastName}, {student.FirstName} enrolled as {studentNumber} by {modifiedBy}. Student login created.",
+            status: "Enrolled",
+            studentId: created.Data);
 
         return ServiceResult<StudentCredentialsDto>.Ok(new StudentCredentialsDto
         {

@@ -13,19 +13,22 @@ public class AdmissionService : IAdmissionService
     private readonly IUserRepository _userRepo;
     private readonly INotificationService _notification;
     private readonly IEmailService _email;
+    private readonly IAuditService _audit;
 
     public AdmissionService(
         IApplicationRepository applicationRepo,
         IProofOfPaymentRepository proofRepo,
         IUserRepository userRepo,
         INotificationService notification,
-        IEmailService email)
+        IEmailService email,
+        IAuditService audit)
     {
         _applicationRepo = applicationRepo;
         _proofRepo = proofRepo;
         _userRepo = userRepo;
         _notification = notification;
         _email = email;
+        _audit = audit;
     }
 
     public async Task<IEnumerable<Application>> GetQueueAsync(string? status)
@@ -55,6 +58,14 @@ public class AdmissionService : IAdmissionService
                 (string.IsNullOrWhiteSpace(remarks) ? "" : $" Remarks: {remarks}"),
             newStatus, remarks);
 
+        await _audit.LogAsync(
+            action: $"Application {newStatus}",
+            entityName: "Application",
+            entityId: app.ApplicationId.ToString(),
+            description: $"Application of {app.LastName}, {app.FirstName} marked {newStatus} by {reviewedBy}.",
+            status: newStatus,
+            details: remarks);
+
         return ServiceResult.Ok($"Application marked as {newStatus}.");
     }
 
@@ -75,6 +86,14 @@ public class AdmissionService : IAdmissionService
                 $"Your proof of payment was {status}." +
                     (string.IsNullOrWhiteSpace(remarks) ? "" : $" Remarks: {remarks}"),
                 null, null);
+
+        await _audit.LogAsync(
+            action: $"Payment {status}",
+            entityName: "ProofOfPayment",
+            entityId: proof.ProofOfPaymentId.ToString(),
+            description: $"Applicant payment (ref {proof.ReferenceNumber}) marked {status} by {reviewedBy}.",
+            status: status,
+            details: remarks);
 
         return ServiceResult.Ok($"Payment marked as {status}.");
     }

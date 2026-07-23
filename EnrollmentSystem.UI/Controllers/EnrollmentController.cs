@@ -65,6 +65,14 @@ public class EnrollmentController : Controller
         }
         return RedirectToAction(nameof(Manage), new { sectionId });
     }
+    // Admin view of a single student's full details (opened from the enrolled list).
+    public async Task<IActionResult> StudentDetails(int id, int? sectionId)
+    {
+        var student = await _studentService.GetProfileAsync(id);
+        if (student is null) return NotFound();
+        ViewBag.SectionId = sectionId;
+        return View(student);
+    }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
