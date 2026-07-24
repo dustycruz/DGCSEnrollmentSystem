@@ -1229,6 +1229,36 @@ a.content-card:hover {
             width: 14px;
             height: 14px;
         }
+/* Clickable subject card (renders as a link but looks like a card) */
+a.class-card-link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease;
+}
+
+    a.class-card-link:hover {
+        border-color: var(--primary);
+        box-shadow: 0 6px 18px rgba(1,148,254,.15);
+        transform: translateY(-2px);
+    }
+
+.class-card-cta {
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: var(--primary);
+    font-weight: 700;
+    font-size: 13px;
+}
+
+    .class-card-cta i {
+        width: 16px;
+        height: 16px;
+    }
 
 .class-actions {
     display: flex;

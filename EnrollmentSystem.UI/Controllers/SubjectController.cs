@@ -43,4 +43,5 @@ public class SubjectController : Controller
         TempData[result.Success ? "Success" : "Error"] = result.Message;
         return RedirectToAction(nameof(Index));
     }
+
 }

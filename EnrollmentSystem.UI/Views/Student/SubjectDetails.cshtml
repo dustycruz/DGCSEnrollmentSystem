@@ -1,0 +1,78 @@
+﻿@* File: EnrollmentSystem.UI/Views/Student/SubjectDetails.cshtml *@
+@model EnrollmentSystem.DAL.Models.Schedule
+@{
+    ViewData["Title"] = Model.Subject?.Name ?? "Subject";
+    var grades = ViewBag.Grades as EnrollmentSystem.BLL.DTOs.ReportCardLineDto;
+    var teacher = Model.Teacher?.Employee is null ? "TBA" : $"{Model.Teacher.Employee.FirstName} {Model.Teacher.Employee.LastName}";
+    string G(decimal? v) => v.HasValue ? v.Value.ToString("0.##") : "-";
+}
+<h1 class="page-title">@Model.Subject?.Name</h1>
+<p class="page-subtitle">@(Model.Subject?.Code) @(string.IsNullOrEmpty(Model.Section?.Name) ? "" : "· " + Model.Section!.Name)</p>
+
+<div class="content-card">
+    <h3><i data-lucide="book"></i> Subject Information</h3>
+    <div class="detail-grid">
+        <div><span class="detail-label">Subject</span><span class="detail-value">@Model.Subject?.Name</span></div>
+        <div><span class="detail-label">Code</span><span class="detail-value">@(Model.Subject?.Code ?? "-")</span></div>
+        <div><span class="detail-label">Teacher</span><span class="detail-value">@teacher</span></div>
+        <div><span class="detail-label">Section</span><span class="detail-value">@(Model.Section?.Name ?? "-")</span></div>
+        <div><span class="detail-label">Grade Level</span><span class="detail-value">@(Model.Section?.GradeLevel?.Name ?? "-")</span></div>
+        <div><span class="detail-label">School Year</span><span class="detail-value">@(Model.Section?.SchoolYear?.Name ?? "-")</span></div>
+    </div>
+</div>
+
+<div class="content-card">
+    <h3><i data-lucide="calendar-clock"></i> Schedule</h3>
+    @if (Model.ScheduleDetails.Any())
+    {
+        <table class="table">
+            <thead><tr><th>Day</th><th>Time</th><th>Room</th></tr></thead>
+            <tbody>
+                @foreach (var d in Model.ScheduleDetails)
+                {
+                    var time = d.StartTime.HasValue && d.EndTime.HasValue
+                        ? $"{d.StartTime.Value.ToString("h:mm tt")} - {d.EndTime.Value.ToString("h:mm tt")}"
+                        : "TBA";
+                    <tr>
+                        <td>@(d.Day ?? "TBA")</td>
+                        <td>@time</td>
+                        <td>@(d.Room?.Name ?? "-")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p style="color:var(--muted)">Schedule not set yet.</p>
+    }
+</div>
+
+<div class="content-card">
+    <h3><i data-lucide="bar-chart-3"></i> My Grades in this Subject</h3>
+    @if (grades is not null)
+    {
+        <table class="table">
+            <thead><tr><th>Q1</th><th>Q2</th><th>Q3</th><th>Q4</th><th>Final</th></tr></thead>
+            <tbody>
+                <tr>
+                    <td>@G(grades.Q1)</td>
+                    <td>@G(grades.Q2)</td>
+                    <td>@G(grades.Q3)</td>
+                    <td>@G(grades.Q4)</td>
+                    <td><strong style="color:var(--primary);">@G(grades.Final)</strong></td>
+                </tr>
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p style="color:var(--muted)">No grades have been posted for this subject yet.</p>
+    }
+</div>
+
+<a class="btn btn-outline-brand" asp-action="Subjects">← Back to My Classes</a>
+
+@section Scripts {
+    <script>if (window.lucide) lucide.createIcons();</script>
+}

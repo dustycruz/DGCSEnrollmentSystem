@@ -32,7 +32,12 @@ public class HomeController : Controller
     [Authorize]
     public async Task<IActionResult> Dashboard()
     {
+        // Teachers get their own rich dashboard.
+        if (User.IsInRole("Teacher"))
+            return RedirectToAction("Index", "Teacher");
+
         var role = User.GetPrimaryRole() ?? "User";
+        // ... rest unchanged
         var model = new DashboardViewModel
         {
             Role = role,

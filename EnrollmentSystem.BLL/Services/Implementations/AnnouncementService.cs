@@ -71,4 +71,12 @@ public class AnnouncementService : IAnnouncementService
 
         return ServiceResult.Ok("Announcement deleted.");
     }
+    public async Task<IEnumerable<Announcement>> GetFeedForSectionAsync(int? sectionId)
+    {
+        var recent = await _announcementRepo.GetRecentAsync(200);
+        return recent
+            .Where(a => a.SectionId == null || (sectionId.HasValue && a.SectionId == sectionId.Value))
+            .OrderByDescending(a => a.PostedDate)
+            .ToList();
+    }
 }

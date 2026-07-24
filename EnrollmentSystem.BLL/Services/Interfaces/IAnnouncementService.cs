@@ -10,6 +10,7 @@ public interface IAnnouncementService
     Task<IEnumerable<Announcement>> GetRecentAsync(int count);
     Task<IEnumerable<Announcement>> GetBySectionAsync(int sectionId);
     Task<IEnumerable<Announcement>> GetByTeacherAsync(int teacherId);
+    Task<IEnumerable<Announcement>> GetFeedForSectionAsync(int? sectionId);
     Task<ServiceResult<int>> CreateAsync(Announcement announcement, string createdBy);
     Task<ServiceResult> DeleteAsync(int id, string modifiedBy);
 }

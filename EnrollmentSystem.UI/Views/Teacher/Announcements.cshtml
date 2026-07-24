@@ -1,0 +1,77 @@
+﻿@* File: EnrollmentSystem.UI/Views/Teacher/Announcements.cshtml *@
+@model TeacherAnnouncementsViewModel
+@{
+    ViewData["Title"] = "Class Announcements";
+}
+<h1 class="page-title">Class Announcements</h1>
+<p class="page-subtitle">Post updates to your classes. Students in the class will see them on their Announcements page.</p>
+
+@if (TempData["Success"] is string ok)
+{
+    <div class="alert alert-success">@ok</div>
+}
+@if (TempData["Error"] is string err)
+{
+    <div class="alert alert-danger">@err</div>
+}
+
+<div class="content-card">
+    <h3><i data-lucide="megaphone"></i> New Announcement</h3>
+    <form asp-action="PostAnnouncement" method="post">
+        @Html.AntiForgeryToken()
+        <div style="margin-bottom:10px;">
+            <label class="form-label">Post to</label>
+            <select name="sectionId" class="form-select" style="max-width:320px;">
+                <option value="">— All my classes (school-wide to my students) —</option>
+                @foreach (var s in Model.Sections)
+                {
+                    <option value="@s.Value">@s.Text</option>
+                }
+            </select>
+        </div>
+        <div style="margin-bottom:10px;">
+            <label class="form-label">Title</label>
+            <input type="text" name="title" class="form-control" required maxlength="200" placeholder="e.g. Quiz on Friday" />
+        </div>
+        <div style="margin-bottom:12px;">
+            <label class="form-label">Message</label>
+            <textarea name="content" class="form-control" rows="3" placeholder="Write your announcement..."></textarea>
+        </div>
+        <button type="submit" class="btn btn-brand"><i data-lucide="send"></i> Post</button>
+    </form>
+</div>
+
+<div class="content-card">
+    <h3><i data-lucide="list"></i> My Posts</h3>
+    @if (Model.Posts.Any())
+    {
+        foreach (var a in Model.Posts)
+        {
+            var target = a.SectionId.HasValue && Model.SectionNames.TryGetValue(a.SectionId.Value, out var name)
+                ? name : "All my classes";
+            <div style="padding:14px 0;border-bottom:1px solid var(--border);">
+                <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;">
+                    <div>
+                        <strong>@a.Title</strong>
+                        <span class="badge-status badge-approved" style="margin-left:8px;">@target</span>
+                    </div>
+                    <form asp-action="DeleteAnnouncement" method="post" onsubmit="return confirm('Delete this announcement?');">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="id" value="@a.AnnouncementId" />
+                        <button class="btn btn-danger" style="padding:4px 10px;font-size:12px;">Delete</button>
+                    </form>
+                </div>
+                <div style="color:var(--muted);font-size:14px;margin-top:4px;">@a.Content</div>
+                <div style="color:var(--muted);font-size:12px;margin-top:2px;">@a.PostedDate.ToString("MMM d, yyyy h:mm tt")</div>
+            </div>
+        }
+    }
+    else
+    {
+        <p style="color:var(--muted)">You haven't posted any announcements yet.</p>
+    }
+</div>
+
+@section Scripts {
+    <script>if (window.lucide) lucide.createIcons();</script>
+}

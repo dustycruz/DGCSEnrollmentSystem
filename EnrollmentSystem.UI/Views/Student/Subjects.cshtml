@@ -23,7 +23,7 @@
         {
             var t = s.Teacher?.Employee is null ? "TBA" : $"{s.Teacher.Employee.FirstName} {s.Teacher.Employee.LastName}";
             var codeSection = (s.Subject?.Code ?? "") + (string.IsNullOrEmpty(s.Section?.Name) ? "" : " · " + s.Section!.Name);
-            <div class="class-card">
+            <a class="class-card class-card-link" asp-action="SubjectDetails" asp-route-scheduleId="@s.ScheduleId">
                 <div class="title">@s.Subject?.Name</div>
                 <div class="sec">@codeSection</div>
                 <div class="fac">@t</div>
@@ -43,11 +43,8 @@
                         <div class="row2" style="color:var(--muted)">Schedule not set</div>
                     }
                 </div>
-                <div class="class-actions">
-                    <a class="btn btn-brand" asp-action="Schedule"><i data-lucide="clock"></i> Schedule</a>
-                    <a class="btn btn-success" asp-action="Grades"><i data-lucide="bar-chart-3"></i> Grades</a>
-                </div>
-            </div>
+                <div class="class-card-cta"><span>View details</span> <i data-lucide="arrow-right"></i></div>
+            </a>
         }
     </div>
 }

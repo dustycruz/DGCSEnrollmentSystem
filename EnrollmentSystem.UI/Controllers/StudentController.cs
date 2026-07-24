@@ -110,6 +110,22 @@ public class StudentController : Controller
         if (s is null) return RedirectToAction(nameof(Index));
         return View(await _studentService.GetScheduleAsync(s.StudentId));
     }
+    // Details for one of the student's own subjects (opened by clicking a subject card).
+    public async Task<IActionResult> SubjectDetails(int scheduleId)
+    {
+        var s = await MeAsync();
+        if (s is null) return RedirectToAction(nameof(Index));
+
+        // Restrict to the student's own schedule so they can't view arbitrary subjects.
+        var schedules = (await _studentService.GetScheduleAsync(s.StudentId)).ToList();
+        var schedule = schedules.FirstOrDefault(x => x.ScheduleId == scheduleId);
+        if (schedule is null) return RedirectToAction(nameof(Subjects));
+
+        var card = await _reporting.GetReportCardAsync(s.StudentId);
+        ViewBag.Grades = card?.Lines.FirstOrDefault(l => l.Subject == (schedule.Subject?.Name ?? ""));
+
+        return View(schedule);
+    }
 
     public async Task<IActionResult> Calendar(int? year, int? month)
     {
@@ -127,7 +143,18 @@ public class StudentController : Controller
     }
 
     public async Task<IActionResult> Announcements()
-        => View(await _announcementService.GetRecentAsync(50));
+    {
+        // Show school-wide announcements plus the student's own class announcements.
+        var student = await MeAsync();
+        int? sectionId = null;
+        if (student is not null)
+        {
+            var enrollments = (await _studentService.GetEnrollmentsAsync(student.StudentId)).ToList();
+            var active = enrollments.FirstOrDefault(e => e.Status == "Enrolled") ?? enrollments.FirstOrDefault();
+            sectionId = active?.SectionId;
+        }
+        return View(await _announcementService.GetFeedForSectionAsync(sectionId));
+    }
 
     public async Task<IActionResult> Payments()
     {

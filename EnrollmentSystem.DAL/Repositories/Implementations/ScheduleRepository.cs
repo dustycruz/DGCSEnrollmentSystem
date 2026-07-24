@@ -16,6 +16,8 @@ public class ScheduleRepository : GenericRepository<Schedule>, IScheduleReposito
             .Include(s => s.Subject)
             .Include(s => s.Teacher).ThenInclude(t => t!.Employee)
             .Include(s => s.ScheduleDetails).ThenInclude(d => d.Room)
+            .Include(s => s.Section).ThenInclude(sec => sec!.GradeLevel)
+            .Include(s => s.Section).ThenInclude(sec => sec!.SchoolYear)
             .ToListAsync();
 
     public async Task<IEnumerable<Schedule>> GetByTeacherAsync(int teacherId)
@@ -41,4 +43,5 @@ public class ScheduleRepository : GenericRepository<Schedule>, IScheduleReposito
         .Include(s => s.Teacher).ThenInclude(t => t!.Employee)
         .Include(s => s.ScheduleDetails).ThenInclude(d => d.Room)
         .ToListAsync();
+
 }

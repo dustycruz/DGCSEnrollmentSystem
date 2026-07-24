@@ -31,7 +31,7 @@
                     <img src="/images/logo.png" alt="DGCS" />
                     <div>
                         <div class="title">DGCS</div>
-                        <div class="subtitle">Enrollment System</div>
+                        <div class="subtitle">Integrated System</div>
                     </div>
                 </div>
 
@@ -74,6 +74,7 @@
                         <a class="nav-link-item @ActiveAction("Teacher", "Schedule")" asp-controller="Teacher" asp-action="Schedule"><i data-lucide="clock"></i> My Schedule</a>
                         <a class="nav-link-item @ActiveAction("Teacher", "Calendar")" asp-controller="Teacher" asp-action="Calendar"><i data-lucide="calendar"></i> Calendar</a>
                         <a class="nav-link-item @ActiveAction("Teacher", "Advisory")" asp-controller="Teacher" asp-action="Advisory"><i data-lucide="user-check"></i> My Advisory</a>
+                        <a class="nav-link-item @ActiveAction("Teacher", "Announcements")" asp-controller="Teacher" asp-action="Announcements"><i data-lucide="megaphone"></i> Announcements</a>
                     }
 
                     @if (User.IsInRole("Admin"))

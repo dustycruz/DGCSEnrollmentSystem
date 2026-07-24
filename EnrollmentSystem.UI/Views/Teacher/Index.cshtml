@@ -1,10 +1,10 @@
 ﻿@* File: EnrollmentSystem.UI/Views/Teacher/Index.cshtml *@
 @model TeacherDashboardViewModel
 @{
-    ViewData["Title"] = "My Classes";
+    ViewData["Title"] = "Dashboard";
 }
-<h1 class="page-title">My Classes</h1>
-<p class="page-subtitle">Welcome, @(string.IsNullOrEmpty(Model.TeacherName) ? "Teacher" : Model.TeacherName)!</p>
+<h1 class="page-title">Welcome, @(string.IsNullOrEmpty(Model.TeacherName) ? "Teacher" : Model.TeacherName)!</h1>
+<p class="page-subtitle">@DateTime.Now.ToString("dddd, MMMM d, yyyy")</p>
 
 @if (Model.Teacher is null)
 {
@@ -12,8 +12,54 @@
 }
 else
 {
+    <div class="stat-grid">
+        <div class="stat-card">
+            <div class="stat-icon blue"><i data-lucide="book-open"></i></div>
+            <div><div class="stat-value">@Model.ClassCount</div><div class="stat-label">Classes</div></div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon ink"><i data-lucide="calendar-clock"></i></div>
+            <div><div class="stat-value">@Model.TodayClasses.Count</div><div class="stat-label">Classes Today</div></div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon yellow"><i data-lucide="user-check"></i></div>
+            <div><div class="stat-value">@Model.AdviseeCount</div><div class="stat-label">Advisees@(string.IsNullOrEmpty(Model.AdvisoryClassName) ? "" : $" · {Model.AdvisoryClassName}")</div></div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon blue"><i data-lucide="clipboard-list"></i></div>
+            <div><div class="stat-value">@Model.PendingGradeQuarters</div><div class="stat-label">Grade quarters pending</div></div>
+        </div>
+    </div>
+
     <div class="content-card">
-        <h3><i data-lucide="book-open"></i> Assigned Classes</h3>
+        <h3><i data-lucide="calendar-clock"></i> Today's Classes — @Model.Today</h3>
+        @if (Model.TodayClasses.Any())
+        {
+            <table class="table">
+                <thead><tr><th>Time</th><th>Subject</th><th>Section</th><th>Room</th><th></th></tr></thead>
+                <tbody>
+                    @foreach (var c in Model.TodayClasses)
+                    {
+                        <tr>
+                            <td style="white-space:nowrap;">@c.Time</td>
+                            <td><strong>@c.Subject</strong></td>
+                            <td>@c.Section</td>
+                            <td>@c.Room</td>
+                            <td><a class="btn btn-brand" style="padding:6px 12px;font-size:13px;" asp-action="EncodeGrades" asp-route-scheduleId="@c.ScheduleId">Encode Grades</a></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <p style="color:var(--muted)">No classes scheduled for today. Enjoy the breather! 🎉</p>
+        }
+    </div>
+
+
+    <div class="content-card">
+        <h3><i data-lucide="book-open"></i> All Assigned Classes</h3>
         @if (Model.Schedules.Any())
         {
             <table class="table">
@@ -25,7 +71,7 @@ else
                             <td><strong>@sc.Subject?.Name</strong></td>
                             <td>@sc.Section?.Name</td>
                             <td>@(sc.Section?.GradeLevel?.Name ?? "-")</td>
-                            <td>
+                            <td style="white-space:nowrap;">
                                 <a class="btn btn-outline-brand" style="padding:6px 12px;font-size:13px;" asp-action="ClassList" asp-route-sectionId="@sc.SectionId">Class List</a>
                                 <a class="btn btn-brand" style="padding:6px 12px;font-size:13px;" asp-action="EncodeGrades" asp-route-scheduleId="@sc.ScheduleId">Encode Grades</a>
                             </td>
@@ -36,7 +82,7 @@ else
         }
         else
         {
-            <p style="color:var(--muted)">You have no assigned classes yet. The admin assigns subjects/sections to you in the Sections module.</p>
+            <p style="color:var(--muted)">You have no assigned classes yet. The admin assigns subjects/sections to you in the Classes module.</p>
         }
     </div>
 }
