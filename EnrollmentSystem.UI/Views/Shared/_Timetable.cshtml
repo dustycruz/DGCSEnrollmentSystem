@@ -15,6 +15,11 @@
         "Sunday" => "Su",
         _ => d ?? ""
     };
+
+    // Optional: callers can make each block/row a link by setting these in ViewData.
+    var evtAction = ViewData["EventAction"] as string;
+    var evtController = ViewData["EventController"] as string;
+    var clickable = !string.IsNullOrEmpty(evtAction);
 }
 <div class="content-card" style="overflow-x:auto;">
     <h3 style="text-align:center;">Weekly Schedule</h3>
@@ -42,33 +47,66 @@
                 {
                     var rs = Slot(dt.StartTime.Value) + 2;
                     var span = Math.Max(1, Slot(dt.EndTime.Value) - Slot(dt.StartTime.Value));
-                    <div class="tt-event" style="grid-column:@col;grid-row:@rs / span @span;">
-                        <div class="c">@(s.Subject?.Code ?? s.Subject?.Name)</div>
-                        <div class="s">@s.Section?.Name</div>
-                        <div class="s">@(dt.Room?.Name)</div>
-                        <div class="s">@(dt.StartTime?.ToString("hh:mm tt")) - @(dt.EndTime?.ToString("hh:mm tt"))</div>
-                    </div>
+                    var gridStyle = $"grid-column:{col};grid-row:{rs} / span {span};";
+                    if (clickable)
+                    {
+                        <a class="tt-event tt-event-link" style="@gridStyle" href="@Url.Action(evtAction, evtController, new { scheduleId = s.ScheduleId, sectionId = s.SectionId })">
+                            <div class="c">@(s.Subject?.Code ?? s.Subject?.Name)</div>
+                            <div class="s">@s.Section?.Name</div>
+                            <div class="s">@(dt.Room?.Name)</div>
+                            <div class="s">@(dt.StartTime?.ToString("hh:mm tt")) - @(dt.EndTime?.ToString("hh:mm tt"))</div>
+                        </a>
+                    }
+                    else
+                    {
+                        <div class="tt-event" style="@gridStyle">
+                            <div class="c">@(s.Subject?.Code ?? s.Subject?.Name)</div>
+                            <div class="s">@s.Section?.Name</div>
+                            <div class="s">@(dt.Room?.Name)</div>
+                            <div class="s">@(dt.StartTime?.ToString("hh:mm tt")) - @(dt.EndTime?.ToString("hh:mm tt"))</div>
+                        </div>
+                    }
                 }
             }
         }
     </div>
 </div>
+
 <div class="content-card" style="overflow-x:auto;">
     <table class="table">
-        <thead><tr><th>Code</th><th>Title</th><th>Section</th><th>Days</th><th>Time</th><th>Room</th><th>Faculty</th></tr></thead>
-        <tbody>
-            @foreach (var s in Model)
+        <thead><tr><th>Code</th><th>Title</th><th>Section</th><th>Days</th><th>Time</th><th>Room</th><th>Faculty</th>@if (clickable){
+            <th></th>
+        }
+    </tr></thead>
+    <tbody>
+        @foreach (var s in Model)
+        {
+            var t = s.Teacher?.Employee is null ? "" : $"{s.Teacher.Employee.FirstName} {s.Teacher.Employee.LastName}";
+            var daysStr = string.Join(" / ", s.ScheduleDetails.Select(d => Abbrev(d.Day)));
+            var timeStr = string.Join(" / ", s.ScheduleDetails.Select(d => $"{d.StartTime?.ToString("hh:mm tt")} - {d.EndTime?.ToString("hh:mm tt")}"));
+            var roomStr = string.Join(" / ", s.ScheduleDetails.Select(d => d.Room?.Name));
+            if (clickable)
             {
-                var t = s.Teacher?.Employee is null ? "" : $"{s.Teacher.Employee.FirstName} {s.Teacher.Employee.LastName}";
-                var daysStr = string.Join(" / ", s.ScheduleDetails.Select(d => Abbrev(d.Day)));
-                var timeStr = string.Join(" / ", s.ScheduleDetails.Select(d => $"{d.StartTime?.ToString("hh:mm tt")} - {d.EndTime?.ToString("hh:mm tt")}"));
-                var roomStr = string.Join(" / ", s.ScheduleDetails.Select(d => d.Room?.Name));
+                <tr data-href="@Url.Action(evtAction, evtController, new { scheduleId = s.ScheduleId, sectionId = s.SectionId })">
+                    <td><strong>@s.Subject?.Code</strong></td>
+                    <td>@s.Subject?.Name</td>
+                    <td>@s.Section?.Name</td>
+                    <td>@daysStr</td>
+                    <td>@timeStr</td>
+                    <td>@roomStr</td>
+                    <td>@t.ToUpper()</td>
+                    <td style="text-align:right;color:var(--muted);"><i data-lucide="chevron-right"></i></td>
+                </tr>
+            }
+            else
+            {
                 <tr><td><strong>@s.Subject?.Code</strong></td><td>@s.Subject?.Name</td><td>@s.Section?.Name</td><td>@daysStr</td><td>@timeStr</td><td>@roomStr</td><td>@t.ToUpper()</td></tr>
             }
-            @if (!Model.Any())
-            {
-                <tr><td colspan="7" style="text-align:center;color:var(--muted)">No schedule yet.</td></tr>
-            }
-        </tbody>
-    </table>
+        }
+        @if (!Model.Any())
+        {
+            <tr><td colspan="@(clickable ? 8 : 7)" style="text-align:center;color:var(--muted)">No schedule yet.</td></tr>
+        }
+    </tbody>
+</table>
 </div>

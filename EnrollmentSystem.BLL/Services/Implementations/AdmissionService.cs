@@ -46,6 +46,10 @@ public class AdmissionService : IAdmissionService
         var app = await _applicationRepo.GetByIdAsync(applicationId);
         if (app is null) return ServiceResult.Fail("Application not found.");
 
+        // Once enrolled, the application is finalized and locked from further changes.
+        if (app.Status == ApplicationStatuses.Enrolled)
+            return ServiceResult.Fail("This application is already enrolled and can no longer be changed.");
+
         app.Status = newStatus;
         app.Remarks = remarks;
         app.ModifiedBy = reviewedBy;
@@ -110,4 +114,5 @@ public class AdmissionService : IAdmissionService
         if (!string.IsNullOrWhiteSpace(app.EmailAddress) && emailStatus is not null)
             await _email.SendStatusUpdateAsync(app.EmailAddress, emailStatus, emailRemarks);
     }
+
 }

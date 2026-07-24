@@ -7,7 +7,7 @@
         ?? Enumerable.Empty<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>();
 }
 <h1 class="page-title">Teachers</h1>
-<p class="page-subtitle">Manage faculty accounts.</p>
+<p class="page-subtitle">Manage faculty accounts. Click a row to view a teacher's profile.</p>
 
 @if (TempData["Success"] is string ok)
 {
@@ -33,12 +33,12 @@
 
 <div class="content-card">
     <table class="table">
-        <thead><tr><th>Name</th><th>Employee No. (Username)</th><th>Email</th><th>Advisory Class</th><th></th></tr></thead>
+        <thead><tr><th>Name</th><th>Employee No. (Username)</th><th>Email</th><th>Advisory Class</th><th></th><th></th></tr></thead>
         <tbody>
             @foreach (var t in Model)
             {
                 advisoryByTeacher.TryGetValue(t.TeacherId, out var advisory);
-                <tr>
+                <tr data-href="@Url.Action("Details", new { id = t.TeacherId })">
                     <td><strong>@t.Employee?.LastName, @t.Employee?.FirstName @t.Employee?.MiddleName</strong></td>
                     <td>@t.Employee?.EmployeeNumber</td>
                     <td>@t.Employee?.EmailAddress</td>
@@ -75,11 +75,12 @@
                             <button type="submit" class="btn btn-danger" style="padding:6px 12px;font-size:13px;">Delete</button>
                         </form>
                     </td>
+                    <td style="text-align:right;color:var(--muted);"><i data-lucide="chevron-right"></i></td>
                 </tr>
             }
             @if (!Model.Any())
             {
-                <tr><td colspan="5" style="text-align:center;color:var(--muted)">No teachers yet.</td></tr>
+                <tr><td colspan="6" style="text-align:center;color:var(--muted)">No teachers yet.</td></tr>
             }
         </tbody>
     </table>

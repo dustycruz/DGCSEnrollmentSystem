@@ -116,6 +116,9 @@ public class StudentService : IStudentService
 
         if (string.IsNullOrWhiteSpace(application.EmailAddress))
             return ServiceResult<StudentCredentialsDto>.Fail("The application has no email address on file.");
+        // Guard against creating a duplicate student account for the same application.
+        if (await _studentRepo.ExistsAsync(st => !st.IsDeleted && st.ApplicationId == applicationId))
+            return ServiceResult<StudentCredentialsDto>.Fail("A student account already exists for this application.");
 
         // 1. Create the Student record
         var created = await CreateFromApplicationAsync(application, modifiedBy);

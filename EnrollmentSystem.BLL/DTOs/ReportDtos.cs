@@ -22,6 +22,7 @@ public class EnrollmentStatDto
 public class ClassListRowDto
 {
     public int Number { get; set; }
+    public int StudentId { get; set; }
     public string StudentNumber { get; set; } = string.Empty;
     public string FullName { get; set; } = string.Empty;
     public string Gender { get; set; } = string.Empty;

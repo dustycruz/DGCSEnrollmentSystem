@@ -2,6 +2,10 @@
 @model IEnumerable<Schedule>
 @{
     ViewData["Title"] = "My Schedule";
+    // Make each timetable block link to the subject details page.
+    ViewData["EventAction"] = "SubjectDetails";
+    ViewData["EventController"] = "Student";
 }
 <h1 class="page-title">My Schedule</h1>
+<p class="page-subtitle">Click a class block to see the subject details.</p>
 <partial name="_Timetable" model="Model" />

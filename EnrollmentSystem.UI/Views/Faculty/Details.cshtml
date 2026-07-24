@@ -1,0 +1,56 @@
+﻿@* File: EnrollmentSystem.UI/Views/Faculty/Details.cshtml *@
+@model EnrollmentSystem.DAL.Models.Teacher
+@{
+    ViewData["Title"] = "Teacher Details";
+    var advisory = ViewBag.Advisory as List<EnrollmentSystem.DAL.Models.Section> ?? new();
+    var schedules = ViewBag.Schedules as List<EnrollmentSystem.DAL.Models.Schedule> ?? new();
+    var e = Model.Employee;
+    string V(string? s) => string.IsNullOrWhiteSpace(s) ? "—" : s!;
+}
+<h1 class="page-title">@e?.LastName, @e?.FirstName @e?.MiddleName</h1>
+<p class="page-subtitle">Employee No. @V(e?.EmployeeNumber)</p>
+
+<div class="content-card">
+    <h3><i data-lucide="user"></i> Account</h3>
+    <div class="detail-grid">
+        <div><span class="detail-label">Full Name</span><span class="detail-value">@e?.FirstName @e?.MiddleName @e?.LastName</span></div>
+        <div><span class="detail-label">Employee No. (Username)</span><span class="detail-value">@V(e?.EmployeeNumber)</span></div>
+        <div><span class="detail-label">Email</span><span class="detail-value">@V(e?.EmailAddress)</span></div>
+        <div><span class="detail-label">Advisory Class</span><span class="detail-value">@(advisory.Any() ? string.Join(", ", advisory.Select(s => s.Name)) : "None")</span></div>
+    </div>
+</div>
+
+<div class="content-card">
+    <h3><i data-lucide="book-open"></i> Classes Taught</h3>
+    @if (schedules.Any())
+    {
+        <table class="table">
+            <thead><tr><th>Subject</th><th>Section</th><th>Grade Level</th><th>Schedule</th></tr></thead>
+            <tbody>
+                @foreach (var s in schedules)
+                {
+                    var slot = s.ScheduleDetails.FirstOrDefault();
+                    var when = slot is not null && slot.StartTime.HasValue && slot.EndTime.HasValue
+                        ? $"{slot.Day} {slot.StartTime.Value.ToString("h:mm tt")}-{slot.EndTime.Value.ToString("h:mm tt")}"
+                        : "TBA";
+                    <tr>
+                        <td><strong>@s.Subject?.Name</strong></td>
+                        <td>@s.Section?.Name</td>
+                        <td>@(s.Section?.GradeLevel?.Name ?? "-")</td>
+                        <td>@when</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p style="color:var(--muted)">No classes assigned to this teacher yet.</p>
+    }
+</div>
+
+<a class="btn btn-outline-brand" asp-action="Index">← Back to Teachers</a>
+
+@section Scripts {
+    <script>if (window.lucide) lucide.createIcons();</script>
+}

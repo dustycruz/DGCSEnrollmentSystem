@@ -41,6 +41,16 @@ public class FacultyController : Controller
 
         return View(await _teacher.GetAllAsync());
     }
+    // Teacher profile: account info, advisory, and the classes/subjects they teach.
+    public async Task<IActionResult> Details(int id)
+    {
+        var teacher = await _teacher.GetAsync(id);
+        if (teacher?.Employee is null) return NotFound();
+
+        ViewBag.Advisory = (await _teacher.GetAdvisoryAsync(id)).ToList();
+        ViewBag.Schedules = (await _teacher.GetScheduleAsync(id)).ToList();
+        return View(teacher);
+    }
 
     // Assign a class advisory to a teacher (guarded to one advisory per teacher in the service).
     [HttpPost]

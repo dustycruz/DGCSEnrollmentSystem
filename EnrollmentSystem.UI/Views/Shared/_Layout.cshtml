@@ -45,9 +45,18 @@
 
                 <nav>
                     <div class="nav-group-label">Main Menu</div>
-                    <a class="nav-link-item @ActiveIf("Home")" asp-controller="Home" asp-action="Dashboard">
-                        <i data-lucide="layout-dashboard"></i> Dashboard
-                    </a>
+                    @if (User.IsInRole("Teacher"))
+                    {
+                        <a class="nav-link-item @ActiveAction("Teacher", "Index")" asp-controller="Teacher" asp-action="Index">
+                            <i data-lucide="layout-dashboard"></i> Dashboard
+                        </a>
+                    }
+                    else
+                    {
+                        <a class="nav-link-item @ActiveIf("Home")" asp-controller="Home" asp-action="Dashboard">
+                            <i data-lucide="layout-dashboard"></i> Dashboard
+                        </a>
+                    }
 
                     @if (User.IsInRole("Applicant"))
                     {
@@ -70,7 +79,6 @@
 
                     @if (User.IsInRole("Teacher"))
                     {
-                        <a class="nav-link-item @ActiveAction("Teacher", "Index")" asp-controller="Teacher" asp-action="Index"><i data-lucide="book-open"></i> My Classes</a>
                         <a class="nav-link-item @ActiveAction("Teacher", "Schedule")" asp-controller="Teacher" asp-action="Schedule"><i data-lucide="clock"></i> My Schedule</a>
                         <a class="nav-link-item @ActiveAction("Teacher", "Calendar")" asp-controller="Teacher" asp-action="Calendar"><i data-lucide="calendar"></i> Calendar</a>
                         <a class="nav-link-item @ActiveAction("Teacher", "Advisory")" asp-controller="Teacher" asp-action="Advisory"><i data-lucide="user-check"></i> My Advisory</a>
@@ -86,6 +94,7 @@
                         </a>
                         <a class="nav-link-item @ActiveIf("Subject")" asp-controller="Subject" asp-action="Index"><i data-lucide="book"></i> Subjects</a>
                         <a class="nav-link-item @ActiveIf("Faculty")" asp-controller="Faculty" asp-action="Index"><i data-lucide="user-round"></i> Teachers</a>
+                        <a class="nav-link-item @ActiveAction("Report", "ClassList")" asp-controller="Report" asp-action="ClassList"><i data-lucide="clipboard-list"></i> Class List</a>
                         <a class="nav-link-item @ActiveIf("Payment")" asp-controller="Payment" asp-action="Index"><i data-lucide="wallet"></i> Payments</a>
                         <a class="nav-link-item @ActiveIf("Announcement")" asp-controller="Announcement" asp-action="Index"><i data-lucide="megaphone"></i> Announcements</a>
 
@@ -145,7 +154,16 @@
     @await RenderSectionAsync("Scripts", required: false)
 
     <script>
-        if (window.lucide) { lucide.createIcons(); }
+            if (window.lucide) { lucide.createIcons(); }
+
+            // Clickable table rows: navigate on row click, but ignore clicks on
+            // interactive controls (links, buttons, form fields) so inline actions still work.
+            document.addEventListener('click', function(e) {
+                var row = e.target.closest('tr[data-href]');
+                if (!row) return;
+                if (e.target.closest('a, button, input, select, textarea, form, label')) return;
+                window.location = row.getAttribute('data-href');
+            });
     </script>
 </body>
 </html>

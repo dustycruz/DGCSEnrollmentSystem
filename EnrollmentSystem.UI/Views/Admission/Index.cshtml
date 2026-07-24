@@ -9,7 +9,7 @@
         ApplicationStatuses.Enrolled, ApplicationStatuses.Rejected };
 }
 <h1 class="page-title">Admissions</h1>
-<p class="page-subtitle">Review applications, verify payments, and finalize enrollment.</p>
+<p class="page-subtitle">Review applications, verify payments, and finalize enrollment. Click a row to open it.</p>
 
 @if (TempData["Success"] is string ok)
 {
@@ -36,12 +36,12 @@
             {
                 var cls = a.Status is "Approved" or "Enrolled" ? "badge-approved"
                     : a.Status == "Rejected" ? "badge-rejected" : "badge-pending";
-                <tr>
+                <tr data-href="@Url.Action("Review", new { id = a.ApplicationId })">
                     <td><strong>@a.LastName, @a.FirstName</strong><br /><span style="color:var(--muted);font-size:12px;">@a.EmailAddress</span></td>
                     <td>@(a.GradeLevel?.Name ?? "-")<br /><span style="color:var(--muted);font-size:12px;">@a.ApplicantType</span></td>
                     <td>@a.ApplicationDate.ToString("MMM dd, yyyy")</td>
                     <td><span class="badge-status @cls">@a.Status</span></td>
-                    <td><a class="btn btn-brand" style="padding:6px 14px;font-size:13px;" asp-action="Review" asp-route-id="@a.ApplicationId">Review</a></td>
+                    <td style="text-align:right;color:var(--muted);"><i data-lucide="chevron-right"></i></td>
                 </tr>
             }
             @if (!Model.Any())
@@ -51,3 +51,7 @@
         </tbody>
     </table>
 </div>
+
+@section Scripts {
+    <script>if (window.lucide) lucide.createIcons();</script>
+}

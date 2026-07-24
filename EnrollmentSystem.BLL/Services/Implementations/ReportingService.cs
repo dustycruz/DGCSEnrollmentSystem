@@ -63,6 +63,7 @@ public class ReportingService : IReportingService
             rows.Add(new ClassListRowDto
             {
                 Number = i++,
+                StudentId = e.StudentId,
                 StudentNumber = e.Student.StudentNumber ?? "-",
                 FullName = $"{e.Student.LastName}, {e.Student.FirstName} {e.Student.MiddleName}".Trim(),
                 Gender = e.Student.Gender ?? "-",

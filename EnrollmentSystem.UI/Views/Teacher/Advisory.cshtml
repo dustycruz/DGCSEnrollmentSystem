@@ -4,7 +4,7 @@
     ViewData["Title"] = "My Advisory";
 }
 <h1 class="page-title">My Advisory Class</h1>
-<p class="page-subtitle">Sections where you are the assigned class adviser.</p>
+<p class="page-subtitle">Sections where you are the assigned class adviser. Click a row to view its class list.</p>
 
 <div class="content-card">
     @if (Model.Any())
@@ -14,11 +14,11 @@
             <tbody>
                 @foreach (var s in Model)
                 {
-                    <tr>
+                    <tr data-href="@Url.Action("ClassList", "Teacher", new { sectionId = s.SectionId })">
                         <td><strong>@s.Name</strong></td>
                         <td>@(s.GradeLevel?.Name ?? "-")</td>
                         <td>@(s.SchoolYear?.Name ?? "-")</td>
-                        <td><a class="btn btn-brand" style="padding:6px 12px;font-size:13px;" asp-action="ClassList" asp-route-sectionId="@s.SectionId">View Class List</a></td>
+                        <td style="text-align:right;color:var(--muted);"><i data-lucide="chevron-right"></i></td>
                     </tr>
                 }
             </tbody>

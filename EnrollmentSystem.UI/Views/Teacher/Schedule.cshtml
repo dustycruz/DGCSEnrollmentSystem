@@ -2,6 +2,9 @@
 @model IEnumerable<Schedule>
 @{
     ViewData["Title"] = "My Schedule";
+    ViewData["EventAction"] = "ClassList";
+    ViewData["EventController"] = "Teacher";
 }
 <h1 class="page-title">My Teaching Schedule</h1>
+<p class="page-subtitle">Click a class to view its class list.</p>
 <partial name="_Timetable" model="Model" />
